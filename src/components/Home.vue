@@ -4,21 +4,16 @@
     <div>
       <el-header>
         <div style="float: left;height: 60px;">
-          <img src="../assets/logo.png" style="height:60px;width:60px;" alt="">
+          <img src="../assets/logo.png" style="height:50px;width:50px;margin:5px 10px;" alt="">
         </div>
-        <div v-if="welcome" style="float: left;height: 60px;color:#909399">欢迎来到XXX后台管理系统</div>
+        <div v-if="welcome" style="float: left;height: 60px;color:#909399">欢迎来到SPS后台管理系统</div>
         <div style="float: right;color:#fff; font-size: 12px;margin-right:50px;">
           <el-dropdown>
             <i class="el-icon-setting" style="margin-right: 15px;color:#fff;"></i>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
-                <div @click="jumpTo()">
+                <div @click="jumpTo('/manage')">
                   <span style="color: #555;font-size: 14px;">个人信息</span>
-                </div>
-              </el-dropdown-item>
-              <el-dropdown-item>
-                <div @click="jumpTo('/user/changepwd')">
-                  <span style="color: #555;font-size: 14px;">修改密码</span>
                 </div>
               </el-dropdown-item>
               <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
@@ -33,7 +28,7 @@
     <el-container>
       <aside style="background-color: #16181D;">
         <div style="text-align:center">
-          <img src="../assets/logo.png" style="width:30px;height:30px;" alt="" @click="closeNav()">
+          <img src="../assets/logo.png" style="width:30px;height:30px;margin:5px 10px;" alt="" @click="closeNav()">
         </div>
         <el-menu style="background-color: #16181D;" class="el-menu-vertical-demo" :default-active="$route.path" router :unique-opened='true'
           @select="handleSelect" :collapse='iscloseNav'>
@@ -54,14 +49,14 @@
           <router-view></router-view>
         </el-main>
         <el-main v-else>
-          <h2>黄晓明后台管理</h2>
-          <h2>友情链接：</h2>
+          <h2>SPS后台管理</h2>
+          <h3>扫码下载APP：</h3>
           <ul>
             <li>
-              <a href="https://vuejs.org" target="_blank">黄晓明官网</a>
+              <a href="" target="_blank">扫我扫我</a>
             </li>
             <li>
-              <a href="https://forum.vuejs.org" target="_blank">黄晓明影友会微博</a>
+              <a href="" target="_blank">扫我扫我</a>
             </li>
           </ul>
         </el-main>
@@ -154,7 +149,8 @@ export default {
     },
     // 个人中心  修改密码
     jumpTo(url) {
-      this.defaultActiveIndex = url;
+      // this.defaultActiveIndex = url;
+      console.log(url)
       this.$router.push(url);
     },
     // 退出

@@ -26,7 +26,7 @@ export default {
     //初始化UE
     const _this = this;
     this.editor = UE.getEditor("editor", this.config);
-
+  
     this.editor.addListener("ready", function() {
       _this.editor.setContent(_this.defaultMsg); // 确保UE加载完成后，放入内容。
     });

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-breadcrumb separator-class="el-icon-arrow-right" class="crumb">
+    <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">黄晓明后台</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/manage' }">管理员管理</el-breadcrumb-item>
+      <el-breadcrumb-item>管理员管理</el-breadcrumb-item>
     </el-breadcrumb>
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">

@@ -8,7 +8,6 @@ import home from '@/components/Home.vue'
 import error from '@/components/404.vue'  //404错误
 // import manage from '@/components/manage/manage.vue'
 var manage = resolve => require(['@/components/manage/manage.vue'], resolve)
-var detail = resolve => require(['../components/manage/detail.vue'], resolve)
 
 var role = resolve => require(['@/components/role/role.vue'], resolve)
 var roleLimit = resolve => require(['@/components/role/roleLimit.vue'], resolve)
@@ -20,6 +19,11 @@ var productEdit = resolve => require(['../components/productList/productEdit.vue
 var productAdd = resolve => require(['../components/productList/productAdd.vue'], resolve)
 
 var O_GetOrderList = resolve => require(['@/components/order/O_GetOrderList.vue'], resolve)
+
+// 停车场设置
+var parkList = resolve => require(['../components/parkSetting/parkList.vue'], resolve)
+var parkEdit = resolve => require(['../components/parkSetting/parkEdit.vue'], resolve)
+var parkAdd = resolve => require(['../components/parkSetting/parkAdd.vue'], resolve)
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
 Vue.use(Router)
@@ -40,7 +44,6 @@ export default new Router({
         { path: '/error', component: error, name: '404页' },
         // manage
         { path: '/manage', component: manage, name: '管理员管理', },
-        { path: '/manage/detail', component: detail, name: '管理员详情' },
         // role
         { path: '/role', component: role, name: '权限管理' },
         { path: '/power', component: power, name: '角色管理' },
@@ -54,6 +57,12 @@ export default new Router({
 
         // order
         { path: '/O_GetOrderList', component: O_GetOrderList, name: '订单列表' },
+        
+
+        // 停车场设置
+        { path: '/parkList', component: parkList, name: '停车场列表' },
+        { path: '/parkList/parkEdit/:id', component: parkEdit, name: '停车场编辑' },
+        { path: '/parkList/parkAdd', component: parkAdd, name: '停车场添加' },  
         
       ]
     },

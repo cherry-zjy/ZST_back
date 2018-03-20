@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-breadcrumb separator-class="el-icon-arrow-right" class="crumb">
+    <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">黄晓明后台</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/manage' }">商品列表</el-breadcrumb-item>
     </el-breadcrumb>
@@ -8,7 +8,7 @@
     <el-col class="toolbar" style="padding-top: 15px;">
       <el-form :inline="true" :model="filters">
         <el-form-item>
-          <el-input v-model="filters.keyword" placeholder="关键字"></el-input>
+          <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>

@@ -42,4 +42,10 @@ export default {
 .edui-dialog {
   z-index: 9999 !important;
 }
+/* 面包屑 */
+.el-breadcrumb__separator{
+  width: 3px;
+  color:#555555;
+  background-color: #555555;
+}
 </style>
