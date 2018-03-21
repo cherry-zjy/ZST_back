@@ -18,13 +18,18 @@ var P_GetProductList = resolve => require(['../components/productList/P_GetProdu
 var productEdit = resolve => require(['../components/productList/productEdit.vue'], resolve)
 var productAdd = resolve => require(['../components/productList/productAdd.vue'], resolve)
 
-var BackAppointmentOrderList = resolve => require(['@/components/order/BackAppointmentOrderList.vue'], resolve)
-var BackParkOrderList = resolve => require(['@/components/order/BackParkOrderList.vue'], resolve)
-
 // 停车场设置
-var BackParkList = resolve => require(['../components/parkSetting/BackParkList.vue'], resolve)
-var parkEdit = resolve => require(['../components/parkSetting/parkEdit.vue'], resolve)
-var parkAdd = resolve => require(['../components/parkSetting/parkAdd.vue'], resolve)
+var BackParkList = resolve => require(['../components/parkSetting/BackParkList.vue'], resolve)//停车场列表
+var parkEdit = resolve => require(['../components/parkSetting/parkEdit.vue'], resolve)//编辑
+var parkAdd = resolve => require(['../components/parkSetting/parkAdd.vue'], resolve)//新增
+// 订单管理
+var BackAppointmentOrderList = resolve => require(['@/components/order/BackAppointmentOrderList.vue'], resolve)//预约订单
+var BackParkOrderList = resolve => require(['@/components/order/BackParkOrderList.vue'], resolve)//停车订单
+// 运行管理
+var BackCouponList = resolve => require(['../components/running/BackCouponList.vue'], resolve)  //优惠券管理
+var BackMonthCardList = resolve => require(['../components/running/BackMonthCardList.vue'], resolve)//月卡管理
+var BackNoticeList = resolve => require(['../components/running/BackNoticeList.vue'], resolve)//通知管理
+
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
 Vue.use(Router)
@@ -54,17 +59,21 @@ export default new Router({
         // productList
         { path: '/P_GetProductList', component: P_GetProductList, name: '商品列表' },
         { path: '/P_GetProductList/productEdit/:id', component: productEdit, name: '商品编辑' },
-        { path: '/P_GetProductList/productAdd', component: productAdd, name: '商品添加' },        
+        { path: '/P_GetProductList/productAdd', component: productAdd, name: '商品添加' },
 
-        // order
-        { path: '/BackAppointmentOrderList', component: BackAppointmentOrderList, name: '预约订单' },
-        { path: '/BackParkOrderList', component: BackParkOrderList, name: '停车订单' },        
-        
+
 
         // 停车场设置
         { path: '/BackParkList', component: BackParkList, name: '停车场列表' },
         { path: '/BackParkList/parkEdit/:id', component: parkEdit, name: '停车场编辑' },
-        { path: '/BackParkList/parkAdd', component: parkAdd, name: '停车场添加' },  
+        { path: '/BackParkList/parkAdd', component: parkAdd, name: '停车场添加' },
+        // order
+        { path: '/BackAppointmentOrderList', component: BackAppointmentOrderList, name: '预约订单' },
+        { path: '/BackParkOrderList', component: BackParkOrderList, name: '停车订单' },
+        //运营管理
+        { path: '/BackCouponList', component: BackCouponList, name: '优惠券管理' },
+        { path: '/BackMonthCardList', component: BackMonthCardList, name: '月卡管理' },
+        { path: '/BackNoticeList', component: BackNoticeList, name: '通知管理' },
         
       ]
     },
