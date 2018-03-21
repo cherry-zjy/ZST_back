@@ -29,7 +29,9 @@ var BackParkOrderList = resolve => require(['@/components/order/BackParkOrderLis
 var BackCouponList = resolve => require(['../components/running/BackCouponList.vue'], resolve)  //优惠券管理
 var BackMonthCardList = resolve => require(['../components/running/BackMonthCardList.vue'], resolve)//月卡管理
 var BackNoticeList = resolve => require(['../components/running/BackNoticeList.vue'], resolve)//通知管理
-
+// 用户管理
+var BackUserList = resolve => require(['../components/user/BackUserList.vue'], resolve)  //用户管理
+var BackChangeUserList = resolve => require(['../components/user/BackChangeUserList.vue'], resolve)  //换绑管理
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
 Vue.use(Router)
@@ -74,7 +76,9 @@ export default new Router({
         { path: '/BackCouponList', component: BackCouponList, name: '优惠券管理' },
         { path: '/BackMonthCardList', component: BackMonthCardList, name: '月卡管理' },
         { path: '/BackNoticeList', component: BackNoticeList, name: '通知管理' },
-        
+        // 用户管理
+        { path: '/BackUserList', component: BackUserList, name: '用户列表' },
+        { path: '/BackChangeUserList', component: BackChangeUserList, name: '换绑管理' },        
       ]
     },
   ]
