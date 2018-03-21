@@ -18,7 +18,8 @@ var P_GetProductList = resolve => require(['../components/productList/P_GetProdu
 var productEdit = resolve => require(['../components/productList/productEdit.vue'], resolve)
 var productAdd = resolve => require(['../components/productList/productAdd.vue'], resolve)
 
-var O_GetOrderList = resolve => require(['@/components/order/O_GetOrderList.vue'], resolve)
+var BackAppointmentOrderList = resolve => require(['@/components/order/BackAppointmentOrderList.vue'], resolve)
+var BackParkOrderList = resolve => require(['@/components/order/BackParkOrderList.vue'], resolve)
 
 // 停车场设置
 var BackParkList = resolve => require(['../components/parkSetting/BackParkList.vue'], resolve)
@@ -56,7 +57,8 @@ export default new Router({
         { path: '/P_GetProductList/productAdd', component: productAdd, name: '商品添加' },        
 
         // order
-        { path: '/O_GetOrderList', component: O_GetOrderList, name: '订单列表' },
+        { path: '/BackAppointmentOrderList', component: BackAppointmentOrderList, name: '预约订单' },
+        { path: '/BackParkOrderList', component: BackParkOrderList, name: '停车订单' },        
         
 
         // 停车场设置
