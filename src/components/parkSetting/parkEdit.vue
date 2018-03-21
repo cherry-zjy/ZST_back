@@ -3,7 +3,7 @@
     <el-header>
       <el-breadcrumb separator="|" class="crumb">
         <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-        <el-breadcrumb-item :to="{ path: '/parkList' }">停车场列表</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/BackParkList' }">停车场列表</el-breadcrumb-item>
         <el-breadcrumb-item>停车场编辑</el-breadcrumb-item>
       </el-breadcrumb>
     </el-header>

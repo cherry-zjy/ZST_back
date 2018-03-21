@@ -228,7 +228,7 @@ export default {
       console.log(Object.assign({}, row));
       var obj = Object.assign({}, row);
       var urlId = obj.ID;
-      this.$router.push("/parkList/parkEdit/id=" + urlId);
+      this.$router.push("/BackParkList/parkEdit/id=" + urlId);
     },
     handleDelete(index, row) {
       var obj = Object.assign({}, row);
@@ -271,7 +271,7 @@ export default {
       });
     },
     handleAdd() {
-      this.$router.push("/parkList/parkAdd");
+      this.$router.push("/BackParkList/parkAdd");
     },
     editSubmit() {
       this.$refs.editForm.validate(valid => {

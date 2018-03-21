@@ -21,7 +21,7 @@ var productAdd = resolve => require(['../components/productList/productAdd.vue']
 var O_GetOrderList = resolve => require(['@/components/order/O_GetOrderList.vue'], resolve)
 
 // 停车场设置
-var parkList = resolve => require(['../components/parkSetting/parkList.vue'], resolve)
+var BackParkList = resolve => require(['../components/parkSetting/BackParkList.vue'], resolve)
 var parkEdit = resolve => require(['../components/parkSetting/parkEdit.vue'], resolve)
 var parkAdd = resolve => require(['../components/parkSetting/parkAdd.vue'], resolve)
 
@@ -60,9 +60,9 @@ export default new Router({
         
 
         // 停车场设置
-        { path: '/parkList', component: parkList, name: '停车场列表' },
-        { path: '/parkList/parkEdit/:id', component: parkEdit, name: '停车场编辑' },
-        { path: '/parkList/parkAdd', component: parkAdd, name: '停车场添加' },  
+        { path: '/BackParkList', component: BackParkList, name: '停车场列表' },
+        { path: '/BackParkList/parkEdit/:id', component: parkEdit, name: '停车场编辑' },
+        { path: '/BackParkList/parkAdd', component: parkAdd, name: '停车场添加' },  
         
       ]
     },
