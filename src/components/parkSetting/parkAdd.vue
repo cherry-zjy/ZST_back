@@ -178,7 +178,7 @@ export default {
 
               // 发保存请求
               //   this.$http
-              // .post("/hxmback/api/Back/P_ProductAdd", para)
+              // .post("/sps/api/Back/P_ProductAdd", para)
               // .then(
               //   function (response) {
               //     this.addLoading = false;

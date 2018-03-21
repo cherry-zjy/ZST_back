@@ -118,7 +118,7 @@ export default {
       */
     getInfo() {
       this.$http
-        .get("/hxmback/api/Role/GetRoles", {
+        .get("/sps/api/Role/GetRoles", {
           params: {
             pageIndex: this.pageIndex,
             pageSize: this.pageSize
@@ -201,7 +201,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/hxmback/api/Role/Edit", {
+              .get("/sps/api/Role/Edit", {
                 params: {
                   ID: para.ID,
                   Role: para.Name,
@@ -261,7 +261,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/hxmback/api/Role/Add", {
+              .get("/sps/api/Role/Add", {
                 params: {
                   Role: para.Name,
                   Token: para.Token

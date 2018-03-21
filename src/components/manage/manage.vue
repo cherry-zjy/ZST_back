@@ -176,7 +176,7 @@ export default {
       */
     getInfo() {
       this.$http
-        .get("/hxmback/api/Admin/GetAdmin", {
+        .get("/sps/api/Admin/GetAdmin", {
           params: {
             pageIndex: this.pageIndex,
             pageSize: this.pageSize
@@ -234,7 +234,7 @@ export default {
     getRoleList() {
       // 获取角色列表
       this.$http
-        .get("/hxmback/api/Role/GetRoles", {
+        .get("/sps/api/Role/GetRoles", {
           params: {
             PageIndex: 1,
             PageSize: 999
@@ -275,7 +275,7 @@ export default {
       this.editFormVisible = true;
       // 根据id获取用户信息
       this.$http
-        .get("/hxmback/api/Admin/GetAdminByID", {
+        .get("/sps/api/Admin/GetAdminByID", {
           params: {
             ID: obj.ID
           }
@@ -333,7 +333,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/hxmback/api/Admin/Edit", {
+              .get("/sps/api/Admin/Edit", {
                 params: para
               })
               .then(
@@ -394,7 +394,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/hxmback/api/Admin/Add", {
+              .get("/sps/api/Admin/Add", {
                 params: para
               })
               .then(

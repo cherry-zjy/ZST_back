@@ -238,7 +238,7 @@ export default {
         */
     getInfo() {
       this.$http
-        .post("/hxmback/api/Back/O_GetOrderList", {
+        .post("/sps/api/Back/O_GetOrderList", {
           Token: getCookie("token"),
           PageIndex: this.pageIndex,
           PageSize: this.pageSize,
@@ -354,7 +354,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/hxmback/api/Admin/Edit", {
+              .get("/sps/api/Admin/Edit", {
                 // params: para
               })
               .then(
@@ -412,7 +412,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/hxmback/api/Admin/Add", {
+              .get("/sps/api/Admin/Add", {
                 // params: para
               })
               .then(

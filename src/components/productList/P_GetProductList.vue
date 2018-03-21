@@ -137,7 +137,7 @@ export default {
       */
     getInfo() {
       this.$http
-        .get("/hxmback/api/Back/P_GetProductList", {
+        .get("/sps/api/Back/P_GetProductList", {
           params: {
             token: getCookie("token"),
             pageIndex: this.pageIndex,
@@ -194,7 +194,7 @@ export default {
     getRoleList() {
       // 获取角色列表
       this.$http
-        .get("/hxmback/api/Role/GetRoles", {
+        .get("/sps/api/Role/GetRoles", {
           params: {
             PageIndex: 1,
             PageSize: 999
@@ -239,7 +239,7 @@ export default {
       var obj = Object.assign({}, row);
       this.$confirm("确认删除吗？", "提示", {}).then(() => {
         this.$http
-          .get("/hxmback/api/Back/P_ProductDel", {
+          .get("/sps/api/Back/P_ProductDel", {
             params: {
               token: getCookie("token"),
               id: obj.ID
@@ -293,7 +293,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/hxmback/api/Admin/Edit", {
+              .get("/sps/api/Admin/Edit", {
                 params: para
               })
               .then(
@@ -354,7 +354,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/hxmback/api/Admin/Add", {
+              .get("/sps/api/Admin/Add", {
                 params: para
               })
               .then(

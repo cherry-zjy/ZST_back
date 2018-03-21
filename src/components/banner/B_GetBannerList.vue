@@ -169,7 +169,7 @@ export default {
           */
     getInfo() {
       this.$http
-        .get("/hxmback/api/Back/B_GetBannerList", {
+        .get("/sps/api/Back/B_GetBannerList", {
           params: {
             token: getCookie("token"),
             pageIndex: this.pageIndex,
@@ -246,7 +246,7 @@ export default {
       this.$confirm("确认提交吗？", "提示", {}).then(() => {
         // 发保存请求
         this.$http
-          .get("/hxmback/api/Back/B_DelBanner", {
+          .get("/sps/api/Back/B_DelBanner", {
               params:{
                   token:getCookie("token"),
                   id:urlId
@@ -316,7 +316,7 @@ export default {
 
             // 发保存请求
             this.$http
-              .post("/hxmback/api/Back/B_EditBanner", para)
+              .post("/sps/api/Back/B_EditBanner", para)
               .then(
                 function(response) {
                   this.editLoading = false;
@@ -372,7 +372,7 @@ export default {
             console.log(para);
             // 发保存请求
             this.$http
-              .post("/hxmback/api/Back/B_AddBanner", para)
+              .post("/sps/api/Back/B_AddBanner", para)
               .then(
                 function(response) {
                   this.addLoading = false;

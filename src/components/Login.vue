@@ -48,7 +48,7 @@ export default {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           this.$http
-            .post("/hxmback/api/Admin/Login", {
+            .post("/sps/api/Admin/Login", {
               Name: this.loginForm.username,
               Password: md5(this.loginForm.password)
             })

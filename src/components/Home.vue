@@ -91,7 +91,7 @@ export default {
     var tt = this;
     if (getCookie("token")) {
       this.$http
-        .get("/hxmback/api/Menu/GetMenus", {
+        .get("/sps/api/Menu/GetMenus", {
           params: {
             Token: getCookie("token")
           }

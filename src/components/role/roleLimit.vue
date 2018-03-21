@@ -58,7 +58,7 @@ export default {
         */
     getInfo(id) {
       this.$http
-        .get("/hxmback/api/Role/GetMenuJurisdiction", {
+        .get("/sps/api/Role/GetMenuJurisdiction", {
           params: {
             RoleID: id
           }
@@ -102,7 +102,7 @@ export default {
     huoqu(parentindex, $index, MenuID, SubMenuID, IsSelect) {
       var RoleID = window.location.href.split("id=")[1].split("&rolename")[0];
       this.$http
-        .get("/hxmback/api/Role/AddMenuJurisdiction", {
+        .get("/sps/api/Role/AddMenuJurisdiction", {
           params: {
             MenuID: MenuID,
             SubMenuID: SubMenuID,

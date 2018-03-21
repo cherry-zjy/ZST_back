@@ -21,11 +21,11 @@ module.exports = {
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
     proxyTable: {
-      "/hxmback": {
-        target: "http://hxm.nbxuanma.com",
+      "/sps": {
+        target: "http://192.168.1.125/Sps/",
         changeOrigin: true,
         pathRewrite: {
-          '^/hxmback': '/'
+          '^/sps': '/'
         }
       }
     },
