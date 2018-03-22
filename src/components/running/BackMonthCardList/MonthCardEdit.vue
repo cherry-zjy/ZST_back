@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-header>
+    <!-- <el-header> -->
       <el-breadcrumb separator="|" class="crumb">
         <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
         <el-breadcrumb-item :to="{ path: '/BackNoticeList' }">通知管理</el-breadcrumb-item>
         <el-breadcrumb-item>通知编辑</el-breadcrumb-item>
       </el-breadcrumb>
-    </el-header>
+    <!-- </el-header> -->
 
     <el-main style="width:70%;">
       <el-form :model="editForm" :rules="rules" ref="editForm" label-width="150px" class="demo-editForm">

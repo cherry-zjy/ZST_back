@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-header>
+    <!-- <el-header> -->
       <el-breadcrumb separator="|" class="crumb">
         <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
         <el-breadcrumb-item :to="{ path: '/BackMonthCardList' }">月卡管理</el-breadcrumb-item>
         <el-breadcrumb-item>月卡添加</el-breadcrumb-item>
       </el-breadcrumb>
-    </el-header>
+    <!-- </el-header> -->
 
     <el-main style="width:70%;">
       <el-form :model="addForm" :rules="rules" ref="addForm" label-width="150px" class="demo-addForm">

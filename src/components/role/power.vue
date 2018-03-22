@@ -7,7 +7,7 @@
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">
       <el-form :inline="true" :model="filters">
-        <el-form-item>
+        <el-form-item  style="float:right;">
           <el-button type="primary" @click="handleAdd()">新增</el-button>
         </el-form-item>
       </el-form>
