@@ -13,20 +13,23 @@
         <el-form-item label="停车场地址" prop="Details">
           <BaiDuMap :mapmsg="locationMsg" ref="map"></BaiDuMap>
         </el-form-item>
-        <el-form-item label="停车场编号" prop="Name">
+        <el-form-item label="停车场编号" prop="Number">
+          <el-input v-model="addForm.Number"></el-input>
+        </el-form-item>
+        <el-form-item label="停车场名" prop="Name">
           <el-input v-model="addForm.Name"></el-input>
         </el-form-item>
-        <el-form-item label="停车场名" prop="Price">
-          <el-input v-model="addForm.Price"></el-input>
+        <el-form-item label="预约车位" prop="AppointmentCount">
+          <el-input v-model.number="addForm.AppointmentCount"></el-input>
         </el-form-item>
-        <el-form-item label="预约车位" prop="Stock">
-          <el-input v-model.number="addForm.Stock"></el-input>
+        <el-form-item label="总车位" prop="TotalCount">
+          <el-input v-model.number="addForm.TotalCount"></el-input>
         </el-form-item>
-        <el-form-item label="总车位" prop="Stock">
-          <el-input v-model.number="addForm.Stock"></el-input>
+        <el-form-item label="剩余车位" prop="ResidualCount">
+          <el-input v-model.number="addForm.ResidualCount"></el-input>
         </el-form-item>
-        <el-form-item label="是否推荐" prop="IsFreeShipping">
-          <el-switch v-model="addForm.IsFreeShipping"></el-switch>
+        <el-form-item label="是否推荐" prop="IsRecommend">
+          <el-switch v-model="addForm.IsRecommend"></el-switch>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('addForm')">立即添加</el-button>
@@ -43,16 +46,43 @@ export default {
     BaiDuMap
   },
   data() {
-    var checkPrice = (rule, value, callback) => {
+    var checkResidualCount = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("价格不能为空"));
+        if (value == "0") {
+          callback();
+        } else {
+          callback(new Error("剩余车位不能为空"));
+        }
+      } else {
+        if (!Number(value)) {
+          callback(new Error("请输入数字值"));
+        } else if (value % 1 !== 0) {
+          callback(new Error("必须为整数"));
+        } else {
+          if (value < 0) {
+            callback(new Error("不能小于0"));
+          } else {
+            callback();
+          }
+        }
       }
       setTimeout(() => {
         // 是否为整数Number.isInteger
+      }, 100);
+      0.11;
+    };
+    var checkAppointmentCount = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("预约车位不能为0或空"));
+      }
+      setTimeout(() => {
+        // 是否为数字
         if (!Number(value)) {
           callback(new Error("请输入数字值"));
+        } else if (value % 1 !== 0) {
+          callback(new Error("必须为整数"));
         } else {
-          if (value < 0) {
+          if (value <= 0) {
             callback(new Error("必须大于0"));
           } else {
             callback();
@@ -60,18 +90,18 @@ export default {
         }
       }, 100);
     };
-    var checkStock = (rule, value, callback) => {
+    var checkTotalCount = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("库存不能为空"));
+        return callback(new Error("总车位不能为0或空"));
       }
       setTimeout(() => {
         // 是否为数字
         if (!Number(value)) {
           callback(new Error("请输入数字值"));
         } else if (value % 1 !== 0) {
-          callback(new Error("库存必须为整数"));
+          callback(new Error("必须为整数"));
         } else {
-          if (value < 0) {
+          if (value <= 0) {
             callback(new Error("必须大于0"));
           } else {
             callback();
@@ -80,18 +110,18 @@ export default {
       }, 100);
     };
     return {
-      mainurl: "http://hxm.nbxuanma.com",
-      action: "http://hxm.nbxuanma.com/api/Photo/UpdateForImage?type=0",
       dialogImageUrl: "",
       dialogVisible: false,
       addForm: {
-        Name: "", //名称
-        Price: "", //价格
-        Stock: "", //库存
-        Image: [], //图片
-        IsFreeShipping: false, //邮费选择
-        Brief: "", //简介
-        Details: ""
+        Number: "", //停车场编号
+        Name: "", //停车场名
+        ResidualCount: "", //剩余车位
+        AppointmentCount: "", //预约车位
+        TotalCount: "", //总车位
+        Address: "", //地址
+        Longitude: 0, //经纬度
+        Latitude: 0,
+        IsRecommend: false //是否推荐
       },
       // 地图经纬度  通用
       locationMsg: {
@@ -100,57 +130,40 @@ export default {
         address: ""
       },
       rules: {
+        Number: [
+          {
+            required: true,
+            message: "请输入停车场编号",
+            trigger: "blur"
+          }
+        ],
         Name: [
           {
             required: true,
-            message: "请输入商品名称",
+            message: "请输入停车场名",
             trigger: "blur"
           }
         ],
-        Price: [
+        ResidualCount: [
           {
-            validator: checkPrice
+            validator: checkResidualCount
           }
         ],
-        Stock: [
+        AppointmentCount: [
           {
-            validator: checkStock
+            validator: checkAppointmentCount
           }
         ],
-        IsFreeShipping: [
+        TotalCount: [
+          {
+            validator: checkTotalCount
+          }
+        ],
+        IsRecommend: [
           {
             required: true,
-            message: "请选择邮费",
+            message: "是否推荐",
             trigger: "change"
-          }
-        ],
-        Image: [
-          {
-            type: "array",
-            required: true,
-            message: "请上传商品图片",
-            trigger: "change"
-          }
-        ],
-        Brief: [
-          {
-            required: true,
-            message: "请输入商品简介",
-            trigger: "blur"
-          }
-        ],
-        lnglat: [
-          {
-            required: true,
-            message: "请输入获取经纬度",
-            trigger: "blur"
-          }
-        ],
-        address: [
-          {
-            required: true,
-            message: "根据经纬度自动生成",
-            trigger: "blur"
           }
         ]
       }
@@ -159,7 +172,6 @@ export default {
   methods: {
     // 添加提交
     submitForm(formName) {
-      console.log(this.$refs.map.locationMsg);
       if (this.$refs.map.locationMsg.lnglat == "") {
         this.$message({
           message: "警告哦，请先地图选点获取经纬度地址",
@@ -174,51 +186,52 @@ export default {
               var para = Object.assign({}, this.addForm);
               // 将token传入参数中
               para.Token = getCookie("token");
-              para.Image = para.Image.join(",");
-
+              para.Address = this.$refs.map.locationMsg.address
+              para.Longitude = this.$refs.map.locationMsg.lnglat.split(",")[0]
+              para.Latitude = this.$refs.map.locationMsg.lnglat.split(",")[1]
               // 发保存请求
-              //   this.$http
-              // .post("/sps/api/Back/P_ProductAdd", para)
-              // .then(
-              //   function (response) {
-              //     this.addLoading = false;
-              //     var status = response.data.Status;
-              //     if (status === 1) {
-              //       // 表单重置
-              //       this.$refs["addForm"].resetFields();
-              //       this.addFormVisible = false;
-              //       this.$router.push({
-              //         path: "/P_GetProductList"
-              //       });
-              //     } else if (status === 40001) {
-              //       this.$message({
-              //         showClose: true,
-              //         type: "warning",
-              //         message: response.data.Result
-              //       });
-              //       setTimeout(() => {
-              //         tt.$router.push({
-              //           path: "/login"
-              //         });
-              //       }, 1500);
-              //     } else {
-              //       this.$message({
-              //         showClose: true,
-              //         type: "warning",
-              //         message: response.data.Result
-              //       });
-              //     }
-              //   }.bind(this)
-              // )
-              // 请求error
-              // .catch(
-              //   function (error) {
-              //     this.$notify.error({
-              //       title: "错误",
-              //       message: "错误：请检查网络"
-              //     });
-              //   }.bind(this)
-              // );
+                this.$http
+              .post("/sps/api/BackPark/AddPark", )
+              .then(
+                function (response) {
+                  this.addLoading = false;
+                  var status = response.data.Status;
+                  if (status === 1) {
+                    // 表单重置
+                    this.$refs["addForm"].resetFields();
+                    this.addFormVisible = false;
+                    this.$router.push({
+                      path: "/BackParkList"
+                    });
+                  } else if (status === 40001) {
+                    this.$message({
+                      showClose: true,
+                      type: "warning",
+                      message: response.data.Result
+                    });
+                    setTimeout(() => {
+                      tt.$router.push({
+                        path: "/login"
+                      });
+                    }, 1500);
+                  } else {
+                    this.$message({
+                      showClose: true,
+                      type: "warning",
+                      message: response.data.Result
+                    });
+                  }
+                }.bind(this)
+              )
+              //请求error
+              .catch(
+                function (error) {
+                  this.$notify.error({
+                    title: "错误",
+                    message: "错误：请检查网络"
+                  });
+                }.bind(this)
+              );
             });
           } else {
             console.log("error submit!!");
