@@ -43,9 +43,14 @@ export default {
   z-index: 9999 !important;
 }
 /* 面包屑 */
-.el-breadcrumb__separator{
+.el-breadcrumb__separator {
   width: 3px;
-  color:#555555;
+  color: #555555;
   background-color: #555555;
+}
+/* 列表点击查看弹框边框 */
+
+#el-popover-2199 {
+  border: 2px solid #3f3f3f !important;
 }
 </style>

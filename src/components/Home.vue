@@ -2,7 +2,7 @@
   <div id="app">
     <!-- header -->
     <div>
-      <el-header>
+      <el-header style="background-color: #16181d;">
         <div style="float: left;height: 60px;">
           <img src="../assets/logo.png" style="height:50px;width:50px;margin:5px 10px;" alt="">
         </div>
@@ -28,14 +28,16 @@
     <el-container>
       <aside style="background-color: #16181D;">
         <div style="text-align:center">
-          <img src="../assets/logo.png" style="width:30px;height:30px;margin:5px 10px;" alt="" @click="closeNav()">
+          <img v-if="!iscloseNav" src="../../static/images/open_nav.png" style="width:30px;height:30px;margin:5px 10px;" alt="" @click="closeNav()">
+          <img v-else src="../../static/images/close_nav.png" style="width:30px;height:30px;margin:5px 10px;" alt="" @click="closeNav()">
         </div>
         <el-menu style="background-color: #16181D;" class="el-menu-vertical-demo" :default-active="$route.path" router :unique-opened='true'
           @select="handleSelect" :collapse='iscloseNav'>
           <template v-for="(item,index) in menuList">
             <el-submenu :index="index+''" :key="index">
               <template slot="title">
-                <i class="el-icon-menu"></i>
+                <img src="../../static/images/menu_list.png" v-if="!iscloseNav" alt="">
+                <i v-else class="el-icon-menu"></i>
                 <span slot="title" style="color:#b3c0d1">{{item.name}}</span>
               </template>
               <el-menu-item v-for="(ll,ii) in item.snippet" :key="ii" :index="'/'+ll.urlf.split('.')[0]">{{ll.title}}</el-menu-item>
@@ -66,129 +68,125 @@
 </template>
 
 <script>
-export default {
-  data: function() {
-    return {
-      defaultActiveIndex: ["0"],
-      menuList: [],
-      userName: "",
-      collapsed: false,
-      iscloseNav: false,
-      welcome: true
-    };
-  },
-  mounted() {
-    var w = window.innerWidth;
-    if (w < 500) {
-      this.welcome = false;
-    }
-    this.userName = getCookie("username");
-    var url = window.location.href;
-    if (url.split("#")[1] == "/") {
-    } else {
-      this.collapsed = true;
-    }
-    var tt = this;
-    if (getCookie("token")) {
-      this.$http
-        .get("/sps/api/Menu/GetMenus", {
-          params: {
-            Token: getCookie("token")
-          }
-        })
-        .then(
-          function(response) {
-            var status = response.data.Status;
-            if (status === 1) {
-              this.menuList = response.data.Result;
-              localStorage.setItem(
-                "menulist",
-                JSON.stringify(response.data.Result)
-              );
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-              setTimeout(() => {
-                tt.$router.push({
-                  path: "/login"
-                });
-              }, 1500);
+  export default {
+    data: function () {
+      return {
+        defaultActiveIndex: ["0"],
+        menuList: [],
+        userName: "",
+        collapsed: false,
+        iscloseNav: false,
+        welcome: true
+      };
+    },
+    mounted() {
+      var w = window.innerWidth;
+      if (w < 500) {
+        this.welcome = false;
+      }
+      this.userName = getCookie("username");
+      var url = window.location.href;
+      if (url.split("#")[1] == "/") {} else {
+        this.collapsed = true;
+      }
+      var tt = this;
+      if (getCookie("token")) {
+        this.$http
+          .get("/sps/api/Menu/GetMenus", {
+            params: {
+              Token: getCookie("token")
             }
-          }.bind(this)
-        )
-        .catch(
-          function(error) {
-            this.$notify.error({
-              title: "错误",
-              message: "错误：请检查网络"
-            });
-          }.bind(this)
-        );
-    } else {
-      this.$message({
-        showClose: true,
-        type: "warning",
-        message: "请先登陆"
-      });
-      setTimeout(() => {
-        tt.$router.push({
-          path: "/login"
+          })
+          .then(
+            function (response) {
+              var status = response.data.Status;
+              if (status === 1) {
+                this.menuList = response.data.Result;
+                // localStorage.setItem(
+                //   "menulist",
+                //   JSON.stringify(response.data.Result)
+                // );
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  tt.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              }
+            }.bind(this)
+          )
+          .catch(
+            function (error) {
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      } else {
+        this.$message({
+          showClose: true,
+          type: "warning",
+          message: "请先登陆"
         });
-      }, 1500);
-    }
-  },
-  methods: {
-    // 	index: 选中菜单项的 index, indexPath: 选中菜单项的 index path
-    handleSelect(index) {
-      this.collapsed = true;
-      // this.defaultActiveIndex = [index];
-      // console.log(this.$route.path);
+        setTimeout(() => {
+          tt.$router.push({
+            path: "/login"
+          });
+        }, 1500);
+      }
     },
-    // 个人中心  修改密码
-    jumpTo(url) {
-      // this.defaultActiveIndex = url;
-      console.log(url)
-      this.$router.push(url);
-    },
-    // 退出
-    logout() {
-      let that = this;
-      this.$confirm("确认退出吗?", "提示", {
-        confirmButtonClass: "el-button--warning"
-      })
-        .then(() => {
-          //确认
-          that.loading = true;
-          delCookie("token");
-          this.$router.push("/login");
-        })
-        .catch(() => {});
-    },
-    closeNav() {
-      this.iscloseNav = !this.iscloseNav;
-      if (this.iscloseNav) {
-        $(".el-aside").css({
-          width: "60px"
-        });
+    methods: {
+      // 	index: 选中菜单项的 index, indexPath: 选中菜单项的 index path
+      handleSelect(index) {
+        this.collapsed = true;
+        // this.defaultActiveIndex = [index];
+        // console.log(this.$route.path);
+      },
+      // 个人中心  修改密码
+      jumpTo(url) {
+        // this.defaultActiveIndex = url;
+        console.log(url);
+        this.$router.push(url);
+      },
+      // 退出
+      logout() {
+        let that = this;
+        this.$confirm("确认退出吗?", "提示", {
+            confirmButtonClass: "el-button--warning"
+          })
+          .then(() => {
+            //确认
+            that.loading = true;
+            delCookie("token");
+            this.$router.push("/login");
+          })
+          .catch(() => {});
+      },
+      closeNav() {
+        this.iscloseNav = !this.iscloseNav;
+        if (this.iscloseNav) {
+          $(".el-aside").css({
+            width: "60px"
+          });
+        }
       }
     }
-  }
-};
+  };
+
 </script>
 
 <style scoped>
-/* @import "../../static/css/index.css"; */
+  /* @import "../../static/css/index.css"; */
 
-.el-header {
-  background-color: #23262e;
-  color: #333;
-  line-height: 60px;
-}
+  .el-header {
+    color: #333;
+    line-height: 60px;
+  }
 
-.el-menu--popup {
-  background-color: #16181d;
-}
 </style>
