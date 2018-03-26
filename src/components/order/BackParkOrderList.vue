@@ -147,7 +147,6 @@ export default {
     //关键字搜索
     getUsers() {
       this.getInfo();
-<<<<<<< HEAD
     },
     getAllUsers() {
       this.filters = {
@@ -157,8 +156,6 @@ export default {
         Type: -1
       };
       this.getInfo();
-=======
->>>>>>> a4a7b2813888016e4f419b94647b76fd63f5c490
     },
     // 分页
     handleCurrentChange(val) {
