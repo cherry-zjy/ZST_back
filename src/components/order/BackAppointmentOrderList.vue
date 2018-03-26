@@ -36,28 +36,31 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="info" @click="getAllUsers()">重置</el-button>          
         </el-form-item>
       </el-form>
     </el-col>
     <!-- table 内容 -->
     <el-table :data="orderList" style="width: 100%" :border='true'>
-      <el-table-column label="停车场编号" prop="OrderNo">
+      <el-table-column label="停车场编号" prop="Number">
       </el-table-column>
-      <el-table-column label="停车场名" prop="CreateTime">
+      <el-table-column label="停车场名" prop="Name">
       </el-table-column>
-      <el-table-column label="预约时间" prop="ProductName">
+      <el-table-column label="预约入场时间" prop="IntoTime">
       </el-table-column>
-      <el-table-column label="预约人" prop="Name">
+      <el-table-column label="预约出场时间" prop="OutTime">
       </el-table-column>
-      <el-table-column label="预约费用" prop="Phone">
+      <el-table-column label="预约人" prop="NickName">
       </el-table-column>
-      <el-table-column label="优惠金额（元）" prop="Price">
+      <el-table-column label="预约费用" prop="TotalPrice">
+      </el-table-column>
+      <el-table-column label="优惠金额（元）" prop="ParkPrice">
       </el-table-column>
       <el-table-column label="订单状态" prop="Status" :formatter="Status">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" plain icon="el-icon-delete" @click="handlDel(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="primary" plain icon="el-icon-delete" @click="handleDel(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -76,36 +79,35 @@ export default {
       pageIndex: 1,
       pageSize: 10,
       pageCount: 1,
-      mainurl: "",
-      roleList: [], //管理员角色列表
       // 搜索关键字
       filters: {
         keyword: "",
         StTime: "2018-01-01",
         EndTime: "",
-        Type: 0
+        Type: -1
       },
       // 状态数组
       typeList: [
         {
           name: "全部",
-          value: 0
+          value: -1
         },
         {
-          name: "待发货",
+          name: "已预约",
           value: 1
         },
         {
-          name: "待收货",
+          name: "已完成",
           value: 2
+        },
+        {
+          name: "已超时",
+          value: 3
         }
       ]
     };
   },
   methods: {
-    // choiceTime(e) {
-    //   console.log(e);
-    // },
     /*
            1、获取列表 渲染列表
            2、搜索关键字
@@ -113,21 +115,21 @@ export default {
         */
     getInfo() {
       this.$http
-        .post("/sps/api/Back/O_GetOrderList", {
+        .post("/sps/api/BackOrder/BackAppointmentOrderList", {
           Token: getCookie("token"),
-          PageIndex: this.pageIndex,
-          PageSize: this.pageSize,
+          pageIndex: this.pageIndex,
+          pageSize: this.pageSize,
           Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
-          Type: this.filters.Type,
-          StTime: this.filters.StTime,
+          Status: this.filters.Type,
+          StartTime: this.filters.StTime,
           EndTime: this.filters.EndTime == "" ? "-1" : this.filters.EndTime
         })
         .then(
           function(response) {
             var status = response.data.Status;
             if (status === 1) {
-              this.orderList = response.data.Result.List;
-              this.pageCount = response.data.Result.Page;
+              this.orderList = response.data.Result.result;
+              this.pageCount = response.data.Result.page;
             } else if (status === 40001) {
               this.$message({
                 showClose: true,
@@ -157,6 +159,15 @@ export default {
       this.getInfo();
       // console.log(this.filters)
     },
+    getAllUsers() {
+      this.filters = {
+        keyword: "",
+        StTime: "2018-01-01",
+        EndTime: "",
+        Type: -1
+      };
+      this.getInfo();
+    },
     // 分页
     handleCurrentChange(val) {
       this.pageIndex = val;
@@ -165,35 +176,33 @@ export default {
     Status(row, status) {
       var status = row[status.property];
       switch (status) {
-        case 0:
+        case -1:
           return (status = "待付款");
           break;
         case 1:
-          return (status = "待发货");
+          return (status = "已预约");
           break;
         case 2:
-          return (status = "已发货");
+          return (status = "已完成");
           break;
         default:
-          return (status = "已完成");
+          return (status = "已超时");
           break;
       }
     },
     /*
-          1、添加编辑时获取角色列表，渲染下拉菜单
+          删除订单
         */
-    handleDel() {
-      //判断是否填写完整  --true
+    handleDel(index, row) {
+      var obj = Object.assign({}, row);
       this.$confirm("确认删除吗？", "提示", {}).then(() => {
         this.editLoading = true;
-        var para = Object.assign({}, this.editForm);
-        // 将token传入参数中
-        console.log(para);
-        para.Token = getCookie("token");
-        // 发保存请求
         this.$http
-          .get("/sps/api/Admin/Edit", {
-            // params: para
+          .get("/sps/api/BackOrder/DelAPPOrder", {
+            params: {
+              token: getCookie("token"),
+              id: obj.ID
+            }
           })
           .then(
             function(response) {
