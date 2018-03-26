@@ -31,19 +31,19 @@
     </el-col>
     <!-- table 内容 -->
     <el-table :data="orderList" style="width: 100%" :border='true'>
-      <el-table-column label="停车场编号" prop="OrderNo">
+      <el-table-column label="停车场编号" prop="Number">
       </el-table-column>
-      <el-table-column label="停车场名" prop="CreateTime">
+      <el-table-column label="停车场名" prop="Name">
       </el-table-column>
-      <el-table-column label="入场时间" prop="ProductName">
+      <el-table-column label="入场时间" prop="IntoTime">
       </el-table-column>
-      <el-table-column label="出场时间" prop="ProductName">
+      <el-table-column label="出场时间" prop="OutTime">
       </el-table-column>
-      <el-table-column label="用户名" prop="Name">
+      <el-table-column label="用户名" prop="NickName">
       </el-table-column>
-      <el-table-column label="支付金额（元）" prop="Phone">
+      <el-table-column label="支付金额（元）" prop="TotalPrice">
       </el-table-column>
-      <el-table-column label="优惠金额（元）" prop="Price">
+      <el-table-column label="优惠金额（元）" prop="ParkPrice">
       </el-table-column>
       <el-table-column label="订单状态" prop="Status" :formatter="Status">
       </el-table-column>
@@ -68,30 +68,32 @@ export default {
       pageIndex: 1,
       pageSize: 10,
       pageCount: 1,
-      mainurl: "",
-      roleList: [], //管理员角色列表
       // 搜索关键字
       filters: {
         keyword: "",
         StTime: "2018-01-01",
         EndTime: "",
-        Type: 0
+        Type: -1
       },
       // 状态数组
       typeList: [
         {
           name: "全部",
-          value: 0
+          value: -1
         },
         {
-          name: "待发货",
+          name: "未入场",
           value: 1
         },
         {
-          name: "待收货",
+          name: "已入场",
           value: 2
+        },
+        {
+          name: "已超时",
+          value: 3
         }
-      ],
+      ]
     };
   },
   methods: {
@@ -102,21 +104,21 @@ export default {
         */
     getInfo() {
       this.$http
-        .post("/sps/api/Back/O_GetOrderList", {
+        .post("/sps/api/BackOrder/BackParkOrderList", {
           Token: getCookie("token"),
-          PageIndex: this.pageIndex,
-          PageSize: this.pageSize,
-          Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
-          Type: this.filters.Type,
-          StTime: this.filters.StTime,
+          pageIndex: this.pageIndex,
+          pageSize: this.pageSize,
+          Keyword: this.filters.keyword == "" ? "" : this.filters.keyword,
+          Status: this.filters.Type,
+          StartTime: this.filters.StTime,
           EndTime: this.filters.EndTime == "" ? "-1" : this.filters.EndTime
         })
         .then(
           function(response) {
             var status = response.data.Status;
             if (status === 1) {
-              this.orderList = response.data.Result.List;
-              this.pageCount = response.data.Result.Page;
+              this.orderList = response.data.Result.result;
+              this.pageCount = response.data.Result.page;
             } else if (status === 40001) {
               this.$message({
                 showClose: true,
@@ -144,7 +146,6 @@ export default {
     //关键字搜索
     getUsers() {
       this.getInfo();
-      // console.log(this.filters)
     },
     // 分页
     handleCurrentChange(val) {
@@ -154,142 +155,79 @@ export default {
     Status(row, status) {
       var status = row[status.property];
       switch (status) {
-        case 0:
-          return (status = "待付款");
+        case -1:
+          return (status = "全部");
           break;
         case 1:
-          return (status = "待发货");
+          return (status = "未入场");
           break;
         case 2:
-          return (status = "已发货");
+          return (status = "已入场");
           break;
         default:
-          return (status = "已完成");
+          return (status = "已超时");
           break;
       }
     },
     /*
-          1、添加编辑时获取角色列表，渲染下拉菜单
+          删除
         */
 
-    handleDel() {
-      this.$refs.editForm.validate(valid => {
-        if (valid) {
-          //判断是否填写完整  --true
-          this.$confirm("确认提交吗？", "提示", {}).then(() => {
-            this.editLoading = true;
-            var para = Object.assign({}, this.editForm);
-            // 将token传入参数中
-            console.log(para);
-            para.Token = getCookie("token");
-            // 发保存请求
-            this.$http
-              .get("/sps/api/Admin/Edit", {
-                // params: para
-              })
-              .then(
-                function(response) {
-                  this.editLoading = false;
-                  var status = response.data.Status;
-                  if (status === 1) {
-                    // 表单重置
-                    this.$refs["editForm"].resetFields();
-                    this.editFormVisible = false;
-                    this.getInfo();
-                  } else if (status === 40001) {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                    setTimeout(() => {
-                      tt.$router.push({
-                        path: "/login"
-                      });
-                    }, 1500);
-                  } else {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                  }
-                }.bind(this)
-              )
-              // 请求error
-              .catch(
-                function(error) {
-                  this.$notify.error({
-                    title: "错误",
-                    message: "错误：请检查网络"
+    handleDel(index, row) {
+      var obj = Object.assign({}, row);
+      //判断是否填写完整  --true
+      this.$confirm("确认提交吗？", "提示", {}).then(() => {
+        this.editLoading = true;
+        // 请求
+        this.$http
+          .get("/sps/api/Admin/Edit", {
+            params: {
+              token: getCookie("token"),
+              id: obj.ID
+            }
+          })
+          .then(
+            function(response) {
+              this.editLoading = false;
+              var status = response.data.Status;
+              if (status === 1) {
+                // 表单重置
+                this.$refs["editForm"].resetFields();
+                this.editFormVisible = false;
+                this.getInfo();
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  tt.$router.push({
+                    path: "/login"
                   });
-                }.bind(this)
-              );
-          });
-        }
-      });
-    },
-    sendSubmit() {
-      this.$refs.sendForm.validate(valid => {
-        if (valid) {
-          //判断是否填写完整  --true
-          this.$confirm("确认提交吗？", "提示", {}).then(() => {
-            this.sendLoading = true;
-            //NProgress.start();
-            var para = Object.assign({}, this.sendForm);
-            console.log(para);
-            // 将token传入参数中
-            para.Token = getCookie("token");
-            // 发保存请求
-            this.$http
-              .get("/sps/api/Admin/Add", {
-                // params: para
-              })
-              .then(
-                function(response) {
-                  this.sendLoading = false;
-                  var status = response.data.Status;
-                  if (status === 1) {
-                    // 表单重置
-                    this.$refs["sendForm"].resetFields();
-                    this.sendFormVisible = false;
-                    this.getInfo();
-                  } else if (status === 40001) {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                    setTimeout(() => {
-                      tt.$router.push({
-                        path: "/login"
-                      });
-                    }, 1500);
-                  } else {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                  }
-                }.bind(this)
-              )
-              // 请求error
-              .catch(
-                function(error) {
-                  this.$notify.error({
-                    title: "错误",
-                    message: "错误：请检查网络"
-                  });
-                }.bind(this)
-              );
-          });
-        }
+                }, 1500);
+              } else {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function(error) {
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
       });
     }
   },
   mounted() {
-    this.mainurl = mainurl;
     this.getInfo();
   }
 };
