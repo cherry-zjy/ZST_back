@@ -50,7 +50,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" plain icon="el-icon-delete" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="handleDel(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -186,26 +186,24 @@ export default {
     handleDel(index, row) {
       var obj = Object.assign({}, row);
       //判断是否填写完整  --true
-      this.$confirm("确认提交吗？", "提示", {}).then(() => {
+      this.$confirm("确认删除吗？", "提示", {}).then(() => {
         this.editLoading = true;
         // 请求
         this.$http
-          .get("/sps/api/Admin/Edit", {
+          .get("/sps/api/BackOrder/DelParkOrder", {
             params: {
-              token: getCookie("token"),
-              id: obj.ID
+              Token: getCookie("token"),
+              ID: obj.ID
             }
           })
           .then(
             function(response) {
               this.editLoading = false;
               var status = response.data.Status;
-              if (status === 1) {
-                // 表单重置
-                this.$refs["editForm"].resetFields();
-                this.editFormVisible = false;
+              console.log(status);
+              if (status == 1) {
                 this.getInfo();
-              } else if (status === 40001) {
+              } else if (status == 40001) {
                 this.$message({
                   showClose: true,
                   type: "warning",

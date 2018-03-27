@@ -14,9 +14,10 @@
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
-        <el-form-item style="float:right;">
+        <!-- <el-form-item style="float:right;">
           <el-button type="primary" @click="handleAdd()">导入</el-button>
-        </el-form-item>
+          <input id="file" type="file" @change="FileIn()"/>
+        </el-form-item> -->
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -29,16 +30,17 @@
         </template>
       </el-table-column>
       <el-table-column label="昵称" prop="Name">
-      </el-table-column>
-      <el-table-column label="会员" prop="IsVip">
         <template slot-scope="scope">
-          <el-popover ref="popover5" placement="right" width="400" trigger="click">
+          <span>{{ scope.row.Name }}</span>
+          <!-- 点击查看会员折扣方式 -->
+          <!-- <el-popover ref="popover5" placement="right" width="400" trigger="click">
             <el-table :data="carList">
               <el-table-column width="200" property="Phone" label="折扣"></el-table-column>
               <el-table-column width="200" property="Sex" label="减免"></el-table-column>
             </el-table>
           </el-popover>
-          <img v-if="!scope.row.IsVip" src="../../../static/images/vip.png"  v-popover:popover5 @click="vipClick(scope.$index, scope.row)"/>
+          <img v-if="scope.row.IsVip" src="../../../static/images/vip.png"  v-popover:popover5 @click="vipClick(scope.$index, scope.row)"/> -->
+          <img v-if="scope.row.IsVip" src="../../../static/images/vip.png" />
         </template>
       </el-table-column>
       <el-table-column label="性别" prop="Sex" :formatter="Sex">
@@ -343,5 +345,14 @@ export default {
 .el-dialog__body .el-form-item {
   width: 60%;
   margin-left: calc(50% - 30%);
+}
+
+#file {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 70px;
+  height: 40px;
+  opacity: 0;
 }
 </style>

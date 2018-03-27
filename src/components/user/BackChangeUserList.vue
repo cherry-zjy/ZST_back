@@ -21,27 +21,29 @@
       <template slot-scope="props">
         <el-form label-position="left" inline class="demo-table-expand">
           <el-form-item label="图片校验:">
-            <img v-for="(item,index) in props.row.Image" :key="index" :src="mainurl+item" width="200" style="margin-left:20px;" />
+            <img :src="mainurl+props.row.DrivingLicenseImage" width="500" style="margin-left:20px;" />
           </el-form-item>
         </el-form>
       </template>
     </el-table-column>
-      <el-table-column label="用户手机号" prop="OrderNo">
+      <el-table-column label="用户手机号" prop="Phone">
       </el-table-column>
-      <el-table-column label="车牌号" prop="CreateTime">
+      <el-table-column label="车牌号" prop="LicensePlate">
       </el-table-column>
-      <el-table-column label="车主姓名" prop="ProductName">
+      <el-table-column label="车主姓名" prop="OwnerName">
       </el-table-column>
-      <el-table-column label="车辆识别号" prop="Name">
+      <el-table-column label="车辆识别号" prop="RecognitionNumber">
       </el-table-column>
-      <el-table-column label="品牌型号" prop="Phone">
+      <el-table-column label="发动机号" prop="EngineNumber">
+      </el-table-column>
+      <el-table-column label="品牌型号" prop="BrandModel">
       </el-table-column>
       <el-table-column label="状态" prop="Status" :formatter="Status">
       </el-table-column>
       <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button size="mini" v-if="scope.row.Status == 2" type="primary" plain icon="el-icon-success" @click="handleEdit(scope.$index, scope.row)">通过</el-button>
-          <el-button size="mini" v-if="scope.row.Status == 1" type="danger" plain icon="el-icon-warning" @click="handleSend(scope.$index, scope.row)">驳回</el-button>
+        <template slot-scope="scope" v-if="scope.row.Status == 0">
+          <el-button size="mini" type="primary" plain icon="el-icon-success" @click="handleEdit(scope.$index, scope.row,true)">通过</el-button>
+          <el-button size="mini" type="danger" plain icon="el-icon-warning" @click="handleEdit(scope.$index, scope.row,false)">驳回</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -61,14 +63,14 @@ export default {
     return {
       productList: [], //列表
       pageIndex: 1,
-      pageSize: 3,
+      pageSize: 5,
       pageCount: 1,
       mainurl: "",
       roleList: [], //管理员角色列表
       // 搜索关键字
       filters: {
         keyword: ""
-      },
+      }
     };
   },
   methods: {
@@ -79,20 +81,20 @@ export default {
       */
     getInfo() {
       this.$http
-        .get("/sps/api/Back/P_GetProductList", {
+        .get("/sps/api/BackUser/ChangeCar", {
           params: {
-            token: getCookie("token"),
+            Token: getCookie("token"),
             pageIndex: this.pageIndex,
             pageSize: this.pageSize,
-            keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword
+            Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword
           }
         })
         .then(
           function(response) {
             var status = response.data.Status;
             if (status === 1) {
-              this.productList = response.data.Result.List;
-              this.pageCount = response.data.Result.Page;
+              this.productList = response.data.Result.list;
+              this.pageCount = response.data.Result.page;
             } else if (status === 40001) {
               this.$message({
                 showClose: true,
@@ -130,23 +132,117 @@ export default {
       var status = row[status.property];
       switch (status) {
         case 0:
-          return (status = "待付款");
+          return (status = "申请中");
           break;
         case 1:
-          return (status = "待发货");
+          return (status = "审核通过");
           break;
         case 2:
-          return (status = "已发货");
+          return (status = "已拒绝");
           break;
         default:
-          return (status = "已完成");
           break;
       }
     },
+    handleEdit(index, row,num) {
+      if (num) {
+        this.$confirm("确认通过吗？", "提示", {}).then(() => {
+          this.$http
+            .get("/sps/api/BackUser/CheckCar", {
+              params: {
+                Token: getCookie("token"),
+                ID: row.ID,
+                Type: 1
+              }
+            })
+            .then(
+              function(response) {
+                this.editLoading = false;
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.getInfo();
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    tt.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function(error) {
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        });
+      } else {
+        this.$confirm("确认驳回吗？", "提示", {}).then(() => {
+          this.$http
+            .get("/sps/api/BackUser/CheckCar", {
+              params: {
+                Token: getCookie("token"),
+                ID: row.ID,
+                Type: 0
+              }
+            })
+            .then(
+              function(response) {
+                this.editLoading = false;
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.getInfo();
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    tt.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function(error) {
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        });
+      }
+    }
   },
   mounted() {
-    // this.mainurl = mainurl;
-    // this.getInfo();
+    this.mainurl = mainurl;
+    this.getInfo();
   }
 };
 </script>

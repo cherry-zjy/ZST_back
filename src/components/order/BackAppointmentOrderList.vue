@@ -60,7 +60,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" plain icon="el-icon-delete" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="handleDel(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -200,18 +200,15 @@ export default {
         this.$http
           .get("/sps/api/BackOrder/DelAPPOrder", {
             params: {
-              token: getCookie("token"),
-              id: obj.ID
+              Token: getCookie("token"),
+              Id: obj.ID
             }
           })
           .then(
             function(response) {
               this.editLoading = false;
               var status = response.data.Status;
-              if (status === 1) {
-                // 表单重置
-                this.$refs["editForm"].resetFields();
-                this.editFormVisible = false;
+              if (status == 1) {
                 this.getInfo();
               } else if (status === 40001) {
                 this.$message({

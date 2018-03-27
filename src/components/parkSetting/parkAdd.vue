@@ -186,52 +186,52 @@ export default {
               var para = Object.assign({}, this.addForm);
               // 将token传入参数中
               para.Token = getCookie("token");
-              para.Address = this.$refs.map.locationMsg.address
-              para.Longitude = this.$refs.map.locationMsg.lnglat.split(",")[0]
-              para.Latitude = this.$refs.map.locationMsg.lnglat.split(",")[1]
+              para.Address = this.$refs.map.locationMsg.address;
+              para.Longitude = this.$refs.map.locationMsg.lnglat.split(",")[0];
+              para.Latitude = this.$refs.map.locationMsg.lnglat.split(",")[1];
               // 发保存请求
-                this.$http
-              .post("/sps/api/BackPark/AddPark", )
-              .then(
-                function (response) {
-                  this.addLoading = false;
-                  var status = response.data.Status;
-                  if (status === 1) {
-                    // 表单重置
-                    this.$refs["addForm"].resetFields();
-                    this.addFormVisible = false;
-                    this.$router.push({
-                      path: "/BackParkList"
-                    });
-                  } else if (status === 40001) {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                    setTimeout(() => {
-                      tt.$router.push({
-                        path: "/login"
+              this.$http
+                .post("/sps/api/BackPark/AddPark", para)
+                .then(
+                  function(response) {
+                    this.addLoading = false;
+                    var status = response.data.Status;
+                    if (status === 1) {
+                      // 表单重置
+                      this.$refs["addForm"].resetFields();
+                      this.addFormVisible = false;
+                      this.$router.push({
+                        path: "/BackParkList"
                       });
-                    }, 1500);
-                  } else {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
+                    } else if (status === 40001) {
+                      this.$message({
+                        showClose: true,
+                        type: "warning",
+                        message: response.data.Result
+                      });
+                      setTimeout(() => {
+                        tt.$router.push({
+                          path: "/login"
+                        });
+                      }, 1500);
+                    } else {
+                      this.$message({
+                        showClose: true,
+                        type: "warning",
+                        message: response.data.Result
+                      });
+                    }
+                  }.bind(this)
+                )
+                //请求error
+                .catch(
+                  function(error) {
+                    this.$notify.error({
+                      title: "错误",
+                      message: "错误：请检查网络"
                     });
-                  }
-                }.bind(this)
-              )
-              //请求error
-              .catch(
-                function (error) {
-                  this.$notify.error({
-                    title: "错误",
-                    message: "错误：请检查网络"
-                  });
-                }.bind(this)
-              );
+                  }.bind(this)
+                );
             });
           } else {
             console.log("error submit!!");
