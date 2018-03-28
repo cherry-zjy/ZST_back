@@ -83,7 +83,7 @@
             <el-radio class="radio" :label="false">否</el-radio>
           </el-radio-group>
         </el-form-item> -->
-        <el-form-item label="角色">
+        <el-form-item label="角色" prop="RoleID">
           <el-select v-model="addForm.RoleID" placeholder="请选择角色">
             <el-option v-for="item in roleList" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
           </el-select>
@@ -155,6 +155,13 @@ export default {
             required: true,
             message: "请输入密码",
             trigger: "blur"
+          }
+        ],
+        RoleID: [
+          {
+            required: true,
+            message: "请选择角色",
+            trigger: "change"
           }
         ]
       },
