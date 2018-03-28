@@ -10,6 +10,16 @@
         <el-form-item>
           <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
+        <el-form-item label="类型">
+          <el-select v-model="filters.Type" placeholder="类型">
+            <el-option v-for="item in typeList" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="filters.Status" placeholder="状态">
+            <el-option v-for="item in statusList" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
@@ -29,17 +39,25 @@
         </el-form>
       </template>
     </el-table-column> -->
-      <el-table-column label="活动名称" prop="Name">
+      <el-table-column label="活动名称" prop="ActivityName">
       </el-table-column>
-      <el-table-column label="参与停车场" prop="Name">
+      <el-table-column label="参与停车场" prop="ParkName">
+        <template slot-scope="scope">
+          <el-popover ref="popover1" placement="right" width="300" trigger="click">
+            <el-table :data="parkList">
+              <el-table-column width="300" property="parkname" label="停车场"></el-table-column>
+            </el-table>
+          </el-popover>
+          <span v-popover:popover1 @click="parkClick(scope.$index, scope.row)">点击查看</span>
+        </template>
       </el-table-column>
-      <el-table-column label="活动时间" prop="Name">
+      <el-table-column label="活动时间" prop="Time">
       </el-table-column>
-      <el-table-column label="券额度" prop="Name">
+      <el-table-column label="券额度" prop="FullCut">
       </el-table-column>
-      <el-table-column label="类型" prop="Price" sortable>
+      <el-table-column label="类型" prop="Days"  :formatter="Days">
       </el-table-column>
-      <el-table-column label="状态" prop="Stock" sortable>
+      <el-table-column label="状态" prop="Status" sortable>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -71,65 +89,92 @@ export default {
       roleList: [], //管理员角色列表
       // 搜索关键字
       filters: {
-        keyword: ""
+        keyword: "",
+        Type: -1,
+        Status: -1
       },
-      //编辑界面是否显示
-      editFormVisible: false,
-      editLoading: false,
-
-      //编辑界面数据
-      editForm: {
-        IsLock: false,
-        Name: "",
-        Role: "",
-        RoleID: "",
-        Password: ""
-      },
-      editFormRules: {
-        Name: [
-          {
-            required: true,
-            message: "请输入账户",
-            trigger: "blur"
-          }
-        ],
-        Password: [
-          {
-            required: true,
-            message: "请输入密码",
-            trigger: "blur"
-          }
-        ]
-      },
-      //新增界面是否显示
-      addFormVisible: false,
-      addLoading: false,
-      addFormRules: {
-        Name: [
-          {
-            required: true,
-            message: "请输入账户",
-            trigger: "blur"
-          }
-        ],
-        Password: [
-          {
-            required: true,
-            message: "请输入密码",
-            trigger: "blur"
-          }
-        ]
-      },
-      //新增界面数据
-      addForm: {
-        IsLock: false,
-        Name: "",
-        RoleID: "",
-        Password: ""
-      }
+      // 状态数组
+      typeList: [
+        {
+          name: "全部",
+          value: -1
+        },
+        {
+          name: "停车券",
+          value: 0
+        },
+        {
+          name: "充值停车币",
+          value: 1
+        },
+        {
+          name: "充值月卡",
+          value: 2
+        },
+        {
+          name: "续费月卡",
+          value: 3
+        },
+        {
+          name: "余额充值",
+          value: 4
+        }
+      ],
+      // 状态数组
+      statusList: [
+        {
+          name: "全部",
+          value: -1
+        },
+        {
+          name: "未开始",
+          value: 0
+        },
+        {
+          name: "活动中",
+          value: 1
+        },
+        {
+          name: "已过期",
+          value: 2
+        }
+      ],
+      parkList: []
     };
   },
   methods: {
+    parkClick(index, row) {
+      this.parkList = [];
+      var obj = Object.assign({}, row).ParkName;
+      var smallobj = {};
+      obj.forEach(element => {
+        smallobj.parkname = element;
+        this.parkList.push(smallobj);
+      });
+    },
+    Days(row, status) {
+      var status = row[status.property];
+      switch (status) {
+        case -1:
+          return (status = "全部");
+          break;
+        case 0:
+          return (status = "停车券");
+          break;
+        case 1:
+          return (status = "充值停车币");
+          break;
+        case 2:
+          return (status = "充值月卡");
+          break;
+        case 3:
+          return (status = "续费月卡");
+          break;
+        default:
+          return (status = "余额充值");
+          break;
+      }
+    },
     /*
          1、获取列表 渲染列表
          2、搜索关键字
@@ -137,20 +182,22 @@ export default {
       */
     getInfo() {
       this.$http
-        .get("/sps/api/Back/P_GetProductList", {
+        .get("/sps/api/BackOperate/BackCouponList", {
           params: {
             token: getCookie("token"),
             pageIndex: this.pageIndex,
             pageSize: this.pageSize,
-            keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword
+            Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
+            Type: this.filters.Type,
+            Status: this.filters.Status
           }
         })
         .then(
           function(response) {
             var status = response.data.Status;
             if (status === 1) {
-              this.productList = response.data.Result.List;
-              this.pageCount = response.data.Result.Page;
+              this.productList = response.data.Result.list;
+              this.pageCount = response.data.Result.page;
             } else if (status === 40001) {
               this.$message({
                 showClose: true,
@@ -191,44 +238,6 @@ export default {
         4、保存修改
         5、保存添加
       */
-    getRoleList() {
-      // 获取角色列表
-      this.$http
-        .get("/sps/api/Role/GetRoles", {
-          params: {
-            PageIndex: 1,
-            PageSize: 999
-          }
-        })
-        .then(
-          function(response) {
-            var status = response.data.Status;
-            if (status === 1) {
-              this.roleList = response.data.Result.data;
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-              setTimeout(() => {
-                tt.$router.push({
-                  path: "/login"
-                });
-              }, 1500);
-            }
-          }.bind(this)
-        )
-        // 请求error
-        .catch(
-          function(error) {
-            this.$notify.error({
-              title: "错误",
-              message: "错误：请检查网络"
-            });
-          }.bind(this)
-        );
-    },
     handleEdit(index, row) {
       console.log(Object.assign({}, row));
       var obj = Object.assign({}, row);
@@ -277,132 +286,11 @@ export default {
     },
     handleAdd() {
       this.$router.push("/BackCouponList/CouponAdd");
-    },
-    editSubmit() {
-      this.$refs.editForm.validate(valid => {
-        if (valid) {
-          //判断是否填写完整  --true
-          this.$confirm("确认提交吗？", "提示", {}).then(() => {
-            this.editLoading = true;
-            var para = Object.assign({}, this.editForm);
-            if (para.Password.length > 20) {
-            } else {
-              para.Password = md5(para.Password);
-            }
-            // 将token传入参数中
-            para.Token = getCookie("token");
-            // 发保存请求
-            this.$http
-              .get("/sps/api/Admin/Edit", {
-                params: para
-              })
-              .then(
-                function(response) {
-                  this.editLoading = false;
-                  var status = response.data.Status;
-                  if (status === 1) {
-                    // 表单重置
-                    this.$refs["editForm"].resetFields();
-                    this.editFormVisible = false;
-                    this.getInfo();
-                  } else if (status === 40001) {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                    setTimeout(() => {
-                      tt.$router.push({
-                        path: "/login"
-                      });
-                    }, 1500);
-                  } else {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                  }
-                }.bind(this)
-              )
-              // 请求error
-              .catch(
-                function(error) {
-                  this.$notify.error({
-                    title: "错误",
-                    message: "错误：请检查网络"
-                  });
-                }.bind(this)
-              );
-          });
-        }
-      });
-    },
-    addSubmit() {
-      this.$refs.addForm.validate(valid => {
-        if (valid) {
-          //判断是否填写完整  --true
-          this.$confirm("确认提交吗？", "提示", {}).then(() => {
-            this.addLoading = true;
-            //NProgress.start();
-            var para = Object.assign({}, this.addForm);
-            if (para.Password.length > 20) {
-            } else {
-              para.Password = md5(para.Password);
-            }
-            // 将token传入参数中
-            para.Token = getCookie("token");
-            // 发保存请求
-            this.$http
-              .get("/sps/api/Admin/Add", {
-                params: para
-              })
-              .then(
-                function(response) {
-                  this.addLoading = false;
-                  var status = response.data.Status;
-                  if (status === 1) {
-                    // 表单重置
-                    this.$refs["addForm"].resetFields();
-                    this.addFormVisible = false;
-                    this.getInfo();
-                  } else if (status === 40001) {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                    setTimeout(() => {
-                      tt.$router.push({
-                        path: "/login"
-                      });
-                    }, 1500);
-                  } else {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                  }
-                }.bind(this)
-              )
-              // 请求error
-              .catch(
-                function(error) {
-                  this.$notify.error({
-                    title: "错误",
-                    message: "错误：请检查网络"
-                  });
-                }.bind(this)
-              );
-          });
-        }
-      });
     }
   },
   mounted() {
     this.mainurl = mainurl;
-    // this.getInfo();
+    this.getInfo();
   }
 };
 </script>
