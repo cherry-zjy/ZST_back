@@ -248,10 +248,10 @@ export default {
       var obj = Object.assign({}, row);
       this.$confirm("确认删除吗？", "提示", {}).then(() => {
         this.$http
-          .get("/sps/api/Back/P_ProductDel", {
+          .get("/sps/api/BackOperate/Delete", {
             params: {
-              token: getCookie("token"),
-              id: obj.ID
+              Token: getCookie("token"),
+              ID: obj.ID
             }
           })
           .then(
