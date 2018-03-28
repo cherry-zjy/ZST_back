@@ -121,7 +121,7 @@ export default {
           pageSize: this.pageSize,
           Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
           Status: this.filters.Type,
-          StartTime: this.filters.StTime,
+          StartTime: this.filters.StTime== "" ? "2018-01-01" : this.filters.EndTime,
           EndTime: this.filters.EndTime == "" ? "-1" : this.filters.EndTime
         })
         .then(
@@ -156,8 +156,8 @@ export default {
     },
     //关键字搜索
     getUsers() {
-      this.getInfo();
-      // console.log(this.filters)
+      // this.getInfo();
+      console.log(this.filters)
     },
     getAllUsers() {
       this.filters = {
