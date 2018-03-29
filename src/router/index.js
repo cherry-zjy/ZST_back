@@ -13,11 +13,6 @@ var role = resolve => require(['@/components/role/role.vue'], resolve)
 var roleLimit = resolve => require(['@/components/role/roleLimit.vue'], resolve)
 var power = resolve => require(['../components/role/power.vue'], resolve)
 
-var B_GetBannerList = resolve => require(['../components/banner/B_GetBannerList.vue'], resolve)
-var P_GetProductList = resolve => require(['../components/productList/P_GetProductList.vue'], resolve)
-var productEdit = resolve => require(['../components/productList/productEdit.vue'], resolve)
-var productAdd = resolve => require(['../components/productList/productAdd.vue'], resolve)
-
 // 停车场设置
 var BackParkList = resolve => require(['../components/parkSetting/BackParkList.vue'], resolve)//停车场列表
 var parkEdit = resolve => require(['../components/parkSetting/parkEdit.vue'], resolve)//编辑
@@ -71,14 +66,6 @@ export default new Router({
         { path: '/role', component: role, name: '权限管理' },
         { path: '/power', component: power, name: '角色管理' },
         { path: '/role/rolelimit/:id', component: roleLimit, name: '权限设置' },
-        // banner
-        { path: '/B_GetBannerList', component: B_GetBannerList, name: 'Banner管理' },
-        // productList
-        { path: '/P_GetProductList', component: P_GetProductList, name: '商品列表' },
-        { path: '/P_GetProductList/productEdit/:id', component: productEdit, name: '商品编辑' },
-        { path: '/P_GetProductList/productAdd', component: productAdd, name: '商品添加' },
-
-
 
         // 停车场设置
         { path: '/BackParkList', component: BackParkList, name: '停车场列表' },
