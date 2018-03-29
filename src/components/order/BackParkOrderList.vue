@@ -104,6 +104,30 @@ export default {
            3、分页
         */
     getInfo() {
+      var EndTime = "";
+      switch (this.filters.EndTime) {
+        case "":
+          EndTime = "-1";
+          break;
+        case null:
+          EndTime = "-1";
+          break;
+        default:
+          EndTime = this.filters.EndTime;
+          break;
+      }
+      var StTime = "";
+      switch (this.filters.StTime) {
+        case "":
+          StTime = "-1";
+          break;
+        case null:
+          StTime = "-1";
+          break;
+        default:
+          StTime = this.filters.StTime;
+          break;
+      }
       this.$http
         .post("/sps/api/BackOrder/BackParkOrderList", {
           Token: getCookie("token"),
@@ -111,8 +135,8 @@ export default {
           pageSize: this.pageSize,
           Keyword: this.filters.keyword == "" ? "" : this.filters.keyword,
           Status: this.filters.Type,
-          StartTime: this.filters.StTime,
-          EndTime: this.filters.EndTime == "" ? "-1" : this.filters.EndTime
+          StartTime: StTime,
+          EndTime: EndTime
         })
         .then(
           function(response) {
