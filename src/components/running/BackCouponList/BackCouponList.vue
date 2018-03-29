@@ -83,10 +83,9 @@ export default {
     return {
       productList: [], //列表
       pageIndex: 1,
-      pageSize: 3,
+      pageSize: 10,
       pageCount: 1,
       mainurl: "",
-      roleList: [], //管理员角色列表
       // 搜索关键字
       filters: {
         keyword: "",
@@ -144,13 +143,14 @@ export default {
   },
   methods: {
     parkClick(index, row) {
-      this.parkList = [];
+      var parkAllList = [];
       var obj = Object.assign({}, row).ParkName;
-      var smallobj = {};
+      var smallobj = [];
       obj.forEach(element => {
-        smallobj.parkname = element;
-        this.parkList.push(smallobj);
+        smallobj = [{parkname:element}]
+        parkAllList= parkAllList.concat(smallobj);
       });
+      this.parkList = parkAllList;
     },
     Days(row, status) {
       var status = row[status.property];

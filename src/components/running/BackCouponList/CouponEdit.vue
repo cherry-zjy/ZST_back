@@ -3,323 +3,432 @@
     <el-header>
       <el-breadcrumb separator="|" class="crumb">
         <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-        <el-breadcrumb-item :to="{ path: '/BackNoticeList' }">通知管理</el-breadcrumb-item>
-        <el-breadcrumb-item>通知编辑</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/BackCouponList' }">优惠券管理</el-breadcrumb-item>
+        <el-breadcrumb-item>优惠券添加</el-breadcrumb-item>
       </el-breadcrumb>
     </el-header>
 
     <el-main style="width:70%;">
       <el-form :model="editForm" :rules="rules" ref="editForm" label-width="150px" class="demo-editForm">
-        <el-form-item label="商品名称" prop="Name">
-          <el-input v-model="editForm.Name"></el-input>
+        <el-form-item label="活动名称：" prop="ActivityName">
+          <el-input v-model="editForm.ActivityName" style="width:200px;"></el-input>
         </el-form-item>
-        <el-form-item label="商品价格（元）" prop="Price">
-          <el-input v-model.number="editForm.Price"></el-input>
+        <el-form-item label="活动类型：" prop="Type">
+          <el-select v-model="editForm.Type" placeholder="请选择活动类型">
+            <el-option v-for="item in typeList" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="商品库存（件）" prop="Stock">
-          <el-input v-model.number="editForm.Stock"></el-input>
+        <el-form-item label="领取类型：" prop="ReceiveType">
+          <el-select v-model="editForm.ReceiveType" placeholder="请选择领取类型">
+            <el-option v-for="item in ReceiveTypeList" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="商品图片" prop="Image">
-          <el-upload v-model="editForm.Image" class="avatar-uploader" :limit="5" :action="action" :on-preview="handlePictureCardPreview"
-            list-type="picture-card" :file-list="Images" :on-success="handleAvatarSuccess" :on-remove="handleRemove">
-            <i class="el-icon-plus"></i>
+        <el-form-item label="活动时间：" prop="ActivityTime">
+          <el-date-picker v-model="editForm.ActivityTime" value-format="yyyy-MM-dd" type="daterange" @change="changtime">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="出资方：" prop="Contribution">
+          <el-input v-model.number="editForm.Contribution" style="width:200px;"></el-input>
+        </el-form-item>
+        <el-form-item label="总限量：" prop="TotalCount">
+          <span style="font-size:12px;">(-1为不限量)</span>
+          <el-input-number v-model="editForm.TotalCount" controls-position="right" :min="-1" :max="100"></el-input-number>
+        </el-form-item>
+        <el-form-item label="每日限量：" prop="DayCount">
+          <span style="font-size:12px;">(-1为不限量)</span>
+          <el-input-number v-model="editForm.DayCount" controls-position="right" :min="-1" :max="100"></el-input-number>
+        </el-form-item>
+        <el-form-item label="每人限量：" prop="UserCount">
+          <span style="font-size:12px;">(0为不限量)</span>
+          <el-input-number v-model="editForm.UserCount" controls-position="right" :min="-1" :max="100"></el-input-number>
+        </el-form-item>
+        <el-form-item label="每人每日限量：" prop="UserDayCount">
+          <span style="font-size:12px;">(0为不限量)</span>
+          <el-input-number v-model="editForm.UserDayCount" controls-position="right" :min="-1" :max="100"></el-input-number>
+        </el-form-item>
+        <el-form-item label="参与车场：" prop="ParkNameID" v-if="!isUpload">
+          <el-upload style="float:right;margin-right:20%;top:0px;" :limit="1" class="upload-demo" :action="action" :on-remove="handleRemove"
+            :on-success="handleExceed">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">若选择上传则单选失效</div>
           </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
-          <span>最多上传五张，且图片宽高比为：1/1</span>
+          <!-- <el-checkbox :indeterminate="isIndeterminate" v-model="editForm.ParkName" @change="handleCheckAllChange">全选</el-checkbox> -->
+          <span style="font-size:12px;">(若内容过多请滚动查看)</span>
+          <el-checkbox-group v-model="editForm.ParkNameID" style="overflow-y: scroll;max-height: 200px;">
+            <el-checkbox v-for="park in parkList" :label="park.ParkID" :key="park.Number">{{park.Name}}
+            </el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="邮费选择" prop="IsFreeShipping">
-          <el-radio-group v-model="editForm.IsFreeShipping">
-            <el-radio class="radio" :label="true">包邮</el-radio>
-            <el-radio class="radio" :label="false">运费模版</el-radio>
-          </el-radio-group>
+        <el-form-item v-else label="参与车场：">
+          <el-upload style="float:right;margin-right:20%;top:0px;" :limit="1" class="upload-demo" :action="action" :on-remove="handleRemove"
+            :on-success="handleExceed">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">若选择上传则单选失效</div>
+          </el-upload>
         </el-form-item>
-        <el-form-item label="商品简介" prop="Brief">
-          <el-input type="textarea" v-model="editForm.Brief"></el-input>
+        <el-form-item label="券类型：" prop="UnitType">
+          <el-select v-model="editForm.UnitType" placeholder="请选择券类型">
+            <el-option v-for="item in [{value:0,name:'元'},{value:1,name:'折'}]" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="图文详情" prop="Details">
-          <el-button type="info" @click="clickOpenDetail(editForm.Details)">图文详情</el-button>
+        <el-form-item label="券额度：" prop="Fullcut">
+          <div v-if="editForm.UnitType == 0" class="yuan">
+            满
+            <el-input-number v-model="editForm.Fullcut.input1" :controls="false" style="width:200px;" placeholder="多少"></el-input-number>
+            减
+            <el-input-number v-model="editForm.Fullcut.input2" :controls="false" style="width:200px;" placeholder="多少元"></el-input-number>
+            <el-checkbox v-model="editForm.Fullcut.input3">上不封顶</el-checkbox>
+          </div>
+          <div v-else class="discoun">
+            满
+            <el-input-number v-model="editForm.Fullcut.input1" :controls="false" style="width:200px;" placeholder="多少"></el-input-number>
+            打
+            <el-input-number v-model="editForm.Fullcut.input2" :controls="false" style="width:200px;" :max="1" :min="0" placeholder="几折">
+            </el-input-number>
+            <span style="font-size:12px;">(折扣为0~1)</span>
+            <el-checkbox v-model="editForm.Fullcut.input3">上不封顶</el-checkbox>
+          </div>
         </el-form-item>
+
         <el-form-item>
-          <el-button type="primary" @click="submitForm('editForm')">立即修改</el-button>
+          <el-button type="primary" @click="submitForm('editForm')">立即添加</el-button>
           <el-button @click="resetForm('editForm')">重置</el-button>
         </el-form-item>
       </el-form>
     </el-main>
-    <!-- 弹出框 图文详情 -->
-    <el-dialog title="图文编辑" :visible.sync="openDetails">
-      <!-- <button @click="getUEContent()">获取内容</button> -->
-      <div class="editor-container">
-        <UEditor :defaultMsg='defaultMsg' :config='config' ref="ueditor"></UEditor>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="openDetails=false">取消</el-button>
-        <el-button type="primary" @click.native="addSubmit">保存</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 <script>
-import UEditor from "../../UEditor.vue";
-
 export default {
   data() {
-    var checkPrice = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("价格不能为空"));
-      }
-      setTimeout(() => {
-        // 是否为整数Number.isInteger
-        if (!Number(value)) {
-          callback(new Error("请输入数字值"));
-        } else {
-          if (value < 0) {
-            callback(new Error("必须大于0"));
-          } else {
-            callback();
-          }
-        }
-      }, 100);
-    };
-    var checkStock = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("库存不能为空"));
-      }
-      setTimeout(() => {
-        // 是否为数字
-        if (!Number(value)) {
-          callback(new Error("请输入数字值"));
-        } else if (value % 1 !== 0) {
-          callback(new Error("库存必须为整数"));
-        } else {
-          if (value < 0) {
-            callback(new Error("必须大于0"));
-          } else {
-            callback();
-          }
-        }
-      }, 100);
-    };
     return {
-      mainurl: "http://hxm.nbxuanma.com",
-      action: "http://hxm.nbxuanma.com/api/Photo/UpdateForImage?type=0",
+      action: "",
       dialogImageUrl: "",
       dialogVisible: false,
       editForm: {
-        Name: "", //名称
-        Price: "", //价格
-        Stock: "", //库存
-        Image: [], //图片
-        IsFreeShipping: false, //邮费选择
-        Brief: "", //简介
-        Details: ""
+        ActivityName: "", //名称
+        Type: 0, //价格
+        ReceiveType: 0, //用户领取方式
+        ActivityTime: "", //时间 ,
+        Contribution: "", //出资方
+        // 限制次数
+        TotalCount: -1,
+        DayCount: -1,
+        UserCount: 0,
+        UserDayCount: 0,
+        ParkNameID: [], //参与停车场
+        UnitType: 1,
+        Fullcut: {
+          input1: "",
+          input2: "",
+          input3: false
+        }
       },
-      Images: [],
+      // 券额度数量
+      quanNum: 1,
+      // 参与车场
+      isUpload: false, //是否上传文件了
+      isIndeterminate: true, //用于全选
+      parkList: [],
+      checkAll: false,
+      checkedCities: [],
       rules: {
-        Name: [
-          {
-            required: true,
-            message: "请输入商品名称",
-            trigger: "blur"
-          }
-        ],
-        Price: [
-          {
-            validator: checkPrice
-            // trigger: 'blur'
-          }
-        ],
-        Stock: [
-          {
-            validator: checkStock
-            // trigger: 'blur'
-          }
-        ],
-        IsFreeShipping: [
-          {
-            required: true,
-            message: "请选择邮费",
-            trigger: "change"
-          }
-        ],
-        Image: [
+        ParkNameID: [
           {
             type: "array",
             required: true,
-            message: "请上传商品图片",
+            message: "请至少选择一个参与车场",
             trigger: "change"
           }
         ],
-        Brief: [
+        ActivityName: [
           {
             required: true,
-            message: "请输入商品简介",
+            message: "请输入活动名称",
+            trigger: "change"
+          }
+        ],
+        Type: [
+          {
+            required: true,
+            message: "请选择活动类型",
             trigger: "blur"
           }
         ],
-        Details: [
+        ReceiveType: [
           {
             required: true,
-            message: "图文详情不能为空",
+            message: "请选择活动类型",
             trigger: "blur"
+          }
+        ],
+        ActivityTime: [
+          {
+            required: true,
+            message: "请选择活动时间",
+            trigger: "blur"
+          }
+        ],
+        Contribution: [
+          {
+            required: true,
+            message: "请输入出资方",
+            trigger: "blur"
+          }
+        ],
+        TotalCount: [
+          {
+            required: true,
+            message: "次数不能为空",
+            trigger: "blur"
+          }
+        ],
+        DayCount: [
+          {
+            required: true,
+            message: "次数不能为空",
+            trigger: "blur"
+          }
+        ],
+        UserCount: [
+          {
+            required: true,
+            message: "次数不能为空",
+            trigger: "blur"
+          }
+        ],
+        UserDayCount: [
+          {
+            required: true,
+            message: "次数不能为空",
+            trigger: "blur"
+          }
+        ],
+        checkedCities: [
+          {
+            required: true,
+            message: "请选择或者上传停车场",
+            trigger: "blur"
+          }
+        ],
+        UnitType: [
+          {
+            required: true,
+            message: "请选择券类型",
+            trigger: "change"
           }
         ]
       },
-      // 图文详情
-      openDetails: false,
 
-      defaultMsg: "这里是初始化内容",
-      config: {
-        initialFrameWidth: null,
-        initialFrameHeight: 350
-      }
+      // 类型数组
+      typeList: [
+        {
+          name: "停车券",
+          value: 0
+        },
+        {
+          name: "充值停车币",
+          value: 1
+        },
+        {
+          name: "充值月卡",
+          value: 2
+        },
+        {
+          name: "续费月卡",
+          value: 3
+        },
+        {
+          name: "余额充值",
+          value: 4
+        }
+      ],
+      ReceiveTypeList: [
+        {
+          name: "用户领取",
+          value: 0
+        },
+        {
+          name: "签到发放",
+          value: 2
+        }
+      ]
     };
   },
-  components: { UEditor },
+  // watch: {
+  //   Fullcut(o, n) {
+  //     console.log(n)
+  //   }
+  // },
   methods: {
-    // 修改提交
+    // 参与车场
+    handleCheckAllChange(val) {
+      this.checkedCities = val ? cityOptions : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedCitiesChange(value) {
+      console.log(value);
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.cities.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.cities.length;
+    },
+    // 上传文件
+    // 成功
+    handleExceed(response, file, fileList) {
+      this.isUpload = true;
+      var upPark = [];
+      response.Result.forEach(element => {
+        upPark.push(element.Num);
+      });
+      console.log(upPark);
+      this.editForm.ParkNameID = upPark;
+    },
+    // 删除文件
+    handleRemove(file, fileList) {
+      this.editForm.ParkNameID = [];
+      this.isUpload = false;
+    },
+    //时间格式化
+    changtime(date) {
+      // this.editForm.ActivityTime = date[0] + "," + date[1]
+    },
+    // 添加提交
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          //判断是否填写完整  --true
-          this.$confirm("确认提交吗？", "提示", {}).then(() => {
-            this.editLoading = true;
-            var para = Object.assign({}, this.editForm);
-            // 将token传入参数中
-            para.Token = getCookie("token");
-            para.ID = window.location.href.split("id=")[1];
-            para.Image = para.Image.join(",");
-            // console.log(this.Images)
-            console.log(para);
-            // 发保存请求
-            this.$http
-              .post("/sps/api/Back/P_ProductEdit", para)
-              .then(
-                function(response) {
-                  this.editLoading = false;
-                  var status = response.data.Status;
-                  if (status === 1) {
-                    // 表单重置
-                    this.$refs["editForm"].resetFields();
-                    this.editFormVisible = false;
-                    this.$router.push({
-                      path: "/P_GetProductList"
-                    });
-                  } else if (status === 40001) {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                    setTimeout(() => {
-                      tt.$router.push({
-                        path: "/login"
+          if (
+            this.editForm.Fullcut.input1 == "" ||
+            this.editForm.Fullcut.input2 == ""
+          ) {
+            this.$message({
+              showClose: true,
+              type: "warning",
+              message: "请输入券额度"
+            });
+          } else {
+            if (this.editForm.Fullcut.input1 < this.editForm.Fullcut.input2) {
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: "券额度减免/折扣 不能大于总额度"
+              });
+            } else {
+              //判断是否填写完整  --true
+              this.$confirm("确认提交吗？", "提示", {}).then(() => {
+                var para = Object.assign({}, this.editForm);
+                // 将token传入参数中
+                para.Token = getCookie("token");
+                para.ID = window.location.href.split("id=")[1];
+                para.ActivityTime =
+                  para.ActivityTime[0] + "," + para.ActivityTime[1];
+                para.ParkNameID = para.ParkNameID.join(",");
+                para.Fullcut =
+                  para.Fullcut.input1 +
+                  "," +
+                  para.Fullcut.input2 +
+                  "," +
+                  para.Fullcut.input3;
+
+                // 发保存请求
+                this.$http
+                  .post("/sps/api/BackOperate/EditCoupon", para)
+                  .then(
+                    function(response) {
+                      var status = response.data.Status;
+                      if (status === 1) {
+                        // 表单重置
+
+                        this.$router.push({
+                          path: "/BackCouponList"
+                        });
+                      } else if (status === 40001) {
+                        this.$message({
+                          showClose: true,
+                          type: "warning",
+                          message: response.data.Result
+                        });
+                        setTimeout(() => {
+                          tt.$router.push({
+                            path: "/login"
+                          });
+                        }, 1500);
+                      } else {
+                        this.$message({
+                          showClose: true,
+                          type: "warning",
+                          message: response.data.Result
+                        });
+                      }
+                    }.bind(this)
+                  )
+                  // 请求error
+                  .catch(
+                    function(error) {
+                      this.$notify.error({
+                        title: "错误",
+                        message: "错误：请检查网络0"
                       });
-                    }, 1500);
-                  } else {
-                    this.$message({
-                      showClose: true,
-                      type: "warning",
-                      message: response.data.Result
-                    });
-                  }
-                }.bind(this)
-              )
-              // 请求error
-              .catch(
-                function(error) {
-                  this.$notify.error({
-                    title: "错误",
-                    message: "错误：请检查网络"
-                  });
-                }.bind(this)
-              );
-          });
+                    }.bind(this)
+                  );
+              });
+            }
+          }
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    // 查看图片
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
-    },
     /*
-       移除图片 
-        handleRemove(file, fileList)  移除的文件，剩下的图片数组（带有域名，需要去掉）
-      */
-    handleRemove(file, fileList) {
-      var newArr = [];
-      for (let index = 0; index < fileList.length; index++) {
-        var element = [fileList[index].url.split(".com")[1]];
-        newArr = newArr.concat(element);
-      }
-      this.editForm.Image = newArr;
-    },
-    /*
-      上传成功的回调函数
-        handleAvatarSuccess(response, file, fileList) 
-        respomse:请求回调，返回上传的图片地址
-        file：该图片的参数信息
-        fileList 返回当前所有的图片数组，
-      */
-    handleAvatarSuccess(response, file, fileList) {
-      var arrImg = [];
-      arrImg = arrImg.concat(response.Result[0]);
-      this.editForm.Image = this.editForm.Image.concat(arrImg);
-    },
-    /*
-      点击打开图文详情框
-      
-      */
-
-    clickOpenDetail(detail) {
-      this.openDetails = true;
-      this.defaultMsg = decodeURIComponent(detail);
-    },
-    addSubmit() {
-      var content = this.$refs.ueditor.getUEContent();
-      this.editForm.Details = encodeURIComponent(content);
-      this.openDetails = false;
-      console.log(this.editForm);
-    },
-    /*
-      重置表单
-      */
+            重置表单
+            */
     resetForm(formName) {
       this.$refs[formName].resetFields();
     }
   },
-  mounted() {
-    var id = window.location.href.split("id=")[1];
+  beforeMount() {
+    this.action = mainurl + "api/BackOperate/ParkExport";
+    // 获取详情
     this.$http
-      .get("/sps/api/Back/P_GetProductDetail", {
+      .get("/sps/api/BackOperate/BackCouponDetails", {
         params: {
-          ID: id,
-          token: getCookie("token")
+          Token: getCookie("token"),
+          ID: window.location.href.split("id=")[1]
         }
       })
       .then(
         function(response) {
           var status = response.data.Status;
           if (status === 1) {
-            this.editForm = response.data.Result;
-            console.log(this.editForm);
-            var newArr = response.data.Result.Image;
-            var newObj = {};
-            for (var i = 0; i < newArr.length; i++) {
-              var element = [
-                {
-                  url: mainurl + newArr[i]
-                }
-              ];
-              this.Images = this.Images.concat(element);
-            }
-            // 将ID传入参数中
-            // this.editForm.ID = obj.ID;
+            // this.editForm = response.data.Result.list;
+            var date = response.data.Result;
+
+            this.editForm = {
+              ActivityName: date.ActivityName, //名称
+              Type: date.Type,
+              ReceiveType: date.ReceiveType, //用户领取方式
+              ActivityTime: [
+                date.ActivityTime.split(",")[0],
+                date.ActivityTime.split(",")[1]
+              ], //时间 ,
+              Contribution: date.Contribution, //出资方
+              // 限制次数
+              TotalCount: date.Counts.TotalCount,
+              DayCount: date.Counts.DayCount,
+              UserCount: date.Counts.UserCount,
+              UserDayCount: date.Counts.UserDayCount,
+              ParkNameID: [], //参与停车场
+              UnitType: date.UnitType,
+              Fullcut: {
+                input1: date.Full,
+                input2: date.Cut,
+                input3: date.IsCap
+              }
+            };
+            date.Parks.forEach(element => {
+              this.editForm.ParkNameID.push(element.ParkID);
+            });
           } else if (status === 40001) {
             this.$message({
               showClose: true,
@@ -343,9 +452,53 @@ export default {
           });
         }.bind(this)
       );
+    // 获取停车场
+    this.$http
+      .get("/sps/api/BackPark/BackParkList", {
+        params: {
+          token: getCookie("token"),
+          pageIndex: 1,
+          pageSize: 999999,
+          keyword: "-1"
+        }
+      })
+      .then(
+        function(response) {
+          var status = response.data.Status;
+          if (status === 1) {
+            this.parkList = response.data.Result.list;
+          } else if (status === 40001) {
+            this.$message({
+              showClose: true,
+              type: "warning",
+              message: response.data.Result
+            });
+            setTimeout(() => {
+              tt.$router.push({
+                path: "/login"
+              });
+            }, 1500);
+          }
+        }.bind(this)
+      )
+      // 请求error
+      .catch(
+        function(error) {
+          this.$notify.error({
+            title: "错误",
+            message: "错误：请检查网络"
+          });
+        }.bind(this)
+      );
+  },
+  mounted() {
+    // this.$refs["editForm"].resetFields();
   }
 };
 </script>
 <style scoped>
-
+.is-controls-right {
+  float: right;
+  margin-right: 50%;
+}
 </style>
