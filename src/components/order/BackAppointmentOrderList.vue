@@ -121,7 +121,7 @@ export default {
           pageSize: this.pageSize,
           Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
           Status: this.filters.Type,
-          StartTime: this.filters.StTime== "" ? "2018-01-01" : this.filters.EndTime,
+          StartTime: this.filters.StTime== "" ? "2018-01-01" : this.filters.StTime,
           EndTime: this.filters.EndTime == "" ? "-1" : this.filters.EndTime
         })
         .then(
