@@ -182,6 +182,12 @@ export default {
          4、分页
       */
     getInfo() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       this.$http
         .get("/sps/api/Admin/GetAdmin", {
           params: {
@@ -191,6 +197,7 @@ export default {
         })
         .then(
           function(response) {
+            loading.close();
             var status = response.data.Status;
             if (status === 1) {
               this.manageList = response.data.Result.data;
@@ -212,6 +219,7 @@ export default {
         // 请求error
         .catch(
           function(error) {
+            loading.close();
             this.$notify.error({
               title: "错误",
               message: "错误：请检查网络"

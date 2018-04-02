@@ -114,6 +114,12 @@ export default {
            3、分页
         */
     getInfo() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       var EndTime = "";
       switch (this.filters.EndTime) {
         case "":
@@ -145,11 +151,12 @@ export default {
           pageSize: this.pageSize,
           Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
           Status: this.filters.Type,
-          StartTime:StTime,
+          StartTime: StTime,
           EndTime: EndTime
         })
         .then(
           function(response) {
+            loading.close();
             var status = response.data.Status;
             if (status === 1) {
               this.orderList = response.data.Result.result;
@@ -171,6 +178,7 @@ export default {
         // 请求error
         .catch(
           function(error) {
+            loading.close();
             this.$notify.error({
               title: "错误",
               message: "错误：请检查网络"

@@ -388,6 +388,12 @@ export default {
     }
   },
   beforeMount() {
+    const loading = this.$loading({
+      lock: true,
+      text: "Loading",
+      spinner: "el-icon-loading",
+      background: "rgba(0, 0, 0, 0.7)"
+    });
     this.action = mainurl + "api/BackOperate/ParkExport";
     // 获取详情
     this.$http
@@ -399,6 +405,7 @@ export default {
       })
       .then(
         function(response) {
+          loading.close();
           var status = response.data.Status;
           if (status === 1) {
             // this.editForm = response.data.Result.list;
@@ -446,6 +453,7 @@ export default {
       // 请求error
       .catch(
         function(error) {
+          loading.close();
           this.$notify.error({
             title: "错误",
             message: "错误：请检查网络"

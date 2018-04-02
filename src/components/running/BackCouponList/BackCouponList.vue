@@ -147,8 +147,8 @@ export default {
       var obj = Object.assign({}, row).ParkName;
       var smallobj = [];
       obj.forEach(element => {
-        smallobj = [{parkname:element}]
-        parkAllList= parkAllList.concat(smallobj);
+        smallobj = [{ parkname: element }];
+        parkAllList = parkAllList.concat(smallobj);
       });
       this.parkList = parkAllList;
     },
@@ -181,6 +181,12 @@ export default {
          3、分页
       */
     getInfo() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       this.$http
         .get("/sps/api/BackOperate/BackCouponList", {
           params: {
@@ -194,6 +200,7 @@ export default {
         })
         .then(
           function(response) {
+            loading.close();
             var status = response.data.Status;
             if (status === 1) {
               this.productList = response.data.Result.list;
@@ -215,6 +222,7 @@ export default {
         // 请求error
         .catch(
           function(error) {
+            loading.close();
             this.$notify.error({
               title: "错误",
               message: "错误：请检查网络"

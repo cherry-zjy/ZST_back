@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       list: [],
-      name:"",
+      name: "",
       isopen: -1
     };
   },
@@ -57,6 +57,12 @@ export default {
            1、获取列表 渲染列表
         */
     getInfo(id) {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       this.$http
         .get("/sps/api/Role/GetMenuJurisdiction", {
           params: {
@@ -65,6 +71,7 @@ export default {
         })
         .then(
           function(response) {
+            loading.close();
             var status = response.data.Status;
             if (status === 1) {
               this.list = response.data.Result;
@@ -85,6 +92,7 @@ export default {
         // 请求error
         .catch(
           function(error) {
+            loading.close();
             this.$notify.error({
               title: "错误",
               message: "错误：请检查网络"

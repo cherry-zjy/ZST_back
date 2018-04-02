@@ -80,6 +80,12 @@ export default {
          3、分页
       */
     getInfo() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       this.$http
         .get("/sps/api/BackUser/ChangeCar", {
           params: {
@@ -91,6 +97,7 @@ export default {
         })
         .then(
           function(response) {
+            loading.close();
             var status = response.data.Status;
             if (status === 1) {
               this.productList = response.data.Result.list;
@@ -112,6 +119,7 @@ export default {
         // 请求error
         .catch(
           function(error) {
+            loading.close();
             this.$notify.error({
               title: "错误",
               message: "错误：请检查网络"
@@ -144,7 +152,7 @@ export default {
           break;
       }
     },
-    handleEdit(index, row,num) {
+    handleEdit(index, row, num) {
       if (num) {
         this.$confirm("确认通过吗？", "提示", {}).then(() => {
           this.$http
