@@ -67,280 +67,258 @@
   </div>
 </template>
 <script>
-  import md5 from "js-md5";
-
-  export default {
-    data() {
-      return {
-        productList: [], //列表
-        pageIndex: 1,
-        pageSize: 10,
-        pageCount: 1,
-        mainurl: "",
-        roleList: [], //管理员角色列表
-        // 搜索关键字
-        filters: {
-          keyword: ""
-        },
-        // 优惠券数组
-        gridData: [],
-        //编辑界面是否显示
-        editFormVisible: false,
-        editLoading: false,
-
-        //编辑界面数据
-        editForm: {
-          IsLock: false,
-          Name: "",
-          Role: "",
-          RoleID: "",
-          Password: ""
-        },
-        editFormRules: {
-          Name: [{
-            required: true,
-            message: "请输入账户",
-            trigger: "blur"
-          }],
-          Password: [{
-            required: true,
-            message: "请输入密码",
-            trigger: "blur"
-          }]
-        },
-        //新增界面是否显示
-        addFormVisible: false,
-        addLoading: false,
-        addFormRules: {
-          Name: [{
-            required: true,
-            message: "请输入账户",
-            trigger: "blur"
-          }],
-          Password: [{
-            required: true,
-            message: "请输入密码",
-            trigger: "blur"
-          }]
-        },
-        //新增界面数据
-        addForm: {
-          IsLock: false,
-          Name: "",
-          RoleID: "",
-          Password: ""
-        }
-      };
-    },
-    methods: {
-      // 导入停车场
-      FileIn() {
-        const loadingDR = this.$loading({
-          lock: true,
-          text: "Loading",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
-        var formdata = new FormData();
-        formdata.append("file", $("#file")[0].files[0]); //获取文件法二
-        this.$http.post("api/BackPark/AddParkExcel", formdata)
-          .then(
-            function (response) {
-              loadingDR.close();
-              var status = response.data.Status;
-              if (status === 1) {
-                this.getInfo()
-                this.$message({
-                  showClose: true,
-                  type: "success",
-                  message: "导入成功"
-                });
-              } else if (status === -1) {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: "请不要重复导入"
-                });
-              }
-            }.bind(this))
-          // 请求error
-          .catch(
-            function (error) {
-              loadingDR.close();
-              this.$notify.error({
-                title: "错误",
-                message: "错误：请检查网络"
-              });
-            }.bind(this)
-          );
+import md5 from "js-md5";
+import qs from "qs";
+export default {
+  data() {
+    return {
+      productList: [], //列表
+      pageIndex: 1,
+      pageSize: 10,
+      pageCount: 1,
+      mainurl: "",
+      roleList: [], //管理员角色列表
+      // 搜索关键字
+      filters: {
+        keyword: ""
       },
-      /*
+      // 优惠券数组
+      gridData: [],
+      //编辑界面是否显示
+      editFormVisible: false,
+      editLoading: false,
+
+      //编辑界面数据
+      editForm: {
+        IsLock: false,
+        Name: "",
+        Role: "",
+        RoleID: "",
+        Password: ""
+      },
+      editFormRules: {
+        Name: [
+          {
+            required: true,
+            message: "请输入账户",
+            trigger: "blur"
+          }
+        ],
+        Password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur"
+          }
+        ]
+      },
+      //新增界面是否显示
+      addFormVisible: false,
+      addLoading: false,
+      addFormRules: {
+        Name: [
+          {
+            required: true,
+            message: "请输入账户",
+            trigger: "blur"
+          }
+        ],
+        Password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur"
+          }
+        ]
+      },
+      //新增界面数据
+      addForm: {
+        IsLock: false,
+        Name: "",
+        RoleID: "",
+        Password: ""
+      }
+    };
+  },
+  methods: {
+    // 导入停车场
+    FileIn() {
+      const loadingDR = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+      var formdata = new FormData();
+      formdata.append("file", $("#file")[0].files[0]); //获取文件法二
+      this.$http
+        .post(
+          "api/BackPark/AddParkExcel",
+          formdata,
+          // qs.stringify({
+          //   params: formdata
+          // })
+          // ,
+          // {
+          //   headers: { "Content-Type": "application/octet-stream" }
+          // } //添加请求头
+        )
+        .then(
+          function(response) {
+            loadingDR.close();
+            var status = response.data.Status;
+            if (status === 1) {
+              this.getInfo();
+              this.$message({
+                showClose: true,
+                type: "success",
+                message: "导入成功"
+              });
+            } else if (status === -1) {
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: "请不要重复导入"
+              });
+            }
+          }.bind(this)
+        )
+        // 请求error
+        .catch(
+          function(error) {
+            loadingDR.close();
+            this.$notify.error({
+              title: "错误",
+              message: "错误：请检查网络"
+            });
+          }.bind(this)
+        );
+    },
+    /*
                1、获取列表 渲染列表
                2、搜索关键字
                3、分页
             */
-      getInfo() {
-        const loading = this.$loading({
-          lock: true,
-          text: "Loading",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
-        this.$http
-          .get("api/BackPark/BackParkList", {
-            params: {
-              token: getCookie("token"),
-              pageIndex: this.pageIndex,
-              pageSize: this.pageSize,
-              keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword
-            }
-          })
-          .then(
-            function (response) {
-              loading.close();
-              var status = response.data.Status;
-              if (status === 1) {
-                this.productList = response.data.Result.list;
-                this.pageCount = response.data.Result.page;
-              } else if (status === 40001) {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-                setTimeout(() => {
-                  tt.$router.push({
-                    path: "/login"
-                  });
-                }, 1500);
-              }
-            }.bind(this)
-          )
-          // 请求error
-          .catch(
-            function (error) {
-              loading.close();
-              this.$notify.error({
-                title: "错误",
-                message: "错误：请检查网络"
+    getInfo() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+      this.$http
+        .get("api/BackPark/BackParkList", {
+          params: {
+            token: getCookie("token"),
+            pageIndex: this.pageIndex,
+            pageSize: this.pageSize,
+            keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword
+          }
+        })
+        .then(
+          function(response) {
+            loading.close();
+            var status = response.data.Status;
+            if (status === 1) {
+              this.productList = response.data.Result.list;
+              this.pageCount = response.data.Result.page;
+            } else if (status === 40001) {
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
               });
-            }.bind(this)
-          );
-      },
-      // 点击查看优惠券
-      detailClick(e) {
-        console.log(e);
-        this.$http
-          .get("api/BackPark/CouponButton", {
-            params: {
-              token: getCookie("token"),
-              ParkID: e
-            }
-          })
-          .then(
-            function (response) {
-              var status = response.data.Status;
-              if (status === 1) {
-                this.gridData = response.data.Result;
-              } else if (status === 40001) {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
+              setTimeout(() => {
+                this.$router.push({
+                  path: "/login"
                 });
-                setTimeout(() => {
-                  tt.$router.push({
-                    path: "/login"
-                  });
-                }, 1500);
-              }
-            }.bind(this)
-          )
-          // 请求error
-          .catch(
-            function (error) {
-              this.$notify.error({
-                title: "错误",
-                message: "错误：请检查网络"
+              }, 1500);
+            }
+          }.bind(this)
+        )
+        // 请求error
+        .catch(
+          function(error) {
+            loading.close();
+            this.$notify.error({
+              title: "错误",
+              message: "错误：请检查网络"
+            });
+          }.bind(this)
+        );
+    },
+    // 点击查看优惠券
+    detailClick(e) {
+      console.log(e);
+      this.$http
+        .get("api/BackPark/CouponButton", {
+          params: {
+            token: getCookie("token"),
+            ParkID: e
+          }
+        })
+        .then(
+          function(response) {
+            var status = response.data.Status;
+            if (status === 1) {
+              this.gridData = response.data.Result;
+            } else if (status === 40001) {
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
               });
-            }.bind(this)
-          );
-      },
-      //
-      getUsers() {
-        this.getInfo();
-      },
-      // 分页
-      handleCurrentChange(val) {
-        this.pageIndex = val;
-        this.getInfo();
-      },
-      /*
+              setTimeout(() => {
+                this.$router.push({
+                  path: "/login"
+                });
+              }, 1500);
+            }
+          }.bind(this)
+        )
+        // 请求error
+        .catch(
+          function(error) {
+            this.$notify.error({
+              title: "错误",
+              message: "错误：请检查网络"
+            });
+          }.bind(this)
+        );
+    },
+    //
+    getUsers() {
+      this.getInfo();
+    },
+    // 分页
+    handleCurrentChange(val) {
+      this.pageIndex = val;
+      this.getInfo();
+    },
+    /*
               1、添加编辑
             */
-      handleEdit(index, row) {
-        var obj = Object.assign({}, row);
-        var urlId = obj.ParkID;
-        localStorage.setItem("parkListInfo", JSON.stringify(obj));
-        this.$router.push("/BackParkList/parkEdit/id=" + urlId);
-      },
-      handleDelete(index, row) {
-        var obj = Object.assign({}, row);
-        this.$confirm("确认删除吗？", "提示", {}).then(() => {
-          this.$http
-            .get("api/BackPark/DelPark", {
-              params: {
-                Token: getCookie("token"),
-                ParkID: obj.ParkID
-              }
-            })
-            .then(
-              function (response) {
-                var status = response.data.Status;
-                if (status === 1) {
-                  this.getInfo();
-                } else if (status === 40001) {
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                  setTimeout(() => {
-                    tt.$router.push({
-                      path: "/login"
-                    });
-                  }, 1500);
-                }
-              }.bind(this)
-            )
-            // 请求error
-            .catch(
-              function (error) {
-                this.$notify.error({
-                  title: "错误",
-                  message: "错误：请检查网络"
-                });
-              }.bind(this)
-            );
-        });
-      },
-      handleAdd() {
-        this.$router.push("/BackParkList/parkAdd");
-      },
-      handleRecommend(index, row) {
-        var obj = Object.assign({}, row);
+    handleEdit(index, row) {
+      var obj = Object.assign({}, row);
+      var urlId = obj.ParkID;
+      localStorage.setItem("parkListInfo", JSON.stringify(obj));
+      this.$router.push("/BackParkList/parkEdit/id=" + urlId);
+    },
+    handleDelete(index, row) {
+      var obj = Object.assign({}, row);
+      this.$confirm("确认删除吗？", "提示", {}).then(() => {
         this.$http
-          .get("api/BackPark/IsRecommend", {
+          .get("api/BackPark/DelPark", {
             params: {
               Token: getCookie("token"),
               ParkID: obj.ParkID
             }
           })
           .then(
-            function (response) {
+            function(response) {
               var status = response.data.Status;
               if (status === 1) {
-                // this.getInfo();
+                this.getInfo();
               } else if (status === 40001) {
                 this.$message({
                   showClose: true,
@@ -348,7 +326,7 @@
                   message: response.data.Result
                 });
                 setTimeout(() => {
-                  tt.$router.push({
+                  this.$router.push({
                     path: "/login"
                   });
                 }, 1500);
@@ -357,42 +335,82 @@
           )
           // 请求error
           .catch(
-            function (error) {
+            function(error) {
               this.$notify.error({
                 title: "错误",
                 message: "错误：请检查网络"
               });
             }.bind(this)
           );
-      }
+      });
     },
-    mounted() {
-      this.mainurl = mainurl;
-      this.getInfo();
+    handleAdd() {
+      this.$router.push("/BackParkList/parkAdd");
+    },
+    handleRecommend(index, row) {
+      var obj = Object.assign({}, row);
+      this.$http
+        .get("api/BackPark/IsRecommend", {
+          params: {
+            Token: getCookie("token"),
+            ParkID: obj.ParkID
+          }
+        })
+        .then(
+          function(response) {
+            var status = response.data.Status;
+            if (status === 1) {
+              // this.getInfo();
+            } else if (status === 40001) {
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
+              });
+              setTimeout(() => {
+                this.$router.push({
+                  path: "/login"
+                });
+              }, 1500);
+            }
+          }.bind(this)
+        )
+        // 请求error
+        .catch(
+          function(error) {
+            this.$notify.error({
+              title: "错误",
+              message: "错误：请检查网络"
+            });
+          }.bind(this)
+        );
     }
-  };
-
+  },
+  mounted() {
+    this.mainurl = mainurl;
+    this.getInfo();
+  }
+};
 </script>
 <style scoped>
-  /* 面包屑 */
+/* 面包屑 */
 
-  .crumb {
-    height: 36px;
-    line-height: 36px;
-  }
+.crumb {
+  height: 36px;
+  line-height: 36px;
+}
 
-  .block {
-    text-align: center;
-    padding: 20px 0;
-  }
+.block {
+  text-align: center;
+  padding: 20px 0;
+}
 
-  #file {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 70px;
-    height: 40px;
-    opacity: 0;
-  }
-
+#file {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 70px;
+  height: 40px;
+  opacity: 0;
+}
 </style>

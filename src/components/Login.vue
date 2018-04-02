@@ -79,7 +79,7 @@ export default {
                 var status = response.data.Status;
                 if (status === 1) {
                   setCookie("token", response.data.Result);
-                  setCookie("username", tt.loginForm.username);
+                  setCookie("username", this.loginForm.username);
                   this.$message({
                     showClose: true,
                     type: "success",

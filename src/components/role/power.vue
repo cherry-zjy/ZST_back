@@ -2,7 +2,7 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/role' }">角色管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/role' }">权限管理</el-breadcrumb-item>
     </el-breadcrumb>
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">
@@ -187,7 +187,7 @@ export default {
                 message: response.data.Result
               });
               setTimeout(() => {
-                tt.$router.push({
+                this.$router.push({
                   path: "/login"
                 });
               }, 1500);
@@ -275,7 +275,7 @@ export default {
                       message: response.data.Result
                     });
                     setTimeout(() => {
-                      tt.$router.push({
+                      this.$router.push({
                         path: "/login"
                       });
                     }, 1500);
@@ -334,7 +334,7 @@ export default {
                       message: response.data.Result
                     });
                     setTimeout(() => {
-                      tt.$router.push({
+                      this.$router.push({
                         path: "/login"
                       });
                     }, 1500);

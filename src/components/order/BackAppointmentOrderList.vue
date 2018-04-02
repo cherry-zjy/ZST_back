@@ -72,6 +72,7 @@
   </div>
 </template>
 <script>
+import qs from 'qs'
 export default {
   data() {
     return {
@@ -145,15 +146,18 @@ export default {
           break;
       }
       this.$http
-        .post("api/BackOrder/BackAppointmentOrderList", {
-          Token: getCookie("token"),
-          pageIndex: this.pageIndex,
-          pageSize: this.pageSize,
-          Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
-          Status: this.filters.Type,
-          StartTime: StTime,
-          EndTime: EndTime
-        })
+        .post(
+          "api/BackOrder/BackAppointmentOrderList",
+          qs.stringify({
+            Token: getCookie("token"),
+            pageIndex: this.pageIndex,
+            pageSize: this.pageSize,
+            Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
+            Status: this.filters.Type,
+            StartTime: StTime,
+            EndTime: EndTime
+          })
+        )
         .then(
           function(response) {
             loading.close();
@@ -168,7 +172,7 @@ export default {
                 message: response.data.Result
               });
               setTimeout(() => {
-                tt.$router.push({
+                this.$router.push({
                   path: "/login"
                 });
               }, 1500);
@@ -248,7 +252,7 @@ export default {
                   message: response.data.Result
                 });
                 setTimeout(() => {
-                  tt.$router.push({
+                  this.$router.push({
                     path: "/login"
                   });
                 }, 1500);

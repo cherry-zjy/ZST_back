@@ -20,15 +20,15 @@ module.exports = {
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
-    proxyTable: {
-      "/sps": {
-        target: "http://sps.nbxuanma.com/",
-        changeOrigin: true,
-        pathRewrite: {
-          '^/sps': '/'
-        }
-      }
-    },
+    // proxyTable: {
+    //   "/sps": {
+    //     target: "http://sps.nbxuanma.com/",
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '^/sps': '/'
+    //     }
+    //   }
+    // },
     /**
      * Source Maps
      */

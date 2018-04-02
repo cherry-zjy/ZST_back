@@ -99,6 +99,7 @@
   </div>
 </template>
 <script>
+import qs from "qs"
 export default {
   data() {
     return {
@@ -332,7 +333,7 @@ export default {
 
                 // 发保存请求
                 this.$http
-                  .post("api/BackOperate/EditCoupon", para)
+                  .post("api/BackOperate/EditCoupon", qs.stringify({ para }))
                   .then(
                     function(response) {
                       var status = response.data.Status;
@@ -349,7 +350,7 @@ export default {
                           message: response.data.Result
                         });
                         setTimeout(() => {
-                          tt.$router.push({
+                          this.$router.push({
                             path: "/login"
                           });
                         }, 1500);
@@ -443,7 +444,7 @@ export default {
               message: response.data.Result
             });
             setTimeout(() => {
-              tt.$router.push({
+              this.$router.push({
                 path: "/login"
               });
             }, 1500);
@@ -482,7 +483,7 @@ export default {
               message: response.data.Result
             });
             setTimeout(() => {
-              tt.$router.push({
+              this.$router.push({
                 path: "/login"
               });
             }, 1500);

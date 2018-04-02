@@ -105,7 +105,7 @@ export default {
                 message: response.data.Result
               });
               setTimeout(() => {
-                tt.$router.push({
+                this.$router.push({
                   path: "/login"
                 });
               }, 1500);
@@ -119,7 +119,7 @@ export default {
               message: "错误：请检查网络"
             });
             setTimeout(() => {
-              tt.$router.push({
+              this.$router.push({
                 path: "/error"
               });
             }, 1500);
@@ -132,7 +132,7 @@ export default {
         message: "请先登陆"
       });
       setTimeout(() => {
-        tt.$router.push({
+        this.$router.push({
           path: "/login"
         });
       }, 1500);

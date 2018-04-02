@@ -144,7 +144,7 @@ export default {
                 message: response.data.Result
               });
               setTimeout(() => {
-                tt.$router.push({
+                this.$router.push({
                   path: "/login"
                 });
               }, 1500);
@@ -184,14 +184,14 @@ export default {
 
     handleSetting(index, row) {
       var obj = Object.assign({}, row);
-      console.log(obj);
+      // console.log(obj);
       var urlId = obj.ID;
       this.$router.push(
         "/role/rolelimit/id=" + urlId + "&rolename=" + obj.Name
       );
     },
     handleEdit(index, row) {
-      console.log(Object.assign({}, row));
+      // console.log(Object.assign({}, row));
       var obj = Object.assign({}, row);
       this.editFormVisible = true;
       this.editForm = obj;
@@ -234,7 +234,7 @@ export default {
                       message: response.data.Result
                     });
                     setTimeout(() => {
-                      tt.$router.push({
+                      this.$router.push({
                         path: "/login"
                       });
                     }, 1500);
@@ -293,7 +293,7 @@ export default {
                       message: response.data.Result
                     });
                     setTimeout(() => {
-                      tt.$router.push({
+                      this.$router.push({
                         path: "/login"
                       });
                     }, 1500);
