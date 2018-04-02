@@ -22,35 +22,6 @@
 
 <body>
   <div id="app"></div>
-  <!-- built files will be auto injected -->
-  <script type="text/javascript">
-    var a_idx = 0;
-    jQuery(document).ready(function ($) {
-      $("body").click(function (e) {
-        var a = new Array("欢", "迎", "使", "用", "S", "P", "S", "后", "台", "管", "理", "系", "统");
-        var $i = $("<span/>").text(a[a_idx]);
-        a_idx = (a_idx + 1) % a.length;
-        var x = e.pageX,
-          y = e.pageY;
-        $i.css({
-          "z-index": 999999,
-          "top": y - 20,
-          "left": x,
-          "position": "absolute",
-          "font-weight": "bold",
-          "color": "#ff6651"
-        });
-        $("body").append($i);
-        $i.animate({
-          "top": y - 180,
-          "opacity": 0
-        }, 1500, function () {
-          $i.remove();
-        });
-      });
-    });
-
-  </script>
   <!-- 高德地图   服务端ak-->
   <!-- <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=3bec918291a9cafd5a562c58d1b2faae"></script>
   <script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script> -->

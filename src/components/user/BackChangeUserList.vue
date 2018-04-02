@@ -87,7 +87,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http
-        .get("/sps/api/BackUser/ChangeCar", {
+        .get("api/BackUser/ChangeCar", {
           params: {
             Token: getCookie("token"),
             pageIndex: this.pageIndex,
@@ -156,7 +156,7 @@ export default {
       if (num) {
         this.$confirm("确认通过吗？", "提示", {}).then(() => {
           this.$http
-            .get("/sps/api/BackUser/CheckCar", {
+            .get("api/BackUser/CheckCar", {
               params: {
                 Token: getCookie("token"),
                 ID: row.ID,
@@ -202,7 +202,7 @@ export default {
       } else {
         this.$confirm("确认驳回吗？", "提示", {}).then(() => {
           this.$http
-            .get("/sps/api/BackUser/CheckCar", {
+            .get("api/BackUser/CheckCar", {
               params: {
                 Token: getCookie("token"),
                 ID: row.ID,

@@ -332,7 +332,7 @@ export default {
 
                 // 发保存请求
                 this.$http
-                  .post("/sps/api/BackOperate/EditCoupon", para)
+                  .post("api/BackOperate/EditCoupon", para)
                   .then(
                     function(response) {
                       var status = response.data.Status;
@@ -397,7 +397,7 @@ export default {
     this.action = mainurl + "api/BackOperate/ParkExport";
     // 获取详情
     this.$http
-      .get("/sps/api/BackOperate/BackCouponDetails", {
+      .get("api/BackOperate/BackCouponDetails", {
         params: {
           Token: getCookie("token"),
           ID: window.location.href.split("id=")[1]
@@ -462,7 +462,7 @@ export default {
       );
     // 获取停车场
     this.$http
-      .get("/sps/api/BackPark/BackParkList", {
+      .get("api/BackPark/BackParkList", {
         params: {
           token: getCookie("token"),
           pageIndex: 1,

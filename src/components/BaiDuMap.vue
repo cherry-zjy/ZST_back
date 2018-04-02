@@ -11,7 +11,7 @@
         <el-input v-model="locationMsg.lnglat" placeholder="鼠标左击获取经纬度" id="lnglat"></el-input>
       </el-form-item>
       <el-form-item label="所在地址" prop="address">
-        <el-input v-model="locationMsg.address" placeholder="根据经纬度自动生成" id="address"></el-input>
+        <el-input v-model="locationMsg.address" placeholder="自动生成地址（可编辑）" id="address"></el-input>
       </el-form-item>
     </el-form>
   </div>

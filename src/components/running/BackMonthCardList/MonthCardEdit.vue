@@ -194,7 +194,7 @@ export default {
             console.log(para);
             // 发保存请求
             this.$http
-              .post("/sps/api/Back/P_ProductEdit", para)
+              .post("api/Back/P_ProductEdit", para)
               .then(
                 function (response) {
                   this.editLoading = false;
@@ -296,7 +296,7 @@ export default {
   mounted() {
     var id = window.location.href.split("id=")[1];
     this.$http
-      .get("/sps/api/Back/P_GetProductDetail", {
+      .get("api/Back/P_GetProductDetail", {
         params: {
           ID: id,
           token: getCookie("token")

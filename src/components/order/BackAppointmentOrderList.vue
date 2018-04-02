@@ -145,7 +145,7 @@ export default {
           break;
       }
       this.$http
-        .post("/sps/api/BackOrder/BackAppointmentOrderList", {
+        .post("api/BackOrder/BackAppointmentOrderList", {
           Token: getCookie("token"),
           pageIndex: this.pageIndex,
           pageSize: this.pageSize,
@@ -229,7 +229,7 @@ export default {
       this.$confirm("确认删除吗？", "提示", {}).then(() => {
         this.editLoading = true;
         this.$http
-          .get("/sps/api/BackOrder/DelAPPOrder", {
+          .get("api/BackOrder/DelAPPOrder", {
             params: {
               Token: getCookie("token"),
               Id: obj.ID

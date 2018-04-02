@@ -90,7 +90,7 @@
               // para.Image = para.Image.join(",");
               // 发保存请求
               this.$http
-                .get("/sps/api/BackOperate/AddNotice", {
+                .get("api/BackOperate/AddNotice", {
                   params: para
                 })
                 .then(

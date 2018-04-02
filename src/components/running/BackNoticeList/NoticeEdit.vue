@@ -135,7 +135,7 @@ export default {
             console.log(para);
             // 发保存请求
             this.$http
-              .get("/sps/api/BackOperate/EditNotice", {
+              .get("api/BackOperate/EditNotice", {
                 params: {
                   ID: para.ID,
                   Title: para.Title,

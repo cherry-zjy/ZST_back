@@ -185,7 +185,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http
-        .get("/sps/api/BackUser/BackUserList", {
+        .get("api/BackUser/BackUserList", {
           params: {
             Token: getCookie("token"),
             pageIndex: this.pageIndex,
@@ -239,7 +239,7 @@ export default {
       if (row.IsLock) {
         this.$confirm("确认解除锁定吗？", "提示", {}).then(() => {
           this.$http
-            .get("/sps/api/BackUser/Islock", {
+            .get("api/BackUser/Islock", {
               params: {
                 token: getCookie("token"),
                 id: row.ID
@@ -284,7 +284,7 @@ export default {
       } else {
         this.$confirm("确认锁定该用户吗？", "提示", {}).then(() => {
           this.$http
-            .get("/sps/api/BackUser/Islock", {
+            .get("api/BackUser/Islock", {
               params: {
                 token: getCookie("token"),
                 id: row.ID

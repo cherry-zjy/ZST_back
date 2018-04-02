@@ -359,7 +359,7 @@
                     para.Fullcut.input3;
                   // 发保存请求
                   this.$http
-                    .post("/sps/api/BackOperate/AddCoupon", para)
+                    .post("api/BackOperate/AddCoupon", para)
                     .then(
                       function (response) {
                         var status = response.data.Status;
@@ -418,7 +418,7 @@
     beforeMount() {
       this.action = mainurl + "api/BackOperate/ParkExport";
       this.$http
-        .get("/sps/api/BackPark/BackParkList", {
+        .get("api/BackPark/BackParkList", {
           params: {
             token: getCookie("token"),
             pageIndex: 1,

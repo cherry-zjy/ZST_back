@@ -124,7 +124,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http
-        .get("/sps/api/Role/GetRoles", {
+        .get("api/Role/GetRoles", {
           params: {
             pageIndex: this.pageIndex,
             pageSize: this.pageSize
@@ -211,7 +211,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/sps/api/Role/Edit", {
+              .get("api/Role/Edit", {
                 params: {
                   ID: para.ID,
                   Role: para.Name,
@@ -271,7 +271,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/sps/api/Role/Add", {
+              .get("api/Role/Add", {
                 params: {
                   Role: para.Name,
                   Token: para.Token

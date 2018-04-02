@@ -188,7 +188,7 @@ export default {
             para.Image = para.Image.join(",");
             // 发保存请求
             this.$http
-              .post("/sps/api/Back/P_ProductAdd", para)
+              .post("api/Back/P_ProductAdd", para)
               .then(
                 function(response) {
                   this.addLoading = false;

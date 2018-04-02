@@ -84,7 +84,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http
-        .get("/sps/api/BackOperate/BackNoticeList", {
+        .get("api/BackOperate/BackNoticeList", {
           params: {
             Token: getCookie("token"),
             pageIndex: this.pageIndex,
@@ -146,7 +146,7 @@ export default {
       var obj = Object.assign({}, row);
       this.$confirm("确认删除吗？", "提示", {}).then(() => {
         this.$http
-          .get("/sps/api/Back/P_ProductDel", {
+          .get("api/Back/P_ProductDel", {
             params: {
               token: getCookie("token"),
               id: obj.ID

@@ -22,7 +22,7 @@ module.exports = {
 
     proxyTable: {
       "/sps": {
-        target: "http://192.168.1.125/Sps/",
+        target: "http://sps.nbxuanma.com/",
         changeOrigin: true,
         pathRewrite: {
           '^/sps': '/'

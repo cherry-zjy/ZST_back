@@ -64,7 +64,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http
-        .get("/sps/api/Role/GetMenuJurisdiction", {
+        .get("api/Role/GetMenuJurisdiction", {
           params: {
             RoleID: id
           }
@@ -110,7 +110,7 @@ export default {
     huoqu(parentindex, $index, MenuID, SubMenuID, IsSelect) {
       var RoleID = window.location.href.split("id=")[1].split("&rolename")[0];
       this.$http
-        .get("/sps/api/Role/AddMenuJurisdiction", {
+        .get("api/Role/AddMenuJurisdiction", {
           params: {
             MenuID: MenuID,
             SubMenuID: SubMenuID,

@@ -128,7 +128,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http
-        .get("/sps/api/Back/P_GetProductList", {
+        .get("api/Back/P_GetProductList", {
           params: {
             token: getCookie("token"),
             pageIndex: this.pageIndex,
@@ -187,7 +187,7 @@ export default {
     getRoleList() {
       // 获取角色列表
       this.$http
-        .get("/sps/api/Role/GetRoles", {
+        .get("api/Role/GetRoles", {
           params: {
             PageIndex: 1,
             PageSize: 999
@@ -232,7 +232,7 @@ export default {
       var obj = Object.assign({}, row);
       this.$confirm("确认删除吗？", "提示", {}).then(() => {
         this.$http
-          .get("/sps/api/Back/P_ProductDel", {
+          .get("api/Back/P_ProductDel", {
             params: {
               token: getCookie("token"),
               id: obj.ID
@@ -286,7 +286,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/sps/api/Admin/Edit", {
+              .get("api/Admin/Edit", {
                 params: para
               })
               .then(
@@ -347,7 +347,7 @@ export default {
             para.Token = getCookie("token");
             // 发保存请求
             this.$http
-              .get("/sps/api/Admin/Add", {
+              .get("api/Admin/Add", {
                 params: para
               })
               .then(

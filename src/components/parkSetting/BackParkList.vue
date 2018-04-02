@@ -143,7 +143,7 @@
         });
         var formdata = new FormData();
         formdata.append("file", $("#file")[0].files[0]); //获取文件法二
-        this.$http.post("/sps/api/BackPark/AddParkExcel", formdata)
+        this.$http.post("api/BackPark/AddParkExcel", formdata)
           .then(
             function (response) {
               loadingDR.close();
@@ -161,17 +161,12 @@
                   type: "warning",
                   message: "请不要重复导入"
                 });
-                setTimeout(() => {
-                  tt.$router.push({
-                    path: "/login"
-                  });
-                }, 1500);
               }
             }.bind(this))
           // 请求error
           .catch(
             function (error) {
-              loading.close();
+              loadingDR.close();
               this.$notify.error({
                 title: "错误",
                 message: "错误：请检查网络"
@@ -192,7 +187,7 @@
           background: "rgba(0, 0, 0, 0.7)"
         });
         this.$http
-          .get("/sps/api/BackPark/BackParkList", {
+          .get("api/BackPark/BackParkList", {
             params: {
               token: getCookie("token"),
               pageIndex: this.pageIndex,
@@ -236,7 +231,7 @@
       detailClick(e) {
         console.log(e);
         this.$http
-          .get("/sps/api/BackPark/CouponButton", {
+          .get("api/BackPark/CouponButton", {
             params: {
               token: getCookie("token"),
               ParkID: e
@@ -293,7 +288,7 @@
         var obj = Object.assign({}, row);
         this.$confirm("确认删除吗？", "提示", {}).then(() => {
           this.$http
-            .get("/sps/api/BackPark/DelPark", {
+            .get("api/BackPark/DelPark", {
               params: {
                 Token: getCookie("token"),
                 ParkID: obj.ParkID
@@ -335,7 +330,7 @@
       handleRecommend(index, row) {
         var obj = Object.assign({}, row);
         this.$http
-          .get("/sps/api/BackPark/IsRecommend", {
+          .get("api/BackPark/IsRecommend", {
             params: {
               Token: getCookie("token"),
               ParkID: obj.ParkID

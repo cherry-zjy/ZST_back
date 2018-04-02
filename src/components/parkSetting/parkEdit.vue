@@ -194,7 +194,7 @@ export default {
               para.Latitude = this.$refs.map.locationMsg.lnglat.split(",")[1];
               // 发保存请求
               this.$http
-                .post("/sps/api/BackPark/EditPark", para)
+                .post("api/BackPark/EditPark", para)
                 .then(
                   function(response) {
                     this.editLoading = false;

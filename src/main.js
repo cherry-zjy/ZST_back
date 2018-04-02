@@ -9,9 +9,15 @@ import App from './App'
 import router from './router'
 
 import axios from 'axios'
+import qs from 'qs'
+Vue.prototype.$http = axios;
+
+// axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.baseURL = 'http://sps.nbxuanma.com';
+
 Vue.use(ElementUI);
 Vue.config.productionTip = false
-Vue.prototype.$http = axios;
+
 //全局引入百度编辑器
 import '../static/UEtidor/ueditor.config.js'
 import '../static/UEtidor/ueditor.all.min.js'
