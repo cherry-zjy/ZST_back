@@ -2,7 +2,7 @@
   "name": "element_back",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "xue <15093568689@163.com>",
+  "author": "cherry-zjy <296579033@qq.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
