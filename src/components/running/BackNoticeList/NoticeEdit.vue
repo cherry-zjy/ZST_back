@@ -247,7 +247,7 @@ export default {
     }
   },
   beforeMount() {
-    this.action = mainurl + "api/Photo/UpdateForImage?type=1";
+    this.action = mainurl + "/api/Photo/UpdateForImage?type=1";
   },
   mounted() {
     var noticeInfo = JSON.parse(localStorage.getItem("noticeListInfo"));

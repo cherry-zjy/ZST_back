@@ -2,15 +2,15 @@
   <div class="login_page fillcontain">
     <transition name="form-fade" mode="in-out">
       <div class="form_img">
-        <img src="../../static/images/login_logo.jpg" alt="">
+        <div class="manage_tip">
+            <p>装师通总公司后台</p>
+          </div>
       </div>
     </transition>
     <transition name="form-fade" mode="in-out">
       <section class="form_contianer">
         <div>
-          <div class="manage_tip">
-            <p>SPS管理系统</p>
-          </div>
+          
           <el-form :model="loginForm" :rules="rules" ref="loginForm">
             <el-form-item prop="username">
               <el-input v-model="loginForm.username" placeholder="用户名"></el-input>
@@ -23,7 +23,6 @@
             </el-form-item>
           </el-form>
         </div>
-
       </section>
     </transition>
   </div>
@@ -125,17 +124,18 @@ export default {
 </script>
 
 <style scoped>
-@import "../../static/css/mixin.css";
+/*@import "../../static/css/mixin.css";*/
 .login_page {
-  background-color: #c8161d;
+  /*background-color: #c8161d;*/
   height: 100%;
   text-align: center;
 }
 
 .manage_tip {
-  /* position: absolute; */
+  position: absolute; 
   width: 100%;
-  /* top: -100px; */
+  top: calc(50% - 42.5px);
+  color: #fff;
   left: 0;
 }
 
@@ -145,18 +145,20 @@ export default {
 }
 
 .form_img {
+  background-color: #409EFF;
+  height: 30%;
   position: absolute;
-  left: calc(50% - 400px);
-  top: calc(50% - 135px);
-  width: 280px;
+  left: 0;
+  top: 0;
+  width: 100%;
   border-radius: 5px;
   text-align: center;
 }
 
 .form_contianer {
   position: absolute;
-  left: calc(50% - 0px);
-  top: calc(50% - 210px);
+  left: calc(50% - 190px);
+  top: calc(30% + 105px);
   /* .wh(320px, 210px);
   .ctp(320px, 210px); */
   width: 320px;
@@ -182,5 +184,9 @@ export default {
 .form-fade-leave-active {
   transform: translate3d(0, -50px, 0);
   opacity: 0;
+}
+input:-webkit-autofill {
+ -webkit-box-shadow: 0 0 0px 1000px white inset;
+ -webkit-text-fill-color: #333;
 }
 </style>

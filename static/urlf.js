@@ -1,4 +1,4 @@
-var mainurl = "http://sps.nbxuanma.com/"
+var mainurl = "http://sps.nbxuanma.com"
 
 function setCookie(name, value) {
 	var Days = 30;

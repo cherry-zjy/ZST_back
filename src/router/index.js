@@ -47,7 +47,7 @@ var BackChangeUserList = resolve => require(['../components/user/BackChangeUserL
 Vue.use(Router)
 
 export default new Router({
-  mode:'history',
+  // mode:'history',
   routes: [
     {
       path: '/login',
