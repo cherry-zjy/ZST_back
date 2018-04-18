@@ -14,11 +14,17 @@ var roleLimit = resolve => require(['@/components/role/roleLimit.vue'], resolve)
 var power = resolve => require(['../components/role/power.vue'], resolve)
 
 // 平台基本信息
-var GetBasicMessage = resolve => require(['../components/user/GetBasicMessage.vue'], resolve)  
+var GetBasicMessage = resolve => require(['../components/basic/GetBasicMessage.vue'], resolve)  
 //作品管理
 var GetProductListIndex = resolve => require(['../components/product/GetProductListIndex.vue'], resolve)  
 var productDetail = resolve => require(['../components/product/productDetail.vue'], resolve)  
-
+//财务管理
+var TimesRechargeOrderIndex = resolve => require(['../components/financemanager/TimesRechargeOrderIndex.vue'], resolve)  
+var VipsRechargeOrderIndex = resolve => require(['../components/financemanager/VipsRechargeOrderIndex.vue'], resolve)  
+var MatchOrderIndex = resolve => require(['../components/financemanager/MatchOrderIndex.vue'], resolve)  
+var GetWithdrawIndex = resolve => require(['../components/financemanager/GetWithdrawIndex.vue'], resolve)  
+//用户管理
+var GetUserIndex = resolve => require(['../components/user/GetUserIndex.vue'], resolve)  
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
 Vue.use(Router)
@@ -50,6 +56,13 @@ export default new Router({
         // 作品管理
         { path: '/GetProductListIndex', component: GetProductListIndex, name: '作品列表' },
         { path: '/product/productDetail/:id', component: productDetail, name: '作品详情' },
+        //财务管理
+        { path: '/TimesRechargeOrderIndex', component: TimesRechargeOrderIndex, name: '次数充值列表' },        
+        { path: '/VipsRechargeOrderIndex', component: VipsRechargeOrderIndex, name: '会员充值列表' },        
+        { path: '/MatchOrderIndex', component: MatchOrderIndex, name: '匹配订单' },        
+        { path: '/GetWithdrawIndex', component: GetWithdrawIndex, name: '提现明细' },        
+        //用户管理
+        { path: '/GetUserIndex', component: GetUserIndex, name: '用户列表' },                
       ]
     },
   ]

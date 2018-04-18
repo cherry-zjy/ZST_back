@@ -2,14 +2,32 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>作品管理</el-breadcrumb-item>
+      <el-breadcrumb-item>提现明细</el-breadcrumb-item>
     </el-breadcrumb>
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">
       <el-form :inline="true" :model="filters">
         <el-form-item>
-          <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
+          <el-input v-model="filters.sear" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
+        
+        <el-form-item>
+          <el-col :span="11">
+            <el-date-picker type="date" placeholder="开始日期" v-model="filters.startTime" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+          </el-col>
+          <el-col class="line" :span="1">~</el-col>
+          <el-col :span="11">
+            <el-date-picker type="date" placeholder="结束时间" v-model="filters.endTime" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+          </el-col>
+        </el-form-item>
+        <el-select v-model="filters.state" placeholder="是否支付">
+    <el-option
+      v-for="item in state"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
@@ -17,26 +35,15 @@
     </el-col>
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
-    
-      <el-table-column label="作品名" prop="Area">
+      <el-table-column label="订单号" prop="OrderNo">
       </el-table-column>
-      <el-table-column label="作品大图" prop="Image">
-        <template slot-scope="scope">
-          <img :src="mainurl+scope.row.Image" width="200" />
-        </template>
+      <el-table-column label="匹配时间" prop="MatchTime">
       </el-table-column>
-      <el-table-column label="发布人" prop="NickName" width="120">
+      <el-table-column label="用户名" prop="NicName">
       </el-table-column>
-      <el-table-column label="主色调" prop="MainColor" width="120">
+      <el-table-column label="联系手机号" prop="Phone">
       </el-table-column>
-      <el-table-column label="辅色调" prop="SecondaryColor" width="120">
-      </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">作品详情</el-button>
-          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">评论</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-        </template>
+      <el-table-column label="匹配作品名" prop="ProductName">
       </el-table-column>
     </el-table>
 
@@ -54,18 +61,29 @@ import md5 from "js-md5";
 export default {
   data() {
     return {
-      productList: [], //列表
+      List: [], //列表
       pageCount: 1,
       mainurl: "",
       // 搜索关键字
       filters: {
-        keyword: ""
-      },
-      productparam:{
         pageIndex: 1,
         pageSize: 12,
         Token: getCookie("token"),
-      }
+        sear: '',
+        startTime: '',
+        endTime: '',
+        state:"0"
+      },
+      state: [{
+          value: '0',
+          label: '提现状态（全部）'
+        }, {
+          value: '1',
+          label: '是'
+        }, {
+          value: '2',
+          label: '否'
+        }],
     };
   },
   methods: {
@@ -81,22 +99,34 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)"
       });
-      if(this.filters.keyword == ""){
-        delete this.productparam.sear
+      if(this.filters.sear == ""){
+        delete this.filters.sear
       }
       else{
-        this.productparam.sear = this.filters.keyword
+        this.filters.sear = this.filters.sear
+      }
+      if(this.filters.startTime == ""){
+        delete this.filters.startTime
+      }
+      else{
+        this.filters.startTime = this.filters.startTime
+      }
+      if(this.filters.endTime == ""){
+        delete this.filters.endTime
+      }
+      else{
+        this.filters.endTime = this.filters.endTime
       }
       this.$http
-        .get("api/Back_ProductList/GetProductListIndex", {
-          params: this.productparam
+        .get("api/Back_FinanceManager/GetWithdrawIndex", {
+          params: this.filters
         })
         .then(
           function(response) {
             loading.close();
             var status = response.data.Status;
             if (status === 1) {
-              this.List = response.data.Result.product;
+              this.List = response.data.Result.withdrawList;
               this.pageCount = response.data.Result.page;
             } else if (status === 40001) {
               this.$message({
@@ -131,13 +161,6 @@ export default {
     handleCurrentChange(val) {
       this.pageIndex = val;
       this.getInfo();
-    },
-    //作品详情
-    handleEdit(index, row) {
-      console.log(Object.assign({}, row));
-      var obj = Object.assign({}, row);
-      var urlId = obj.ID;
-      this.$router.push("/product/productDetail/id=" + urlId);
     },
   },
   mounted() {
