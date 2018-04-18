@@ -17,6 +17,7 @@ var power = resolve => require(['../components/role/power.vue'], resolve)
 var GetBasicMessage = resolve => require(['../components/user/GetBasicMessage.vue'], resolve)  
 //作品管理
 var GetProductListIndex = resolve => require(['../components/product/GetProductListIndex.vue'], resolve)  
+var productDetail = resolve => require(['../components/product/productDetail.vue'], resolve)  
 
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
@@ -48,6 +49,7 @@ export default new Router({
         { path: '/GetBasicMessage', component: GetBasicMessage, name: '基本信息' },
         // 作品管理
         { path: '/GetProductListIndex', component: GetProductListIndex, name: '作品列表' },
+        { path: '/product/productDetail/:id', component: productDetail, name: '作品详情' },
       ]
     },
   ]

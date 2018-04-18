@@ -20,30 +20,24 @@
     </el-col>
     <!-- table 内容 -->
     <el-table :data="productList" style="width: 100%" :border='true'>
-    <el-table-column type="expand">
-      <template slot-scope="props">
-        <el-form label-position="left" inline class="demo-table-expand">
-          <el-form-item label="商品图片:">
-            <!-- <span>{{ props.row.name }}</span> -->
-            <img v-for="(item,index) in props.row.Image" :key="index" :src="mainurl+item" width="200" style="margin-left:20px;" />
-          </el-form-item>
-        </el-form>
-      </template>
-    </el-table-column>
-      <el-table-column label="商品名称" prop="Name">
+    
+      <el-table-column label="作品名" prop="Area">
       </el-table-column>
-      <!-- <el-table-column label="商品图片" prop="Image" >
+      <el-table-column label="作品大图" prop="Image">
         <template slot-scope="scope">
-            <img v-for="(item,index) in scope.row.Image" :key="index" :src="mainurl+item" width="200" />
+          <img :src="mainurl+scope.row.Image" width="200" />
         </template>
-      </el-table-column> -->
-      <el-table-column label="商品价格" prop="Price" sortable>
       </el-table-column>
-      <el-table-column label="库存" prop="Stock" sortable>
+      <el-table-column label="发布人" prop="NickName" width="120">
+      </el-table-column>
+      <el-table-column label="主色调" prop="MainColor" width="120">
+      </el-table-column>
+      <el-table-column label="辅色调" prop="SecondaryColor" width="120">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini"  type="primary" plain icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">作品详情</el-button>
+          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">评论</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -64,68 +58,16 @@ export default {
   data() {
     return {
       productList: [], //列表
-      pageIndex: 1,
-      pageSize: 3,
       pageCount: 1,
       mainurl: "",
-      roleList: [], //管理员角色列表
       // 搜索关键字
       filters: {
         keyword: ""
       },
-      //编辑界面是否显示
-      editFormVisible: false,
-      editLoading: false,
-
-      //编辑界面数据
-      editForm: {
-        IsLock: false,
-        Name: "",
-        Role: "",
-        RoleID: "",
-        Password: ""
-      },
-      editFormRules: {
-        Name: [
-          {
-            required: true,
-            message: "请输入账户",
-            trigger: "blur"
-          }
-        ],
-        Password: [
-          {
-            required: true,
-            message: "请输入密码",
-            trigger: "blur"
-          }
-        ]
-      },
-      //新增界面是否显示
-      addFormVisible: false,
-      addLoading: false,
-      addFormRules: {
-        Name: [
-          {
-            required: true,
-            message: "请输入账户",
-            trigger: "blur"
-          }
-        ],
-        Password: [
-          {
-            required: true,
-            message: "请输入密码",
-            trigger: "blur"
-          }
-        ]
-      },
-      //新增界面数据
-      addForm: {
-        IsLock: false,
-        Name: "",
-        RoleID: "",
-        Password: ""
+      productparam:{
+        pageIndex: 1,
+        pageSize: 12,
+        Token: getCookie("token"),
       }
     };
   },
@@ -136,21 +78,22 @@ export default {
          3、分页
       */
     getInfo() {
+      if(this.filters.keyword == ""){
+        delete this.productparam.sear
+      }
+      else{
+        this.productparam.sear = this.filters.keyword
+      }
       this.$http
-        .get("/api/Back_ProductList/GetProductList", {
-          params: {
-            token: getCookie("token"),
-            pageIndex: this.pageIndex,
-            pageSize: this.pageSize,
-            keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword
-          }
+        .get("api/Back_ProductList/GetProductListIndex", {
+          params: this.productparam
         })
         .then(
           function(response) {
             var status = response.data.Status;
             if (status === 1) {
-              this.productList = response.data.Result.List;
-              this.pageCount = response.data.Result.Page;
+              this.productList = response.data.Result.product;
+              this.pageCount = response.data.Result.page;
             } else if (status === 40001) {
               this.$message({
                 showClose: true,
@@ -183,6 +126,13 @@ export default {
     handleCurrentChange(val) {
       this.pageIndex = val;
       this.getInfo();
+    },
+    //作品详情
+    handleEdit(index, row) {
+      console.log(Object.assign({}, row));
+      var obj = Object.assign({}, row);
+      var urlId = obj.ID;
+      this.$router.push("/product/productDetail/id=" + urlId);
     },
   },
   mounted() {
