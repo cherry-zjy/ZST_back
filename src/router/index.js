@@ -26,6 +26,10 @@ var GetWithdrawIndex = resolve => require(['../components/financemanager/GetWith
 //用户管理
 var GetUserIndex = resolve => require(['../components/user/GetUserIndex.vue'], resolve)  
 var GetUserIndexDetail = resolve => require(['../components/user/GetUserIndexDetail.vue'], resolve)  
+//审核管理
+var ProductExamineIndex = resolve => require(['../components/examine/ProductExamineIndex.vue'], resolve)  
+var ProductExamineDetail = resolve => require(['../components/examine/ProductExamineDetail.vue'], resolve)  
+var UserExamineIndex = resolve => require(['../components/examine/UserExamineIndex.vue'], resolve)  
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
 Vue.use(Router)
@@ -65,7 +69,11 @@ export default new Router({
         //用户管理
         { path: '/GetUserIndex', component: GetUserIndex, name: '用户列表' },                
         { path: 'user/GetUserIndexDetail/:id', component: GetUserIndexDetail, name: '用户详情' },                
-      ]
+        //审核管理
+        { path: '/ProductExamineIndex', component: ProductExamineIndex, name: '作品审核列表' },                
+        { path: 'examine/ProductExamineDetail/:id', component: ProductExamineDetail, name: '作品审核详情' },                
+        { path: '/UserExamineIndex', component: UserExamineIndex, name: '认证审核列表' },                
+    ]
     },
   ]
 })
