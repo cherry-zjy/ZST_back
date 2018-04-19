@@ -54,7 +54,7 @@ import md5 from "js-md5";
 export default {
   data() {
     return {
-      productList: [], //列表
+      List: [], //列表
       pageCount: 1,
       mainurl: "",
       // 搜索关键字

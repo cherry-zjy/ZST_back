@@ -2,14 +2,30 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>作品管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">
       <el-form :inline="true" :model="filters">
         <el-form-item>
-          <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
+          <el-input v-model="filters.sear" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
+        <el-select v-model="filters.IsVip" placeholder="黑卡会员">
+    <el-option
+      v-for="item in IsVip"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+  <el-select v-model="filters.IsVerify" placeholder="是否认证">
+    <el-option
+      v-for="item in IsVerify"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
@@ -18,24 +34,21 @@
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
     
-      <el-table-column label="作品名" prop="Area">
+      <el-table-column label="用户名" prop="Name">
       </el-table-column>
-      <el-table-column label="作品大图" prop="Image">
-        <template slot-scope="scope">
-          <img :src="mainurl+scope.row.Image" width="200" />
-        </template>
+      <el-table-column label="手机号" prop="Phone">
       </el-table-column>
-      <el-table-column label="发布人" prop="NickName" width="120">
+      <el-table-column label="是否认证" prop="IsVerify" width="120">
       </el-table-column>
-      <el-table-column label="主色调" prop="MainColor" width="120">
+      <el-table-column label="会员卡号" prop="CardNo">
       </el-table-column>
-      <el-table-column label="辅色调" prop="SecondaryColor" width="120">
+      <el-table-column label="剩余匹配次数" prop="Available">
+      </el-table-column>
+      <el-table-column label="钱袋收入（元）" prop="Balance">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">作品详情</el-button>
-          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">评论</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -54,18 +67,38 @@ import md5 from "js-md5";
 export default {
   data() {
     return {
-      productList: [], //列表
+      List: [], //列表
       pageCount: 1,
       mainurl: "",
       // 搜索关键字
       filters: {
-        keyword: ""
-      },
-      productparam:{
+        sear: "",
         pageIndex: 1,
         pageSize: 12,
         Token: getCookie("token"),
-      }
+        IsVip:'0',
+        IsVerify:'0',
+      },
+      IsVip: [{
+          value: '0',
+          label: '黑卡会员（全部）'
+        }, {
+          value: '1',
+          label: '是'
+        }, {
+          value: '2',
+          label: '否'
+        }],
+      IsVerify: [{
+          value: '0',
+          label: '是否认证（全部）'
+        }, {
+          value: '1',
+          label: '认证未通过'
+        }, {
+          value: '2',
+          label: '认证通过否'
+        }],
     };
   },
   methods: {
@@ -81,22 +114,22 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)"
       });
-      if(this.filters.keyword == ""){
-        delete this.productparam.sear
+      if(this.filters.sear == ""){
+        delete this.filters.sear
       }
       else{
-        this.productparam.sear = this.filters.keyword
+        this.filters.sear = this.filters.keyword
       }
       this.$http
-        .get("api/Back_ProductList/GetProductListIndex", {
-          params: this.productparam
+        .get("api/Back_UserList/GetUserIndex", {
+          params: this.filters
         })
         .then(
           function(response) {
             loading.close();
             var status = response.data.Status;
             if (status === 1) {
-              this.List = response.data.Result.product;
+              this.List = response.data.Result.coustomer;
               this.pageCount = response.data.Result.page;
             } else if (status === 40001) {
               this.$message({
@@ -132,12 +165,12 @@ export default {
       this.pageIndex = val;
       this.getInfo();
     },
-    //作品详情
+    //详情
     handleEdit(index, row) {
       console.log(Object.assign({}, row));
       var obj = Object.assign({}, row);
       var urlId = obj.ID;
-      this.$router.push("/product/productDetail/id=" + urlId);
+      this.$router.push("/user/GetUserIndexDetail/id=" + urlId);
     },
   },
   mounted() {

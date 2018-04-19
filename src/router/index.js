@@ -25,6 +25,7 @@ var MatchOrderIndex = resolve => require(['../components/financemanager/MatchOrd
 var GetWithdrawIndex = resolve => require(['../components/financemanager/GetWithdrawIndex.vue'], resolve)  
 //用户管理
 var GetUserIndex = resolve => require(['../components/user/GetUserIndex.vue'], resolve)  
+var GetUserIndexDetail = resolve => require(['../components/user/GetUserIndexDetail.vue'], resolve)  
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
 Vue.use(Router)
@@ -63,6 +64,7 @@ export default new Router({
         { path: '/GetWithdrawIndex', component: GetWithdrawIndex, name: '提现明细' },        
         //用户管理
         { path: '/GetUserIndex', component: GetUserIndex, name: '用户列表' },                
+        { path: 'user/GetUserIndexDetail/:id', component: GetUserIndexDetail, name: '用户详情' },                
       ]
     },
   ]
