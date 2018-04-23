@@ -68,7 +68,7 @@
           <el-input v-model="getList.Name"></el-input>
         </el-form-item>
         <el-form-item label="到期时间" prop="ExpiryTime">
-          <el-date-picker type="date" placeholder="开始日期" v-model="getList.ExpiryTime" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+          <el-date-picker type="date" placeholder="到期时间" v-model="getList.ExpiryTime" style="width: 100%;"></el-date-picker>
         </el-form-item>
         <el-form-item label="广告大图" prop="Image">
           <el-upload v-model="getList.Image" class="avatar-uploader" :action="action" :show-file-list="false" :on-success="handleAvatarSuccess"
@@ -241,7 +241,7 @@
                     Name: para.Name,
                     Url: para.Url,
                     Title: para.Title,
-                    ExpiryTime: para.ExpiryTime.substring(0, 10),
+                    ExpiryTime: para.ExpiryTime,
                   })
                 )
                 .then(
@@ -266,7 +266,7 @@
                         message: response.data.Result
                       });
                       setTimeout(() => {
-                        tt.$router.push({
+                        this.$router.push({
                           path: "/login"
                         });
                       }, 1500);
@@ -317,7 +317,7 @@
                     Name: para.Name,
                     Url: para.Url,
                     Title: para.Title,
-                    ExpiryTime: para.ExpiryTime.substring(0, 10),
+                    ExpiryTime: para.ExpiryTime,
                   })
                 )
                 .then(
@@ -445,6 +445,7 @@
         console.log(Object.assign({}, row));
         var obj = Object.assign({}, row);
         this.getList = obj;
+        this.getList.ExpiryTime = new Date(this.getList.ExpiryTime.substring(0,10))      
         this.imageUrl = this.mainurl + obj.Image;
         this.change = true;
         this.add = false;
