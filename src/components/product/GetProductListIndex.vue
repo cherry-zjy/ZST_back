@@ -141,7 +141,7 @@
             background: "rgba(0, 0, 0, 0.7)"
           });
           this.$http
-            .get("api/Back_ProductList/DelProductEval", {
+            .get("api/Back_ProductList/DelProduct", {
               params: {
                 Token: getCookie("token"),
                 prodID: row.ID,
