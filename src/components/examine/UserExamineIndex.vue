@@ -27,32 +27,23 @@
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
 
-      <el-table-column label="作品名" prop="Name">
+      <el-table-column label="审核人昵称" prop="NicName">
       </el-table-column>
-      <el-table-column label="作品大图" prop="Image">
-        <template slot-scope="scope">
-          <img :src="mainurl+scope.row.Image" width="200" />
-        </template>
+      <el-table-column label="手机号" prop="Phone">
       </el-table-column>
-      <el-table-column label="作品作者" prop="Author">
+      <el-table-column label="真实姓名" prop="Name">
       </el-table-column>
-      <el-table-column label="申请时间" prop="CreateTime">
+      <el-table-column label="申请时间" prop="IdentityTime">
+      </el-table-column>
+      <el-table-column label="证件号" prop="IdentityCode">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="success" @click="successbtn(1,scope.$index, scope.row.ID)">通过</el-button>
-          <el-button size="mini" type="danger" @click="refusebtn(2,scope.$index, scope.row.ID)">拒绝</el-button>
+          <el-button size="mini" type="success" @click="examine(0,scope.row.ID,'确认通过该审核？')">通过</el-button>
+          <el-button size="mini" type="danger" @click="examine(1,scope.row.ID,'确认拒绝该审核？')">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <el-dialog title="提示" :visible.sync="dialogFormVisible" width="30%">
-      <span>{{dialogtext}}</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="examine('state')">确 定</el-button>
-      </span>
-    </el-dialog>
 
     <!-- 分页 -->
     <div class="block">
@@ -62,8 +53,6 @@
   </div>
 </template>
 <script>
-  import md5 from "js-md5";
-
   export default {
     data() {
       return {
@@ -75,9 +64,6 @@
           pageSize: 12,
           Token: getCookie("token"),
         },
-        dialogFormVisible: false,
-        dialogtext: "",
-        state: ""
       };
     },
     methods: {
@@ -161,42 +147,30 @@
         this.getInfo();
       },
       //审核
-      successbtn(state, index, row) {
-        this.state = state;
-        console.log(Object.assign({}, row));
-        var obj = Object.assign({}, row);
-        var urlId = obj.ID;
-        this.dialogFormVisible = true;
-        this.dialogtext = '确认通过审核？';
-      },
-      refusebtn(state, index, row) {
-        this.state = state;
-        console.log(Object.assign({}, row));
-        var obj = Object.assign({}, row);
-        var urlId = obj.ID;
-        this.dialogFormVisible = true;
-        this.dialogtext = '确认拒绝审核？';
-      },
-      examine() {
-        const loading = this.$loading({
+      examine(state,id,msg) {
+        this.$confirm(''+msg+'', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const loading = this.$loading({
           lock: true,
           text: "Loading",
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)"
         });
         this.$http
-          .get("api/Back_ExamineManager/UserExamineIndex", {
+          .get("api/Back_ExamineManager/ExamineUser", {
             params: {
               Token: getCookie("token"),
-              userID: window.location.href.split("id=")[1],
-              state: this.state,
+              userID: id,
+              state: state,
             }
           })
           .then(
             function (response) {
               loading.close();
               var status = response.data.Status;
-              this.dialogFormVisible = false;
               if (status === 1) {
                 this.$message({
                   showClose: true,
@@ -234,7 +208,13 @@
               });
             }.bind(this)
           );
-      }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          });          
+        });
+      },
     },
     mounted() {
       this.mainurl = mainurl;
