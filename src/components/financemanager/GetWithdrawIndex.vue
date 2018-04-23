@@ -35,15 +35,21 @@
     </el-col>
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
-      <el-table-column label="订单号" prop="OrderNo">
+      <el-table-column label="提现人姓名" prop="Name">
       </el-table-column>
-      <el-table-column label="匹配时间" prop="MatchTime">
+      <el-table-column label="申请日期" prop="ApplyTime">
       </el-table-column>
-      <el-table-column label="用户名" prop="NicName">
+      <el-table-column label="提现支付宝账号" prop="Account">
       </el-table-column>
-      <el-table-column label="联系手机号" prop="Phone">
+      <el-table-column label="提现金额（元）" prop="Price">
       </el-table-column>
-      <el-table-column label="匹配作品名" prop="ProductName">
+      <el-table-column label="提现状态" prop="State">
+      </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button size="mini"  type="primary" @click="handle('1', scope.row,'同意')">同意</el-button>
+          <el-button size="mini"  type="primary" @click="handle('2', scope.row,'拒绝')">拒绝</el-button>
+        </template>
       </el-table-column>
     </el-table>
 
@@ -79,10 +85,10 @@ export default {
           label: '提现状态（全部）'
         }, {
           value: '1',
-          label: '是'
+          label: '未支付'
         }, {
           value: '2',
-          label: '否'
+          label: '已支付'
         }],
     };
   },
@@ -153,6 +159,75 @@ export default {
           }.bind(this)
         );
     },
+    //审核
+    handle(state,row,msg) {
+        this.$confirm('确认'+msg+'?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)"
+          });
+          this.$http
+        .get("api/Back_FinanceManager/HandleWithdrawals", {
+          params: {
+            Token:getCookie("token"),
+            withID:row.ID,
+            state:state,
+          }
+        })
+        .then(
+          function(response) {
+            loading.close();
+            var status = response.data.Status;
+            if (status === 1) {
+              this.$message({
+                showClose: true,
+                type: "success",
+                message: response.data.Result
+              });
+              this.getInfo()
+            } else if (status === 40001) {
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
+              });
+              setTimeout(() => {
+                tt.$router.push({
+                  path: "/login"
+                });
+              }, 1500);
+            }else{
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
+              });
+            }
+          }.bind(this)
+        )
+        // 请求error
+        .catch(
+          function(error) {
+            loading.close();
+            this.$notify.error({
+              title: "错误",
+              message: "错误：请检查网络"
+            });
+          }.bind(this)
+        );
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          });          
+        });
+      },
     //
     getUsers() {
       this.getInfo();
