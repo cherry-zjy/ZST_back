@@ -17,7 +17,7 @@
     </el-col>
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
-    
+
       <el-table-column label="作品名" prop="Area">
       </el-table-column>
       <el-table-column label="作品大图" prop="Image">
@@ -33,129 +33,195 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">作品详情</el-button>
-          <el-button size="mini"  type="primary" @click="handleEdit(scope.$index, scope.row)">评论</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">作品详情</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页 -->
     <div class="block">
-      <el-pagination @current-change="handleCurrentChange"
-       layout="prev, pager, next,jumper" :page-count="pageCount">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount">
       </el-pagination>
     </div>
   </div>
 </template>
 <script>
-import md5 from "js-md5";
+  import md5 from "js-md5";
 
-export default {
-  data() {
-    return {
-      List: [], //列表
-      pageCount: 1,
-      mainurl: "",
-      // 搜索关键字
-      filters: {
-        keyword: ""
-      },
-      productparam:{
-        pageIndex: 1,
-        pageSize: 12,
-        Token: getCookie("token"),
-      }
-    };
-  },
-  methods: {
-    /*
-         1、获取列表 渲染列表
-         2、搜索关键字
-         3、分页
-      */
-    getInfo() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Loading",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
-      if(this.filters.keyword == ""){
-        delete this.productparam.sear
-      }
-      else{
-        this.productparam.sear = this.filters.keyword
-      }
-      this.$http
-        .get("api/Back_ProductList/GetProductListIndex", {
-          params: this.productparam
-        })
-        .then(
-          function(response) {
-            loading.close();
-            var status = response.data.Status;
-            if (status === 1) {
-              this.List = response.data.Result.product;
-              this.pageCount = response.data.Result.page;
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-              setTimeout(() => {
-                tt.$router.push({
-                  path: "/login"
+  export default {
+    data() {
+      return {
+        List: [], //列表
+        pageCount: 1,
+        mainurl: "",
+        // 搜索关键字
+        filters: {
+          keyword: ""
+        },
+        productparam: {
+          pageIndex: 1,
+          pageSize: 4,
+          Token: getCookie("token"),
+        }
+      };
+    },
+    methods: {
+      /*
+           1、获取列表 渲染列表
+           2、搜索关键字
+           3、分页
+        */
+      getInfo() {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        if (this.filters.keyword == "") {
+          delete this.productparam.sear
+        } else {
+          this.productparam.sear = this.filters.keyword
+        }
+        this.$http
+          .get("api/Back_ProductList/GetProductListIndex", {
+            params: this.productparam
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.List = response.data.Result.product;
+                this.pageCount = response.data.Result.page;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
                 });
-              }, 1500);
-            }
-          }.bind(this)
-        )
-        // 请求error
-        .catch(
-          function(error) {
-            loading.close();
-            this.$notify.error({
-              title: "错误",
-              message: "错误：请检查网络"
-            });
-          }.bind(this)
-        );
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
+      //删除
+      handleDelete(row) {
+        this.$confirm('确认删除该作品?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)"
+          });
+          this.$http
+            .get("api/Back_ProductList/DelProductEval", {
+              params: {
+                Token: getCookie("token"),
+                prodID: row.ID,
+              }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
+                  });
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                }else{
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+      getUsers() {
+        this.getInfo();
+      },
+      // 分页
+      handleCurrentChange(val) {
+        this.productparam.pageIndex = val;
+        this.getInfo();
+      },
+      //作品详情
+      handleEdit(index, row) {
+        console.log(Object.assign({}, row));
+        var obj = Object.assign({}, row);
+        var urlId = obj.ID;
+        this.$router.push("/product/productDetail/id=" + urlId);
+      },
     },
-    //
-    getUsers() {
+    mounted() {
+      this.mainurl = mainurl;
       this.getInfo();
-    },
-    // 分页
-    handleCurrentChange(val) {
-      this.pageIndex = val;
-      this.getInfo();
-    },
-    //作品详情
-    handleEdit(index, row) {
-      console.log(Object.assign({}, row));
-      var obj = Object.assign({}, row);
-      var urlId = obj.ID;
-      this.$router.push("/product/productDetail/id=" + urlId);
-    },
-  },
-  mounted() {
-    this.mainurl = mainurl;
-    this.getInfo();
-  }
-};
+    }
+  };
+
 </script>
 <style scoped>
-/* 面包屑 */
+  /* 面包屑 */
 
-.crumb {
-  height: 36px;
-  line-height: 36px;
-}
+  .crumb {
+    height: 36px;
+    line-height: 36px;
+  }
 
-.block {
-  text-align: center;
-  padding: 20px 0;
-}
+  .block {
+    text-align: center;
+    padding: 20px 0;
+  }
+
 </style>

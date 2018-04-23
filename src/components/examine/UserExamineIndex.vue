@@ -130,7 +130,7 @@ export default {
                 message: response.data.Result
               });
               setTimeout(() => {
-                tt.$router.push({
+                this.$router.push({
                   path: "/login"
                 });
               }, 1500);
@@ -182,7 +182,7 @@ export default {
           background: "rgba(0, 0, 0, 0.7)"
         });
         this.$http
-          .get("api/Back_ExamineManager/ExamineUser", {
+          .get("api/Back_ExamineManager/UserExamineIndex", {
             params: {
               Token: getCookie("token"),
               userID: window.location.href.split("id=")[1],
