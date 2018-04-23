@@ -83,7 +83,7 @@
         reason: "",
         dialogFormVisible: false,
         dialogVisible2: false,
-        ServiceProvider:[]
+        ServiceProvider: []
       };
     },
     methods: {
@@ -128,6 +128,13 @@
                   path: "/login"
                 });
               }, 1500);
+            } else {
+              loading.close();
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
+              });
             }
           }.bind(this)
         )

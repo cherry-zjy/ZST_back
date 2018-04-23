@@ -28,7 +28,7 @@
       @change="choiceTime">
     </el-date-picker> -->
         </el-form-item>
-            
+
         <el-form-item label="发货状态">
           <el-select v-model="filters.Type" placeholder="发货状态">
             <el-option v-for="item in typeList" :key="item.value" :label="item.name" :value="item.value"></el-option>
@@ -36,7 +36,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
-          <el-button type="info" @click="getAllUsers()">重置</el-button>          
+          <el-button type="info" @click="getAllUsers()">重置</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -72,179 +72,98 @@
   </div>
 </template>
 <script>
-import qs from 'qs'
-export default {
-  data() {
-    return {
-      orderList: [], //列表
-      pageIndex: 1,
-      pageSize: 10,
-      pageCount: 1,
-      // 搜索关键字
-      filters: {
-        keyword: "",
-        StTime: "2018-01-01",
-        EndTime: "",
-        Type: -1
-      },
-      // 状态数组
-      typeList: [
-        {
-          name: "全部",
-          value: -1
+  import qs from 'qs'
+  export default {
+    data() {
+      return {
+        orderList: [], //列表
+        pageIndex: 1,
+        pageSize: 10,
+        pageCount: 1,
+        // 搜索关键字
+        filters: {
+          keyword: "",
+          StTime: "2018-01-01",
+          EndTime: "",
+          Type: -1
         },
-        {
-          name: "已预约",
-          value: 1
-        },
-        {
-          name: "已完成",
-          value: 2
-        },
-        {
-          name: "已超时",
-          value: 3
-        }
-      ]
-    };
-  },
-  methods: {
-    /*
-           1、获取列表 渲染列表
-           2、搜索关键字
-           3、分页
-        */
-    getInfo() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Loading",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
-      var EndTime = "";
-      switch (this.filters.EndTime) {
-        case "":
-          EndTime = "-1";
-          break;
-        case null:
-          EndTime = "-1";
-          break;
-        default:
-          EndTime = this.filters.EndTime;
-          break;
-      }
-      var StTime = "";
-      switch (this.filters.StTime) {
-        case "":
-          StTime = "-1";
-          break;
-        case null:
-          StTime = "-1";
-          break;
-        default:
-          StTime = this.filters.StTime;
-          break;
-      }
-      this.$http
-        .post(
-          "api/BackOrder/BackAppointmentOrderList",
-          qs.stringify({
-            Token: getCookie("token"),
-            pageIndex: this.pageIndex,
-            pageSize: this.pageSize,
-            Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
-            Status: this.filters.Type,
-            StartTime: StTime,
-            EndTime: EndTime
-          })
-        )
-        .then(
-          function(response) {
-            loading.close();
-            var status = response.data.Status;
-            if (status === 1) {
-              this.orderList = response.data.Result.result;
-              this.pageCount = response.data.Result.page;
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-              setTimeout(() => {
-                this.$router.push({
-                  path: "/login"
-                });
-              }, 1500);
-            }
-          }.bind(this)
-        )
-        // 请求error
-        .catch(
-          function(error) {
-            loading.close();
-            this.$notify.error({
-              title: "错误",
-              message: "错误：请检查网络"
-            });
-          }.bind(this)
-        );
-    },
-    //关键字搜索
-    getUsers() {
-      this.getInfo();
-    },
-    getAllUsers() {
-      this.filters = {
-        keyword: "",
-        StTime: "2018-01-01",
-        EndTime: "",
-        Type: -1
+        // 状态数组
+        typeList: [{
+            name: "全部",
+            value: -1
+          },
+          {
+            name: "已预约",
+            value: 1
+          },
+          {
+            name: "已完成",
+            value: 2
+          },
+          {
+            name: "已超时",
+            value: 3
+          }
+        ]
       };
-      this.getInfo();
     },
-    // 分页
-    handleCurrentChange(val) {
-      this.pageIndex = val;
-      this.getInfo();
-    },
-    Status(row, status) {
-      var status = row[status.property];
-      switch (status) {
-        case -1:
-          return (status = "待付款");
-          break;
-        case 1:
-          return (status = "已预约");
-          break;
-        case 2:
-          return (status = "已完成");
-          break;
-        default:
-          return (status = "已超时");
-          break;
-      }
-    },
-    /*
-          删除订单
-        */
-    handleDel(index, row) {
-      var obj = Object.assign({}, row);
-      this.$confirm("确认删除吗？", "提示", {}).then(() => {
-        this.editLoading = true;
+    methods: {
+      /*
+             1、获取列表 渲染列表
+             2、搜索关键字
+             3、分页
+          */
+      getInfo() {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        var EndTime = "";
+        switch (this.filters.EndTime) {
+          case "":
+            EndTime = "-1";
+            break;
+          case null:
+            EndTime = "-1";
+            break;
+          default:
+            EndTime = this.filters.EndTime;
+            break;
+        }
+        var StTime = "";
+        switch (this.filters.StTime) {
+          case "":
+            StTime = "-1";
+            break;
+          case null:
+            StTime = "-1";
+            break;
+          default:
+            StTime = this.filters.StTime;
+            break;
+        }
         this.$http
-          .get("api/BackOrder/DelAPPOrder", {
-            params: {
+          .post(
+            "api/BackOrder/BackAppointmentOrderList",
+            qs.stringify({
               Token: getCookie("token"),
-              Id: obj.ID
-            }
-          })
+              pageIndex: this.pageIndex,
+              pageSize: this.pageSize,
+              Keyword: this.filters.keyword == "" ? "-1" : this.filters.keyword,
+              Status: this.filters.Type,
+              StartTime: StTime,
+              EndTime: EndTime
+            })
+          )
           .then(
-            function(response) {
-              this.editLoading = false;
+            function (response) {
+              loading.close();
               var status = response.data.Status;
-              if (status == 1) {
-                this.getInfo();
+              if (status === 1) {
+                this.orderList = response.data.Result.result;
+                this.pageCount = response.data.Result.page;
               } else if (status === 40001) {
                 this.$message({
                   showClose: true,
@@ -257,6 +176,7 @@ export default {
                   });
                 }, 1500);
               } else {
+                loading.close();
                 this.$message({
                   showClose: true,
                   type: "warning",
@@ -267,43 +187,136 @@ export default {
           )
           // 请求error
           .catch(
-            function(error) {
+            function (error) {
+              loading.close();
               this.$notify.error({
                 title: "错误",
                 message: "错误：请检查网络"
               });
             }.bind(this)
           );
-      });
+      },
+      //关键字搜索
+      getUsers() {
+        this.getInfo();
+      },
+      getAllUsers() {
+        this.filters = {
+          keyword: "",
+          StTime: "2018-01-01",
+          EndTime: "",
+          Type: -1
+        };
+        this.getInfo();
+      },
+      // 分页
+      handleCurrentChange(val) {
+        this.pageIndex = val;
+        this.getInfo();
+      },
+      Status(row, status) {
+        var status = row[status.property];
+        switch (status) {
+          case -1:
+            return (status = "待付款");
+            break;
+          case 1:
+            return (status = "已预约");
+            break;
+          case 2:
+            return (status = "已完成");
+            break;
+          default:
+            return (status = "已超时");
+            break;
+        }
+      },
+      /*
+            删除订单
+          */
+      handleDel(index, row) {
+        var obj = Object.assign({}, row);
+        this.$confirm("确认删除吗？", "提示", {}).then(() => {
+          this.editLoading = true;
+          this.$http
+            .get("api/BackOrder/DelAPPOrder", {
+              params: {
+                Token: getCookie("token"),
+                Id: obj.ID
+              }
+            })
+            .then(
+              function (response) {
+                this.editLoading = false;
+                var status = response.data.Status;
+                if (status == 1) {
+                  this.getInfo();
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        });
+      }
+    },
+    mounted() {
+      this.getInfo();
     }
-  },
-  mounted() {
-    this.getInfo();
-  }
-};
+  };
+
 </script>
 <style scoped>
-/* 面包屑 */
+  /* 面包屑 */
 
-.crumb {
-  height: 36px;
-  line-height: 36px;
-}
+  .crumb {
+    height: 36px;
+    line-height: 36px;
+  }
 
-.block {
-  text-align: center;
-  padding: 20px 0;
-}
-/* 弹出框 */
-.el-dialog__body .el-form-item {
-  width: 60%;
-  margin-left: calc(50% - 30%);
-}
-/* 选择公司 */
-.el-select--medium {
-  width: 100%;
-}
-.el-input--medium {
-  width: 100%;
-}
+  .block {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  /* 弹出框 */
+
+  .el-dialog__body .el-form-item {
+    width: 60%;
+    margin-left: calc(50% - 30%);
+  }
+
+  /* 选择公司 */
+
+  .el-select--medium {
+    width: 100%;
+  }
+
+  .el-input--medium {
+    width: 100%;
+  }
+
 </style>

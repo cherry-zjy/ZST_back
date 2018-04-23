@@ -26,7 +26,7 @@
     </el-col>
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
-    
+
       <el-table-column label="作品名" prop="Name">
       </el-table-column>
       <el-table-column label="作品大图" prop="Image">
@@ -40,8 +40,8 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini"  type="success" @click="successbtn(1,scope.$index, scope.row.ID)">通过</el-button>
-          <el-button size="mini"  type="danger" @click="refusebtn(2,scope.$index, scope.row.ID)">拒绝</el-button>
+          <el-button size="mini" type="success" @click="successbtn(1,scope.$index, scope.row.ID)">通过</el-button>
+          <el-button size="mini" type="danger" @click="refusebtn(2,scope.$index, scope.row.ID)">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -56,125 +56,128 @@
 
     <!-- 分页 -->
     <div class="block">
-      <el-pagination @current-change="handleCurrentChange"
-       layout="prev, pager, next,jumper" :page-count="pageCount">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount">
       </el-pagination>
     </div>
   </div>
 </template>
 <script>
-import md5 from "js-md5";
+  import md5 from "js-md5";
 
-export default {
-  data() {
-    return {
-      List: [], //列表
-      pageCount: 1,
-      mainurl: "",
-      filters:{
-        pageIndex: 1,
-        pageSize: 12,
-        Token: getCookie("token"),
-      },
-      dialogFormVisible:false,
-      dialogtext:"",
-      state:""
-    };
-  },
-  methods: {
-    /*
-         1、获取列表 渲染列表
-         2、搜索关键字
-         3、分页
-      */
-    getInfo() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Loading",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
-      if(this.filters.sear == ""){
-        delete this.filters.sear
-      }
-      else{
-        this.filters.sear = this.filters.sear
-      }
-      if(this.filters.startTime == ""){
-        delete this.filters.startTime
-      }
-      else{
-        this.filters.startTime = this.filters.startTime
-      }
-      if(this.filters.endTime == ""){
-        delete this.filters.endTime
-      }
-      else{
-        this.filters.endTime = this.filters.endTime
-      }
-      this.$http
-        .get("api/Back_ExamineManager/UserExamineIndex", {
-          params: this.filters
-        })
-        .then(
-          function(response) {
-            loading.close();
-            var status = response.data.Status;
-            if (status === 1) {
-              this.List = response.data.Result.userList;
-              this.pageCount = response.data.Result.page;
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-              setTimeout(() => {
-                this.$router.push({
-                  path: "/login"
+  export default {
+    data() {
+      return {
+        List: [], //列表
+        pageCount: 1,
+        mainurl: "",
+        filters: {
+          pageIndex: 1,
+          pageSize: 12,
+          Token: getCookie("token"),
+        },
+        dialogFormVisible: false,
+        dialogtext: "",
+        state: ""
+      };
+    },
+    methods: {
+      /*
+           1、获取列表 渲染列表
+           2、搜索关键字
+           3、分页
+        */
+      getInfo() {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        if (this.filters.sear == "") {
+          delete this.filters.sear
+        } else {
+          this.filters.sear = this.filters.sear
+        }
+        if (this.filters.startTime == "") {
+          delete this.filters.startTime
+        } else {
+          this.filters.startTime = this.filters.startTime
+        }
+        if (this.filters.endTime == "") {
+          delete this.filters.endTime
+        } else {
+          this.filters.endTime = this.filters.endTime
+        }
+        this.$http
+          .get("api/Back_ExamineManager/UserExamineIndex", {
+            params: this.filters
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.List = response.data.Result.userList;
+                this.pageCount = response.data.Result.page;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
                 });
-              }, 1500);
-            }
-          }.bind(this)
-        )
-        // 请求error
-        .catch(
-          function(error) {
-            loading.close();
-            this.$notify.error({
-              title: "错误",
-              message: "错误：请检查网络"
-            });
-          }.bind(this)
-        );
-    },
-    //
-    getUsers() {
-      this.getInfo();
-    },
-    // 分页
-    handleCurrentChange(val) {
-      this.pageIndex = val;
-      this.getInfo();
-    },
-    //审核
-    successbtn(state,index, row) {
-      this.state = state;
-      console.log(Object.assign({}, row));
-      var obj = Object.assign({}, row);
-      var urlId = obj.ID;
-      this.dialogFormVisible = true;
-      this.dialogtext = '确认通过审核？';
-    },
-    refusebtn(state,index, row) {
-      this.state = state;
-      console.log(Object.assign({}, row));
-      var obj = Object.assign({}, row);
-      var urlId = obj.ID;
-      this.dialogFormVisible = true;
-      this.dialogtext = '确认拒绝审核？';
-    },
-    examine() {
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
+      //
+      getUsers() {
+        this.getInfo();
+      },
+      // 分页
+      handleCurrentChange(val) {
+        this.filters.pageIndex = val;
+        this.getInfo();
+      },
+      //审核
+      successbtn(state, index, row) {
+        this.state = state;
+        console.log(Object.assign({}, row));
+        var obj = Object.assign({}, row);
+        var urlId = obj.ID;
+        this.dialogFormVisible = true;
+        this.dialogtext = '确认通过审核？';
+      },
+      refusebtn(state, index, row) {
+        this.state = state;
+        console.log(Object.assign({}, row));
+        var obj = Object.assign({}, row);
+        var urlId = obj.ID;
+        this.dialogFormVisible = true;
+        this.dialogtext = '确认拒绝审核？';
+      },
+      examine() {
         const loading = this.$loading({
           lock: true,
           text: "Loading",
@@ -211,6 +214,13 @@ export default {
                     path: "/login"
                   });
                 }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
               }
             }.bind(this)
           )
@@ -225,23 +235,25 @@ export default {
             }.bind(this)
           );
       }
-  },
-  mounted() {
-    this.mainurl = mainurl;
-    this.getInfo();
-  }
-};
+    },
+    mounted() {
+      this.mainurl = mainurl;
+      this.getInfo();
+    }
+  };
+
 </script>
 <style scoped>
-/* 面包屑 */
+  /* 面包屑 */
 
-.crumb {
-  height: 36px;
-  line-height: 36px;
-}
+  .crumb {
+    height: 36px;
+    line-height: 36px;
+  }
 
-.block {
-  text-align: center;
-  padding: 20px 0;
-}
+  .block {
+    text-align: center;
+    padding: 20px 0;
+  }
+
 </style>

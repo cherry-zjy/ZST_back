@@ -131,7 +131,7 @@
         add: false,
         imageUrl: "",
         rules: {
-            Image: [{
+          Image: [{
             required: true,
             message: "请上传图片",
             trigger: "blur"
@@ -141,7 +141,7 @@
             message: '请输入投放人姓名',
             trigger: 'blur'
           }, ],
-         Url: [{
+          Url: [{
             required: true,
             message: '请输入跳转地址',
             trigger: 'blur'
@@ -410,6 +410,13 @@
                     path: "/login"
                   });
                 }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
               }
             }.bind(this)
           )
@@ -430,7 +437,7 @@
       },
       // 分页
       handleCurrentChange(val) {
-        this.pageIndex = val;
+        this.filters.pageIndex = val;
         this.getInfo();
       },
       //详情

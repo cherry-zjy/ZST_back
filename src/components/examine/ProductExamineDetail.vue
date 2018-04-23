@@ -150,6 +150,13 @@
                     path: "/login"
                   });
                 }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
               }
             }.bind(this)
           )
@@ -200,6 +207,13 @@
                   path: "/login"
                 });
               }, 1500);
+            } else {
+              loading.close();
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
+              });
             }
           }.bind(this)
         )

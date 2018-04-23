@@ -45,84 +45,93 @@
   </div>
 </template>
 <script>
-import qs from "qs"
-export default {
-  data() {
-    return {
-      editForm: [],
-      mainurl :''
-  }
-  },
-  methods: {
-    back(){
-      this.$router.push("/GetUserIndex");
-    }
-  },
-  filters: {  
-    sexfilter: function (value) {  
-      if(value == '-1'){
-        value = "未定义"
-      }else if(value == '0'){
-        value = "女"
-      }else{
-        value = "男"
+  import qs from "qs"
+  export default {
+    data() {
+      return {
+        editForm: [],
+        mainurl: ''
       }
-        return value
-    }  
-},  
-  mounted() {
-    this.mainurl = mainurl;
-    const loading = this.$loading({
-      lock: true,
-      text: "Loading",
-      spinner: "el-icon-loading",
-      background: "rgba(0, 0, 0, 0.7)"
-    });
-    this.action = mainurl + "api/BackOperate/ParkExport";
-    // 获取详情
-    this.$http
-      .get("api/Back_UserList/GetUserDetail", {
-        params: {
-          Token: getCookie("token"),
-          userID: window.location.href.split("id=")[1]
+    },
+    methods: {
+      back() {
+        this.$router.push("/GetUserIndex");
+      }
+    },
+    filters: {
+      sexfilter: function (value) {
+        if (value == '-1') {
+          value = "未定义"
+        } else if (value == '0') {
+          value = "女"
+        } else {
+          value = "男"
         }
-      })
-      .then(
-        function(response) {
-          loading.close();
-          var status = response.data.Status;
-          if (status === 1) {
-            this.editForm = response.data.Result;
-          } else if (status === 40001) {
-            this.$message({
-              showClose: true,
-              type: "warning",
-              message: response.data.Result
-            });
-            setTimeout(() => {
-              this.$router.push({
-                path: "/login"
-              });
-            }, 1500);
+        return value
+      }
+    },
+    mounted() {
+      this.mainurl = mainurl;
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+      this.action = mainurl + "api/BackOperate/ParkExport";
+      // 获取详情
+      this.$http
+        .get("api/Back_UserList/GetUserDetail", {
+          params: {
+            Token: getCookie("token"),
+            userID: window.location.href.split("id=")[1]
           }
-        }.bind(this)
-      )
-      // 请求error
-      .catch(
-        function(error) {
-          loading.close();
-          this.$notify.error({
-            title: "错误",
-            message: "错误：请检查网络"
-          });
-        }.bind(this)
-      );
-  },
-};
+        })
+        .then(
+          function (response) {
+            loading.close();
+            var status = response.data.Status;
+            if (status === 1) {
+              this.editForm = response.data.Result;
+            } else if (status === 40001) {
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
+              });
+              setTimeout(() => {
+                this.$router.push({
+                  path: "/login"
+                });
+              }, 1500);
+            } else {
+              loading.close();
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: response.data.Result
+              });
+            }
+          }.bind(this)
+        )
+        // 请求error
+        .catch(
+          function (error) {
+            loading.close();
+            this.$notify.error({
+              title: "错误",
+              message: "错误：请检查网络"
+            });
+          }.bind(this)
+        );
+    },
+  };
+
 </script>
 <style scoped>
-.is-controls-right {
-  float: right;
-  margin-right: 50%;
-}
+  .is-controls-right {
+    float: right;
+    margin-right: 50%;
+  }
+
 </style>

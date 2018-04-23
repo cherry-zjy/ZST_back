@@ -59,129 +59,136 @@
 </template>
 
 <script>
-export default {
-  data: function() {
-    return {
-      defaultActiveIndex: ["0"],
-      menuList: [],
-      userName: "",
-      collapsed: false,
-      iscloseNav: false,
-      welcome: true
-    };
-  },
-  mounted() {
-    var w = window.innerWidth;
-    if (w < 500) {
-      this.welcome = false;
-    }
-    this.userName = getCookie("username");
-    var url = window.location.href;
-    if (url.split("#")[1] == "/") {
-    } else {
-      this.collapsed = true;
-    }
-    var tt = this;
-    if (getCookie("token")) {
-      this.$http
-        .get("api/Menu/GetMenus", {
-          params: {
-            Token: getCookie("token")
-          }
-        })
-        .then(
-          function(response) {
-            var status = response.data.Status;
-            if (status === 1) {
-              this.menuList = response.data.Result;
-              // localStorage.setItem(
-              //   "menulist",
-              //   JSON.stringify(response.data.Result)
-              // );
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
+  export default {
+    data: function () {
+      return {
+        defaultActiveIndex: ["0"],
+        menuList: [],
+        userName: "",
+        collapsed: false,
+        iscloseNav: false,
+        welcome: true
+      };
+    },
+    mounted() {
+      var w = window.innerWidth;
+      if (w < 500) {
+        this.welcome = false;
+      }
+      this.userName = getCookie("username");
+      var url = window.location.href;
+      if (url.split("#")[1] == "/") {} else {
+        this.collapsed = true;
+      }
+      var tt = this;
+      if (getCookie("token")) {
+        this.$http
+          .get("api/Menu/GetMenus", {
+            params: {
+              Token: getCookie("token")
+            }
+          })
+          .then(
+            function (response) {
+              var status = response.data.Status;
+              if (status === 1) {
+                this.menuList = response.data.Result;
+                // localStorage.setItem(
+                //   "menulist",
+                //   JSON.stringify(response.data.Result)
+                // );
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          .catch(
+            function (error) {
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
               });
               setTimeout(() => {
                 this.$router.push({
-                  path: "/login"
+                  path: "/error"
                 });
               }, 1500);
-            }
-          }.bind(this)
-        )
-        .catch(
-          function(error) {
-            this.$notify.error({
-              title: "错误",
-              message: "错误：请检查网络"
-            });
-            setTimeout(() => {
-              this.$router.push({
-                path: "/error"
-              });
-            }, 1500);
-          }.bind(this)
-        );
-    } else {
-      this.$message({
-        showClose: true,
-        type: "warning",
-        message: "请先登陆"
-      });
-      setTimeout(() => {
-        this.$router.push({
-          path: "/login"
+            }.bind(this)
+          );
+      } else {
+        this.$message({
+          showClose: true,
+          type: "warning",
+          message: "请先登陆"
         });
-      }, 1500);
-    }
-  },
-  methods: {
-    // 	index: 选中菜单项的 index, indexPath: 选中菜单项的 index path
-    handleSelect(index) {
-      this.collapsed = true;
-      // this.defaultActiveIndex = [index];
-      // console.log(this.$route.path);
+        setTimeout(() => {
+          this.$router.push({
+            path: "/login"
+          });
+        }, 1500);
+      }
     },
-    // 个人中心  修改密码
-    jumpTo(url) {
-      // this.defaultActiveIndex = url;
-      console.log(url);
-      this.$router.push(url);
-    },
-    // 退出
-    logout() {
-      let that = this;
-      this.$confirm("确认退出吗?", "提示", {
-        confirmButtonClass: "el-button--warning"
-      })
-        .then(() => {
-          //确认
-          that.loading = true;
-          delCookie("token");
-          this.$router.push("/login");
-        })
-        .catch(() => {});
-    },
-    closeNav() {
-      this.iscloseNav = !this.iscloseNav;
-      if (this.iscloseNav) {
-        $(".el-aside").css({
-          width: "60px"
-        });
+    methods: {
+      // 	index: 选中菜单项的 index, indexPath: 选中菜单项的 index path
+      handleSelect(index) {
+        this.collapsed = true;
+        // this.defaultActiveIndex = [index];
+        // console.log(this.$route.path);
+      },
+      // 个人中心  修改密码
+      jumpTo(url) {
+        // this.defaultActiveIndex = url;
+        console.log(url);
+        this.$router.push(url);
+      },
+      // 退出
+      logout() {
+        let that = this;
+        this.$confirm("确认退出吗?", "提示", {
+            confirmButtonClass: "el-button--warning"
+          })
+          .then(() => {
+            //确认
+            that.loading = true;
+            delCookie("token");
+            this.$router.push("/login");
+          })
+          .catch(() => {});
+      },
+      closeNav() {
+        this.iscloseNav = !this.iscloseNav;
+        if (this.iscloseNav) {
+          $(".el-aside").css({
+            width: "60px"
+          });
+        }
       }
     }
-  }
-};
+  };
+
 </script>
 
 <style scoped>
-/* @import "../../static/css/index.css"; */
+  /* @import "../../static/css/index.css"; */
 
-.el-header {
-  color: #333;
-  line-height: 60px;
-}
+  .el-header {
+    color: #333;
+    line-height: 60px;
+  }
+
 </style>

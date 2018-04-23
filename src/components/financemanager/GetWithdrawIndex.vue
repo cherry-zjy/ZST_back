@@ -145,7 +145,14 @@ export default {
                   path: "/login"
                 });
               }, 1500);
-            }
+            } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
           }.bind(this)
         )
         // 请求error
@@ -234,7 +241,7 @@ export default {
     },
     // 分页
     handleCurrentChange(val) {
-      this.pageIndex = val;
+      this.filters.pageIndex = val;
       this.getInfo();
     },
   },
