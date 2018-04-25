@@ -3,9 +3,9 @@
     <!-- header -->
     <div>
       <el-header style="background-color: #16181d;">
-        <div style="float: left;height: 60px;">
+        <!-- <div style="float: left;height: 60px;">
           <img src="../assets/logo.png" style="height:50px;width:50px;margin:5px 10px;" alt="">
-        </div>
+        </div> -->
         <div v-if="welcome" style="float: left;height: 60px;color:#909399">欢迎来到装师通后台管理系统</div>
         <div style="float: right;color:#fff; font-size: 12px;margin-right:50px;">
           <el-dropdown>
@@ -154,6 +154,7 @@
       jumpTo(url) {
         // this.defaultActiveIndex = url;
         console.log(url);
+        this.collapsed = true;
         this.$router.push(url);
       },
       // 退出

@@ -162,7 +162,11 @@
         );
       },
       back() {
-        this.$router.push("/GetProductListIndex");
+        if(this.isjump){
+          this.$router.push('../../GetProductListIndex?name='+this.editForm.PushMan+'&id='+this.userid+'');
+        }else{
+          this.$router.push("/GetProductListIndex");
+        }
       },
     },
     
