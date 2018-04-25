@@ -3,7 +3,10 @@
     <el-header>
       <el-breadcrumb separator="|" class="crumb">
         <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-        <el-breadcrumb-item :to="{ path: '/GetProductListIndex' }">作品列表</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: 'GetUserIndex' }" v-if='isjump'>用户列表</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '../../user/GetUserIndexDetail/id='+userid+''}" v-if='isjump'>用户详情</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '../../GetProductListIndex' }" v-if='!isjump'>作品列表</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '../../GetProductListIndex?name='+editForm.PushMan+'&id='+userid+'' }" v-if='isjump'>作品列表</el-breadcrumb-item>
         <el-breadcrumb-item>作品详情</el-breadcrumb-item>
       </el-breadcrumb>
     </el-header>
@@ -83,17 +86,26 @@
         reason: "",
         dialogFormVisible: false,
         dialogVisible2: false,
-        ServiceProvider: []
+        ServiceProvider: [],
+        isjump:false
       };
     },
-    methods: {
-      back() {
-        this.$router.push("/GetProductListIndex");
-      },
+    computed:{
+      userid:function(){
+        return window.location.href.split("userid=")[1]
+      }
     },
     mounted() {
       this.mainurl = mainurl;
-      const loading = this.$loading({
+      if (window.location.href.split("userid=")[1] !== undefined && window.location.href.split("userid=")[1] !== ""&&window.location.href.split("userid=")[1] !== 'undefined') {
+        this.userid;
+        this.isjump = true;
+      }
+      this.getInfo()
+    },
+    methods: {
+      getInfo(){
+        const loading = this.$loading({
         lock: true,
         text: "Loading",
         spinner: "el-icon-loading",
@@ -104,7 +116,7 @@
         .get("api/Back_ProductList/GetProductDetail", {
           params: {
             Token: getCookie("token"),
-            prodID: window.location.href.split("id=")[1]
+            prodID: window.location.href.split("id=")[1].split("&")[0]
           }
         })
         .then(
@@ -148,7 +160,12 @@
             // });
           }.bind(this)
         );
-    }
+      },
+      back() {
+        this.$router.push("/GetProductListIndex");
+      },
+    },
+    
   };
 
 </script>

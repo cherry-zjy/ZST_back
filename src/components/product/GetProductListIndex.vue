@@ -2,7 +2,9 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>作品管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: 'GetUserIndex' }" v-if='isjump'>用户列表</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: 'user/GetUserIndexDetail/id='+reverseduserid+''}" v-if='isjump'>用户详情</el-breadcrumb-item>
+      <el-breadcrumb-item>用户作品管理</el-breadcrumb-item>
     </el-breadcrumb>
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">
@@ -63,8 +65,27 @@
           pageIndex: 1,
           pageSize: 4,
           Token: getCookie("token"),
-        }
+        },
+        isjump:false,
+        userid :""
       };
+    },
+    computed: {
+      name: function () {
+        return this.filters.keyword = decodeURIComponent(window.location.href.split("name=")[1].split("&")[0])
+      },
+      reverseduserid: function () {
+        return this.userid = window.location.href.split("id=")[1]
+      }
+    },
+    mounted() {
+      this.mainurl = mainurl;
+      if (window.location.href.split("name=")[1] !== undefined && window.location.href.split("name=")[1] !== "") {
+        this.name;
+        this.isjump = true;
+      }
+      console.log(this.$router)
+      this.getInfo();
     },
     methods: {
       /*
@@ -209,13 +230,9 @@
         console.log(Object.assign({}, row));
         var obj = Object.assign({}, row);
         var urlId = obj.ID;
-        this.$router.push("/product/productDetail/id=" + urlId);
+        this.$router.push("/product/productDetail/id="+urlId+"&userid="+this.reverseduserid+"");
       },
     },
-    mounted() {
-      this.mainurl = mainurl;
-      this.getInfo();
-    }
   };
 
 </script>
