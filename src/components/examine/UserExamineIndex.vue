@@ -177,6 +177,7 @@
                   type: "success",
                   message: response.data.Result
                 });
+                this.getInfo();
               } else if (status === 40001) {
                 this.$message({
                   showClose: true,

@@ -88,7 +88,7 @@
           label: '认证未通过'
         }, {
           value: '2',
-          label: '认证通过否'
+          label: '认证通过'
         }],
       };
     },
@@ -108,7 +108,7 @@
         if (this.filters.sear == "") {
           delete this.filters.sear
         } else {
-          this.filters.sear = this.filters.keyword
+          this.filters.sear = this.filters.sear
         }
         this.$http
           .get("api/Back_UserList/GetUserIndex", {
