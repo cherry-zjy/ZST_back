@@ -56,7 +56,7 @@
         // 搜索关键字
         filters: {
           pageIndex: 1,
-          pageSize: 12,
+          pageSize: 8,
           Token: getCookie("token"),
           sear: '',
           startTime: '',

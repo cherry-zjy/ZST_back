@@ -33,7 +33,7 @@
       </el-table-column>
       <el-table-column label="状态" prop="State" :formatter="statefilterHandler">
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="del(scope.row.ID)">删除</el-button>
