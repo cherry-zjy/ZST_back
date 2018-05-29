@@ -10,6 +10,10 @@
         <el-form-item>
           <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
+        <el-select v-model="filters.type" placeholder="是否审核通过">
+          <el-option v-for="item in type" :key="item.value" :label="item.label" :value="item.value">
+          </el-option>
+        </el-select>
         <el-form-item>
           <el-col :span="11">
             <el-date-picker type="date" placeholder="开始日期" v-model="filters.startTime" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
@@ -63,7 +67,18 @@
           pageIndex: 1,
           pageSize: 12,
           Token: getCookie("token"),
+          type:'0'
         },
+        type: [{
+          value: '0',
+          label: '是否审核通过（全部）'
+        }, {
+          value: '2',
+          label: '审核未通过'
+        }, {
+          value: '1',
+          label: '审核通过'
+        }],
       };
     },
     methods: {

@@ -10,6 +10,10 @@
         <el-form-item>
           <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
+        <el-select v-model="filters.type" placeholder="是否审核通过">
+          <el-option v-for="item in type" :key="item.value" :label="item.label" :value="item.value">
+          </el-option>
+        </el-select>
         <el-form-item>
           <el-col :span="11">
             <el-date-picker type="date" placeholder="开始日期" v-model="filters.startTime" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
@@ -22,6 +26,11 @@
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
+        <el-tag>审核作品共：{{data.Sum}}</el-tag>
+        <el-tag>通过审核数：{{data.Through}}</el-tag>
+        <el-tag>未通过审核数：{{data.NotThrough}}</el-tag>
+        <el-tag>未审核作品共：{{data.Unaudited}}</el-tag>
+        
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -58,6 +67,7 @@
   export default {
     data() {
       return {
+        data:[],
         List: [], //列表
         pageCount: 1,
         mainurl: "",
@@ -65,7 +75,18 @@
           pageIndex: 1,
           pageSize: 12,
           Token: getCookie("token"),
-        }
+          type:'0'
+        },
+        type: [{
+          value: '0',
+          label: '是否审核通过（全部）'
+        }, {
+          value: '2',
+          label: '审核未通过'
+        }, {
+          value: '1',
+          label: '审核通过'
+        }],
       };
     },
     methods: {
@@ -114,7 +135,7 @@
                   message: response.data.Result
                 });
                 setTimeout(() => {
-                  tt.$router.push({
+                  this.$router.push({
                     path: "/login"
                   });
                 }, 1500);
@@ -132,6 +153,49 @@
           .catch(
             function (error) {
               loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
+      getData(){
+        this.$http
+          .get("api/Back_ExamineManager/DataStatistics", {
+            params: {
+              type:1,
+              Token:getCookie("token")
+            }
+          })
+          .then(
+            function (response) {
+              var status = response.data.Status;
+              if (status === 1) {
+                this.data = response.data.Result;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
               this.$notify.error({
                 title: "错误",
                 message: "错误：请检查网络"
@@ -159,6 +223,7 @@
     mounted() {
       this.mainurl = mainurl;
       this.getInfo();
+      this.getData();
     }
   };
 

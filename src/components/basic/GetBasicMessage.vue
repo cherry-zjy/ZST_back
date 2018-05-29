@@ -5,7 +5,9 @@
       <el-breadcrumb-item>基本信息</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="msgbox">
-      <p>注册用户数量：{{List}}</p>
+      <p>注册用户数量：{{List.userList}}</p>
+      <br/>
+      <p>会员用户数量：{{List.vipLis}}</p>
     </div>
   </div>
 

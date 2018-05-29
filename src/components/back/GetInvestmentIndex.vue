@@ -7,6 +7,11 @@
 
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;" v-if="!change">
+      <el-select v-model="filters.type" placeholder="类型">
+        <el-option v-for="item in type" :key="item.value" :label="item.label" :value="item.value">
+        </el-option>
+      </el-select>
+      <el-button type="primary" @click="getInfo()">查询</el-button>
       <el-form :inline="true" style="float:right">
         <el-form-item>
           <el-button type="primary" @click="handleAdd()">新增</el-button>
@@ -16,7 +21,7 @@
 
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true' v-if="!change">
-      <el-table-column label="广告标题" prop="Name">
+      <el-table-column label="广告标题" prop="Title">
       </el-table-column>
       <el-table-column label="广告图" prop="Image">
         <template slot-scope="scope">
@@ -33,6 +38,9 @@
       </el-table-column>
       <el-table-column label="状态" prop="State" :formatter="statefilterHandler">
       </el-table-column>
+      <el-table-column label="广告点击次数" prop="ClicksNumber">
+      </el-table-column>
+      
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -98,6 +106,7 @@
           pageIndex: 1,
           pageSize: 12,
           Token: getCookie("token"),
+          type: '4'
         },
         change: false,
         typeList: [{
@@ -162,7 +171,33 @@
             message: '请选择时间',
             trigger: 'change'
           }],
-        }
+          type: [{
+            value: '0',
+            label: '是否审核通过（全部）'
+          }, {
+            value: '1',
+            label: '审核未通过'
+          }, {
+            value: '2',
+            label: '审核通过'
+          }],
+        },
+        type: [{
+          value: '4',
+          label: '类型（全部）'
+        }, {
+          value: '0',
+          label: '欢迎广告页'
+        }, {
+          value: '1',
+          label: '首页间接广告位'
+        }, {
+          value: '2',
+          label: '配对页广告位'
+        }, {
+          value: '3',
+          label: '作品页广告位'
+        }],
       };
     },
     mounted() {
@@ -301,6 +336,7 @@
             //判断是否填写完整  --true
             this.$confirm("确认提交吗？", "提示", {}).then(() => {
               var para = Object.assign({}, this.getList);
+              console.log(para)
               const loading = this.$loading({
                 lock: true,
                 text: "Loading",
@@ -309,13 +345,13 @@
               });
               // 发保存请求
               this.$http
-                .post("api/Back_PlatformManager/AddInvestment",
+                .post("api/Back/EditEnterprise",
                   qs.stringify({
                     Token: getCookie("token"),
                     Type: para.Type,
-                    Image: para.Image,
-                    Name: para.Name,
-                    Url: para.Url,
+                    WorkStore: para.WorkStore,
+                    Logo: para.Logo,
+                    Workstyle: para.Workstyle,
                     Title: para.Title,
                     ExpiryTime: para.ExpiryTime,
                   })
@@ -371,7 +407,7 @@
         });
       },
       //删除
-      del(id){
+      del(id) {
         this.$confirm('确认删除该广告?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -514,7 +550,7 @@
         console.log(Object.assign({}, row));
         var obj = Object.assign({}, row);
         this.getList = obj;
-        this.getList.ExpiryTime = new Date(this.getList.ExpiryTime.substring(0,10))      
+        this.getList.ExpiryTime = new Date(this.getList.ExpiryTime.substring(0, 10))
         this.imageUrl = this.mainurl + obj.Image;
         this.change = true;
         this.add = false;
