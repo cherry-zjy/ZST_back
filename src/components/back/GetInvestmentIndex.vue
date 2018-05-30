@@ -23,9 +23,9 @@
     <el-table :data="List" style="width: 100%" :border='true' v-if="!change">
       <el-table-column label="广告标题" prop="Title">
       </el-table-column>
-      <el-table-column label="广告图" prop="Image">
+      <el-table-column label="广告图" prop="Image" width="300">
         <template slot-scope="scope">
-          <img :src="mainurl+scope.row.Image" width="200" />
+          <img :src="mainurl+scope.row.Image" width="250"/>
         </template>
       </el-table-column>
       <el-table-column label="广告类型" prop="Type" :formatter="typeText">
@@ -41,7 +41,7 @@
       <el-table-column label="广告点击次数" prop="ClicksNumber">
       </el-table-column>
       
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="del(scope.row.ID)">删除</el-button>
@@ -55,9 +55,9 @@
       </el-pagination>
     </div>
 
-    <el-main style="width:70%;" v-if="change">
+    <el-main v-if="change">
 
-      <el-form :model="getList" ref="getList" label-width="150px" class="demo-ruleForm" :rules="rules">
+      <el-form :model="getList" ref="getList" label-width="150px" class="demo-ruleForm" :rules="rules" style="width:70%">
         <el-form-item>
           <el-button type="primary" @click="change = false" style="float:right">返回</el-button>
         </el-form-item>
@@ -85,6 +85,9 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
+        <el-form-item label="广告内容" prop="defaultMsg">
+          <UEditor :defaultMsg='defaultMsg' :config='config' ref="ueditor"></UEditor>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('getList')" v-if="!add">修改</el-button>
           <el-button type="primary" @click="addForm('getList')" v-if="add">添加</el-button>
@@ -96,8 +99,16 @@
 </template>
 <script>
   import qs from "qs"
+  import UEditor from "../UEditor.vue";
   export default {
     data() {
+      var checkdefaultMsg = (rule, value, callback) => {
+        if (encodeURIComponent(this.$refs.ueditor.getUEContent()) == '') {
+          callback(new Error("请输入广告内容"));
+        } else {
+          callback();
+        }
+      };
       return {
         List: [], //列表
         pageCount: 1,
@@ -171,6 +182,10 @@
             message: '请选择时间',
             trigger: 'change'
           }],
+          defaultMsg: [{
+            required: true,
+            validator: checkdefaultMsg
+          }],
           type: [{
             value: '0',
             label: '是否审核通过（全部）'
@@ -198,8 +213,14 @@
           value: '3',
           label: '作品页广告位'
         }],
+        defaultMsg: "这里是初始化内容",
+        config: {
+          initialFrameWidth: null,
+          initialFrameHeight: 350
+        }
       };
     },
+    components: { UEditor },
     mounted() {
       this.mainurl = mainurl;
       this.action = this.mainurl + "/api/Photo/UpdateForImage?type=0",
@@ -265,6 +286,7 @@
                 spinner: "el-icon-loading",
                 background: "rgba(0, 0, 0, 0.7)"
               });
+              var content = this.$refs.ueditor.getUEContent();
               // 发保存请求
               this.$http
                 .post("api/Back_PlatformManager/EditBannerList",
@@ -277,6 +299,7 @@
                     Url: para.Url,
                     Title: para.Title,
                     ExpiryTime: para.ExpiryTime,
+                    Ueditor:encodeURIComponent(content)
                   })
                 )
                 .then(
@@ -343,17 +366,19 @@
                 spinner: "el-icon-loading",
                 background: "rgba(0, 0, 0, 0.7)"
               });
+              var content = this.$refs.ueditor.getUEContent();
               // 发保存请求
               this.$http
-                .post("api/Back/EditEnterprise",
+                .post("api/Back_PlatformManager/AddInvestment",
                   qs.stringify({
                     Token: getCookie("token"),
                     Type: para.Type,
-                    WorkStore: para.WorkStore,
-                    Logo: para.Logo,
-                    Workstyle: para.Workstyle,
+                    Image: para.Image,
+                    Name: para.Name,
+                    Url: para.Url,
                     Title: para.Title,
                     ExpiryTime: para.ExpiryTime,
+                    Ueditor:encodeURIComponent(content)
                   })
                 )
                 .then(
@@ -554,6 +579,12 @@
         this.imageUrl = this.mainurl + obj.Image;
         this.change = true;
         this.add = false;
+        this.defaultMsg = decodeURIComponent(this.getList.Ueditor);
+      },
+      addSubmit() {
+        var content = this.$refs.ueditor.getUEContent();
+        this.editForm.Details = encodeURIComponent(content);
+        console.log(this.editForm);
       },
       //新增
       handleAdd() {
@@ -569,6 +600,7 @@
           Url: '',
           Title: '',
         };
+        this.defaultMsg = '';
         this.imageUrl = '';
       }
     },
@@ -613,5 +645,7 @@
   .avatar {
     width: 100%;
   }
-
+  #editor{
+    height: 400px;
+  }
 </style>
