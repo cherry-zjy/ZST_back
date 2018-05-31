@@ -75,9 +75,9 @@ export default {
         pageIndex: 1,
         pageSize: 12,
         Token: getCookie("token"),
-        sear: '',
-        startTime: '',
-        endTime: '',
+        // sear: '',
+        // startTime: '',
+        // endTime: '',
         state:"0"
       },
       state: [{
@@ -111,18 +111,18 @@ export default {
       else{
         this.filters.sear = this.filters.sear
       }
-      if(this.filters.startTime == ""){
-        delete this.filters.startTime
-      }
-      else{
-        this.filters.startTime = this.filters.startTime
-      }
-      if(this.filters.endTime == ""){
-        delete this.filters.endTime
-      }
-      else{
-        this.filters.endTime = this.filters.endTime
-      }
+      // if(this.filters.startTime == ""){
+      //   delete this.filters.startTime
+      // }
+      // else{
+      //   this.filters.startTime = this.filters.startTime
+      // }
+      // if(this.filters.endTime == ""){
+      //   delete this.filters.endTime
+      // }
+      // else{
+      //   this.filters.endTime = this.filters.endTime
+      // }
       this.$http
         .get("api/Back_FinanceManager/GetWithdrawIndex", {
           params: this.filters

@@ -8,7 +8,7 @@
     <el-col class="toolbar" style="padding-top: 15px;">
       <el-form :inline="true" :model="filters">
         <el-form-item>
-          <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
+          <el-input v-model="filters.sear" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
         <el-select v-model="filters.type" placeholder="是否审核通过">
           <el-option v-for="item in type" :key="item.value" :label="item.label" :value="item.value">
@@ -107,16 +107,16 @@
         } else {
           this.filters.sear = this.filters.sear
         }
-        if (this.filters.startTime == "") {
-          delete this.filters.startTime
-        } else {
-          this.filters.startTime = this.filters.startTime
-        }
-        if (this.filters.endTime == "") {
-          delete this.filters.endTime
-        } else {
-          this.filters.endTime = this.filters.endTime
-        }
+        // if (this.filters.startTime == "") {
+        //   delete this.filters.startTime
+        // } else {
+        //   this.filters.startTime = this.filters.startTime
+        // }
+        // if (this.filters.endTime == "") {
+        //   delete this.filters.endTime
+        // } else {
+        //   this.filters.endTime = this.filters.endTime
+        // }
         this.$http
           .get("api/Back_ExamineManager/ProductExamineIndex", {
             params: this.filters

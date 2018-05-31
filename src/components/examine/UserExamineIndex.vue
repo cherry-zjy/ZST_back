@@ -99,16 +99,16 @@
         } else {
           this.filters.sear = this.filters.sear
         }
-        if (this.filters.startTime == "") {
-          delete this.filters.startTime
-        } else {
-          this.filters.startTime = this.filters.startTime
-        }
-        if (this.filters.endTime == "") {
-          delete this.filters.endTime
-        } else {
-          this.filters.endTime = this.filters.endTime
-        }
+        // if (this.filters.startTime == "") {
+        //   delete this.filters.startTime
+        // } else {
+        //   this.filters.startTime = this.filters.startTime
+        // }
+        // if (this.filters.endTime == "") {
+        //   delete this.filters.endTime
+        // } else {
+        //   this.filters.endTime = this.filters.endTime
+        // }
         this.$http
           .get("api/Back_ExamineManager/UserExamineIndex", {
             params: this.filters
