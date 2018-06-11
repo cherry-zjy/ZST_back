@@ -18,6 +18,7 @@ var GetBasicMessage = resolve => require(['../components/basic/GetBasicMessage.v
 //作品管理
 var GetProductListIndex = resolve => require(['../components/product/GetProductListIndex.vue'], resolve)  
 var productDetail = resolve => require(['../components/product/productDetail.vue'], resolve)  
+var productcomment = resolve => require(['../components/product/productcomment.vue'], resolve)  
 //财务管理
 var TimesRechargeOrderIndex = resolve => require(['../components/financemanager/TimesRechargeOrderIndex.vue'], resolve)  
 var VipsRechargeOrderIndex = resolve => require(['../components/financemanager/VipsRechargeOrderIndex.vue'], resolve)  
@@ -63,6 +64,7 @@ export default new Router({
         // 作品管理
         { path: '/GetProductListIndex', component: GetProductListIndex, name: '作品列表' },
         { path: '/product/productDetail/:id', component: productDetail, name: '作品详情' },
+        { path: '/product/productcomment/:id', component: productcomment, name: '作品评论' },
         //财务管理
         { path: '/TimesRechargeOrderIndex', component: TimesRechargeOrderIndex, name: '次数充值列表' },        
         { path: '/VipsRechargeOrderIndex', component: VipsRechargeOrderIndex, name: '会员充值列表' },        

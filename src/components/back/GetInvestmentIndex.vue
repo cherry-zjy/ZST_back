@@ -30,8 +30,6 @@
       </el-table-column>
       <el-table-column label="广告类型" prop="Type" :formatter="typeText">
       </el-table-column>
-      <el-table-column label="链接地址" prop="Url">
-      </el-table-column>
       <el-table-column label="投放人姓名" prop="Name">
       </el-table-column>
       <el-table-column label="到期时间" prop="ExpiryTime" :formatter="timefilterHandler">
@@ -63,9 +61,6 @@
         </el-form-item>
         <el-form-item label="广告标题" prop="Title">
           <el-input v-model="getList.Title"></el-input>
-        </el-form-item>
-        <el-form-item label="跳转地址" prop="Url">
-          <el-input v-model="getList.Url"></el-input>
         </el-form-item>
         <el-form-item label="广告类型" prop="Type">
           <el-select v-model="getList.Type" placeholder="请选择类型">
@@ -144,7 +139,6 @@
           Image: '',
           Name: '',
           Type: '',
-          Url: '',
           Title: '',
         },
         action: "",
@@ -159,11 +153,6 @@
           Name: [{
             required: true,
             message: '请输入投放人姓名',
-            trigger: 'blur'
-          }, ],
-          Url: [{
-            required: true,
-            message: '请输入跳转地址',
             trigger: 'blur'
           }, ],
           Title: [{
@@ -296,7 +285,7 @@
                     Type: para.Type,
                     Image: para.Image,
                     Name: para.Name,
-                    Url: para.Url,
+                    // Url: para.Url,
                     Title: para.Title,
                     ExpiryTime: para.ExpiryTime,
                     Ueditor:encodeURIComponent(content)
@@ -375,7 +364,7 @@
                     Type: para.Type,
                     Image: para.Image,
                     Name: para.Name,
-                    Url: para.Url,
+                    // Url: para.Url,
                     Title: para.Title,
                     ExpiryTime: para.ExpiryTime,
                     Ueditor:encodeURIComponent(content)
@@ -597,7 +586,7 @@
           Image: '',
           Name: '',
           Type: '',
-          Url: '',
+          // Url: '',
           Title: '',
         };
         this.defaultMsg = '';

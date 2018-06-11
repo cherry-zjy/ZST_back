@@ -36,6 +36,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">作品详情</el-button>
+          <el-button size="mini" type="primary" @click="handleComment(scope.$index, scope.row)">评论列表</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -232,6 +233,11 @@
         var urlId = obj.ID;
         this.$router.push("/product/productDetail/id="+urlId+"&userid="+this.reverseduserid+"");
       },
+      handleComment(index, row){
+        var obj = Object.assign({}, row);
+        var urlId = obj.ID;
+        this.$router.push("/product/productcomment/id="+urlId);
+      }
     },
   };
 
