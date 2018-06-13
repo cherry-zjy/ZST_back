@@ -25,7 +25,7 @@
       </el-table-column>
       <el-table-column label="广告图" prop="Image" width="300">
         <template slot-scope="scope">
-          <img :src="mainurl+scope.row.Image" width="250"/>
+          <img :src="mainurl+scope.row.Image" width="250" @click="handlePictureCardPreview(scope.row.Image)" />
         </template>
       </el-table-column>
       <el-table-column label="广告类型" prop="Type" :formatter="typeText">
@@ -38,7 +38,7 @@
       </el-table-column>
       <el-table-column label="广告点击次数" prop="ClicksNumber">
       </el-table-column>
-      
+
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -90,6 +90,9 @@
         </el-form-item>
       </el-form>
     </el-main>
+    <el-dialog :visible.sync="dialogVisible">
+      <img width="100%" :src="dialogImageUrl" alt="">
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -206,10 +209,13 @@
         config: {
           initialFrameWidth: null,
           initialFrameHeight: 500
-        }
+        },
+        dialogVisible: false
       };
     },
-    components: { UEditor },
+    components: {
+      UEditor
+    },
     mounted() {
       this.mainurl = mainurl;
       this.action = this.mainurl + "/api/Photo/UpdateForImage?type=0",
@@ -262,6 +268,11 @@
         }
         return isLt2M;
       },
+      //图片放大
+      handlePictureCardPreview(url) {
+        this.dialogImageUrl = this.mainurl + url;
+        this.dialogVisible = true;
+      },
       // 修改提交
       submitForm(formName) {
         this.$refs[formName].validate(valid => {
@@ -288,7 +299,7 @@
                     // Url: para.Url,
                     Title: para.Title,
                     ExpiryTime: para.ExpiryTime,
-                    Ueditor:encodeURIComponent(content)
+                    Ueditor: encodeURIComponent(content)
                   })
                 )
                 .then(
@@ -367,7 +378,7 @@
                     // Url: para.Url,
                     Title: para.Title,
                     ExpiryTime: para.ExpiryTime,
-                    Ueditor:encodeURIComponent(content)
+                    Ueditor: encodeURIComponent(content)
                   })
                 )
                 .then(
@@ -634,7 +645,9 @@
   .avatar {
     width: 100%;
   }
-  #editor{
+
+  #editor {
     height: 400px;
   }
+
 </style>

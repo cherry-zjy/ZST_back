@@ -47,8 +47,10 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini"  type="primary" @click="handle('1', scope.row,'同意')">同意</el-button>
-          <el-button size="mini"  type="primary" @click="handle('2', scope.row,'拒绝')">拒绝</el-button>
+          <el-button size="mini"  type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '已支付'" disabled>已同意</el-button>
+          <el-button size="mini"  type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '未支付'">同意</el-button>
+          <el-button size="mini"  type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '已拒绝'" disabled>已拒绝</el-button>
+          <el-button size="mini"  type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '未支付'">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
