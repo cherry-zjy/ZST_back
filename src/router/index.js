@@ -33,6 +33,7 @@ var ProductExamineDetail = resolve => require(['../components/examine/ProductExa
 var UserExamineIndex = resolve => require(['../components/examine/UserExamineIndex.vue'], resolve)  
 //平台管理
 var GetInvestmentIndex = resolve => require(['../components/back/GetInvestmentIndex.vue'], resolve)  
+var SysMesList = resolve => require(['../components/back/SysMesList.vue'], resolve)  
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
 Vue.use(Router)
@@ -79,6 +80,7 @@ export default new Router({
         { path: '/UserExamineIndex', component: UserExamineIndex, name: '认证审核列表' },        
         //平台管理
         { path: '/GetInvestmentIndex', component: GetInvestmentIndex, name: '广告列表' },                                      
+        { path: '/SysMesList', component: SysMesList, name: '系统公告' },                                      
     ]
     },
   ]

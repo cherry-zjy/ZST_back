@@ -26,10 +26,10 @@
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
-        <el-tag>审核作品共：{{data.Sum}}</el-tag>
-        <el-tag>通过审核数：{{data.Through}}</el-tag>
-        <el-tag>未通过审核数：{{data.NotThrough}}</el-tag>
-        <el-tag>未审核作品共：{{data.Unaudited}}</el-tag>
+        <el-tag><span @click="getInfo(0)" class="cursur">审核作品共：{{data.Sum}}</span></el-tag>
+        <el-tag><span @click="getInfo(1)" class="cursur">通过审核数：{{data.Through}}</span></el-tag>
+        <el-tag><span @click="getInfo(2)" class="cursur">未通过审核数：{{data.NotThrough}}</span></el-tag>
+        <el-tag><span @click="getInfo(3)" class="cursur">未审核作品共：{{data.Unaudited}}</span></el-tag>
         
       </el-form>
     </el-col>
@@ -86,6 +86,9 @@
         }, {
           value: '1',
           label: '审核通过'
+        }, {
+          value: '3',
+          label: '未审核作品'
         }],
       };
     },
@@ -95,7 +98,11 @@
            2、搜索关键字
            3、分页
         */
-      getInfo() {
+      getInfo(type) {
+        console.log(type)
+        if (type) {
+          this.filters.type = ""+type+""
+        }
         const loading = this.$loading({
           lock: true,
           text: "Loading",
@@ -239,6 +246,9 @@
   .block {
     text-align: center;
     padding: 20px 0;
+  }
+  .cursur{
+    cursor: pointer;
   }
 
 </style>
