@@ -32,11 +32,19 @@
       </el-table-column>
       <el-table-column label="投放人姓名" prop="Name">
       </el-table-column>
+      <el-table-column label="发布时间" prop="CreateTime">
+      </el-table-column>
       <el-table-column label="到期时间" prop="ExpiryTime" :formatter="timefilterHandler">
       </el-table-column>
       <el-table-column label="状态" prop="State" :formatter="statefilterHandler">
       </el-table-column>
       <el-table-column label="广告点击次数" prop="ClicksNumber">
+      </el-table-column>
+      <el-table-column label="排序" prop="Sequence">
+        <template slot-scope="scope">
+          {{scope.row.Sequence}}
+          <el-button type="primary" icon="el-icon-edit" circle @click="editseq(scope.row.Sequence,scope.row.ID)"></el-button>
+        </template>
       </el-table-column>
 
       <el-table-column label="操作">
@@ -93,6 +101,14 @@
     <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt="">
     </el-dialog>
+
+    <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
+      <el-input v-model="Sequence"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="seqhandle()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -113,10 +129,13 @@
         mainurl: "",
         filters: {
           pageIndex: 1,
-          pageSize: 12,
+          pageSize: 6,
           Token: getCookie("token"),
           type: '4'
         },
+        Sequence: '',
+        SequenceID: '',
+        centerDialogVisible: false,
         change: false,
         typeList: [{
             name: "欢迎广告页",
@@ -272,6 +291,70 @@
       handlePictureCardPreview(url) {
         this.dialogImageUrl = this.mainurl + url;
         this.dialogVisible = true;
+      },
+      editseq(seq, id) {
+        this.centerDialogVisible = true;
+        this.Sequence = seq;
+        this.SequenceID = id
+      },
+      seqhandle() {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        this.$http
+          .get("api/Back_PlatformManager/OrderAdver", {
+            params: {
+              Token: getCookie("token"),
+              advID: this.SequenceID,
+              sequence:this.Sequence
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.$message({
+                  showClose: true,
+                  type: "success",
+                  message: response.data.Result
+                });
+                this.centerDialogVisible = false,
+                this.getInfo()
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
       },
       // 修改提交
       submitForm(formName) {
