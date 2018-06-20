@@ -133,6 +133,7 @@
           Token: getCookie("token"),
           type: '4'
         },
+        dialogImageUrl:'',
         Sequence: '',
         SequenceID: '',
         centerDialogVisible: false,

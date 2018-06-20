@@ -8,7 +8,9 @@
         </div> -->
         <div v-if="welcome" style="float: left;height: 60px;color:#909399">欢迎来到装师通后台管理系统</div>
         <div style="float: right;color:#fff; font-size: 12px;margin-right:50px;">
-          <i class="el-icon-star-on" style="margin-right: 30px;color:#fff;" @click="editseq()">匹配次数</i>
+          <i class="el-icon-star-on" style="color:#fff;" @click="editseq()" v-if="!Warning"></i>
+          <i class="el-icon-warning" style="color:red;" @click="editseq()" v-if="Warning"></i>
+          <span style="margin-right: 30px" @click="editseq()">匹配次数</span>
           <el-dropdown>
             <i class="el-icon-setting" style="margin-right: 15px;color:#fff;"></i>
             <el-dropdown-menu slot="dropdown">
@@ -71,15 +73,16 @@
   export default {
     data: function () {
       return {
-        centerDialogVisible:false,
-        value:'',
-        Val:'',
+        centerDialogVisible: false,
+        value: '',
+        Val: '',
         defaultActiveIndex: ["0"],
         menuList: [],
         userName: "",
         collapsed: false,
         iscloseNav: false,
-        welcome: true
+        welcome: true,
+        Warning:false
       };
     },
     mounted() {
@@ -142,6 +145,7 @@
               }, 1500);
             }.bind(this)
           );
+          this.first()
       } else {
         this.$message({
           showClose: true,
@@ -156,6 +160,69 @@
       }
     },
     methods: {
+      first() {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        this.$http
+          .get("api/Back_BasicMessage/GetMatchTimes", {
+            params: {
+              Token: getCookie("token"),
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.Val = response.data.Result.Val;
+                if(response.data.Result.Warning){
+                  this.Warning = true;
+                }else{
+                  this.Warning = false;
+                }
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else if (status === -1) {
+                this.Val = response.data.Result.Val;
+                if(response.data.Result.Warning){
+                  this.Warning = true;
+                }else{
+                  this.Warning = false;
+                }
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
       // 	index: 选中菜单项的 index, indexPath: 选中菜单项的 index path
       handleSelect(index) {
         this.collapsed = true;
@@ -195,7 +262,7 @@
         this.centerDialogVisible = true;
         this.value = '';
       },
-      match(){
+      match() {
         const loading = this.$loading({
           lock: true,
           text: "Loading",
@@ -219,6 +286,11 @@
                   type: "success",
                   message: response.data.Result.Msg
                 });
+                if(response.data.Result.Warning){
+                  this.Warning = true;
+                }else{
+                  this.Warning = false;
+                }
                 this.centerDialogVisible = false
               } else if (status === 40001) {
                 this.$message({
@@ -231,13 +303,18 @@
                     path: "/login"
                   });
                 }, 1500);
-              }else if (status === -1) {
+              } else if (status === -1) {
                 this.$message({
                   showClose: true,
                   type: "warning",
                   message: response.data.Result.Msg
                 });
                 this.Val = response.data.Result.Val
+                if(response.data.Result.Warning){
+                  this.Warning = true;
+                }else{
+                  this.Warning = false;
+                }
               } else {
                 loading.close();
                 this.$message({
