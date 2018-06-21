@@ -29,7 +29,7 @@
     </el-option>
   </el-select>
         <el-form-item>
-          <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -58,7 +58,7 @@
     <!-- 分页 -->
     <div class="block">
       <el-pagination @current-change="handleCurrentChange"
-       layout="prev, pager, next,jumper" :page-count="pageCount">
+       layout="prev, pager, next,jumper" :page-count="pageCount" :current-page="currentPage">
       </el-pagination>
     </div>
   </div>
@@ -94,13 +94,21 @@ export default {
         }],
     };
   },
+  computed: {
+      currentPage: function () {
+        return this.filters.pageIndex
+      }
+    },
   methods: {
     /*
          1、获取列表 渲染列表
          2、搜索关键字
          3、分页
       */
-    getInfo() {
+    getInfo(searchange) {
+      if (searchange) {
+          this.filters.pageIndex = 1
+        }
       const loading = this.$loading({
         lock: true,
         text: "Loading",
@@ -237,10 +245,6 @@ export default {
           });          
         });
       },
-    //
-    getUsers() {
-      this.getInfo();
-    },
     // 分页
     handleCurrentChange(val) {
       this.filters.pageIndex = val;

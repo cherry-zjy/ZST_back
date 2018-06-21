@@ -133,7 +133,7 @@
           Token: getCookie("token"),
           type: '4'
         },
-        dialogImageUrl:'',
+        dialogImageUrl: '',
         Sequence: '',
         SequenceID: '',
         centerDialogVisible: false,
@@ -233,6 +233,18 @@
         dialogVisible: false
       };
     },
+    computed: {
+      filterstype() {　　　　
+        return this.filters.type　　
+      }
+    },
+    watch: {
+      filterstype: function (newQuestion, oldQuestion) {
+        if (newQuestion !== oldQuestion) {
+          this.filters.pageIndex = 1;
+        }
+      }
+    },
     components: {
       UEditor
     },
@@ -310,7 +322,7 @@
             params: {
               Token: getCookie("token"),
               advID: this.SequenceID,
-              sequence:this.Sequence
+              sequence: this.Sequence
             }
           })
           .then(
@@ -324,7 +336,7 @@
                   message: response.data.Result
                 });
                 this.centerDialogVisible = false,
-                this.getInfo()
+                  this.getInfo()
               } else if (status === 40001) {
                 this.$message({
                   showClose: true,

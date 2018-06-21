@@ -13,7 +13,7 @@
           <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -44,7 +44,7 @@
 
     <!-- 分页 -->
     <div class="block">
-      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount" :current-page="currentPage">
       </el-pagination>
     </div>
   </div>
@@ -77,6 +77,9 @@
       },
       reverseduserid: function () {
         return this.userid = window.location.href.split("id=")[1]
+      },
+      currentPage: function () {
+        return this.productparam.pageIndex
       }
     },
     mounted() {
@@ -94,7 +97,10 @@
            2、搜索关键字
            3、分页
         */
-      getInfo() {
+      getInfo(searchange) {
+        if (searchange) {
+          this.productparam.pageIndex = 1
+        }
         const loading = this.$loading({
           lock: true,
           text: "Loading",
@@ -217,9 +223,6 @@
             message: '已取消删除'
           });
         });
-      },
-      getUsers() {
-        this.getInfo();
       },
       // 分页
       handleCurrentChange(val) {

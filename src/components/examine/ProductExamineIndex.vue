@@ -24,7 +24,7 @@
           </el-col>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="primary" @click="getInfo(false,true)">查询</el-button>
         </el-form-item>
         <el-tag><span @click="getInfo(0)" class="cursur">审核作品共：{{data.Sum}}</span></el-tag>
         <el-tag><span @click="getInfo(1)" class="cursur">通过审核数：{{data.Through}}</span></el-tag>
@@ -56,7 +56,7 @@
 
     <!-- 分页 -->
     <div class="block">
-      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount" :current-page="currentPage">
       </el-pagination>
     </div>
   </div>
@@ -73,10 +73,14 @@
         mainurl: "",
         filters: {
           pageIndex: 1,
-          pageSize: 12,
+          pageSize: 6,
           Token: getCookie("token"),
-          type:'0'
+          type:'0',
+          sear:'',
+          // startTime:'',
+          // endTime:'',
         },
+        
         type: [{
           value: '0',
           label: '是否审核通过（全部）'
@@ -92,14 +96,21 @@
         }],
       };
     },
+    computed: {
+      currentPage: function () {
+        return this.filters.pageIndex
+      }
+    },
     methods: {
       /*
            1、获取列表 渲染列表
            2、搜索关键字
            3、分页
         */
-      getInfo(type) {
-        console.log(type)
+      getInfo(type,searchange) {
+        if (searchange) {
+          this.filters.pageIndex = 1
+        }
         if (type) {
           this.filters.type = ""+type+""
         }
@@ -112,7 +123,7 @@
         if (this.filters.sear == "") {
           delete this.filters.sear
         } else {
-          this.filters.sear = this.filters.sear
+          this.filters.sear = this.sear
         }
         // if (this.filters.startTime == "") {
         //   delete this.filters.startTime
@@ -211,9 +222,6 @@
           );
       },
       //
-      getUsers() {
-        this.getInfo();
-      },
       // 分页
       handleCurrentChange(val) {
         this.filters.pageIndex = val;

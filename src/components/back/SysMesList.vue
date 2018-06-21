@@ -11,7 +11,7 @@
         <el-form-item>
           <el-input v-model="filters.sear" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
-        <el-button type="primary" @click="getInfo()">查询</el-button>
+        <el-button type="primary" @click="getInfo(true)">查询</el-button>
         <el-form :inline="true" style="float:right">
           <el-form-item>
             <el-button type="primary" @click="handleAdd()">新增</el-button>
@@ -37,7 +37,7 @@
 
     <!-- 分页 -->
     <div class="block" v-if="change">
-      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount" :current-page="currentPage">
       </el-pagination>
     </div>
 
@@ -66,6 +66,7 @@
       return {
         List: [], //列表
         pageCount: 1,
+        // currentPage:1,//当前页
         mainurl: "",
         change: true,
         getList: [],
@@ -78,22 +79,27 @@
         },
         filters: {
           pageIndex: 1,
-          pageSize: 12,
+          pageSize: 2,
           Token: getCookie("token"),
+          sear:''
         },
       };
+    },
+    computed: {
+      currentPage: function () {
+        return this.filters.pageIndex
+      }
     },
     mounted() {
       this.mainurl = mainurl;
       this.getInfo();
     },
     methods: {
-      /*
-           1、获取列表 渲染列表
-           2、搜索关键字
-           3、分页
-        */
-      getInfo() {
+      getInfo(searchange) {
+        // searchange判断是否是搜索关键字，是的话当前页为1
+        if (searchange) {
+          this.filters.pageIndex = 1
+        }
         if (this.filters.sear == "") {
           delete this.filters.sear
         } else {
@@ -148,7 +154,8 @@
             }.bind(this)
           );
       },
-      //
+      
+
       handleAdd() {
         this.change = false;
       },
