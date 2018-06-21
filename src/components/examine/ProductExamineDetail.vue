@@ -21,11 +21,11 @@
             {{editForm.Author}}
           </el-form-item>
           <el-form-item label="作品大图：" prop="Image">
-            <img :src="mainurl+editForm.Image" width="100" />
+            <img :src="mainurl+editForm.Image" width="200" height="150" />
           </el-form-item>
           <el-form-item label="单品图：" prop="Images">
             <span v-for="(items,index) in imageForm" :key="index">
-              <img :src="mainurl+items" width="100" class="imgpad">
+              <img :src="mainurl+items" width="200" height="150" class="imgpad">
             </span>
           </el-form-item>
           <el-form-item label="主色调：" prop="MainColor">
@@ -49,7 +49,7 @@
             {{editForm.OfficialName}}
           </el-form-item>
           <el-form-item label="LOGO：" prop="Logo">
-            <img :src="mainurl+editForm.Logo" width="100" />
+            <img :src="mainurl+editForm.Logo" width="200" height="150" />
           </el-form-item>
           <el-form-item label="服务商姓名：" prop="Contact">
             {{editForm.Contact}}
@@ -75,7 +75,8 @@
     <el-dialog title="拒绝理由" :visible.sync="dialogFormVisible">
       <el-form>
         <el-form-item label="请输入拒绝理由">
-          <el-input v-model="reason" auto-complete="off"></el-input>
+          <el-autocomplete class="inline-input" v-model="reason" :fetch-suggestions="querySearch" placeholder="请输入内容"></el-autocomplete>
+          <!-- <el-input v-model="reason" auto-complete="off"></el-input> -->
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -104,10 +105,37 @@
         labelPosition: 'left',
         reason: "",
         dialogFormVisible: false,
-        dialogVisible2: false
+        dialogVisible2: false,
+        restaurants: [],
       };
     },
     methods: {
+      createFilter(queryString) {
+        return (restaurant) => {
+          return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
+      querySearch(queryString, cb) {
+        var restaurants = this.restaurants;
+        var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+      loadAll() {
+        return [{
+            "value": "作品不清晰！"
+          },
+          {
+            "value": "有广告嫌疑！"
+          },
+          {
+            "value": "你想忽悠我没门！"
+          },
+          {
+            "value": "需要上传单品！"
+          },
+        ];
+      },
       back() {
         this.$router.push("/ProductExamineIndex");
       },
@@ -174,6 +202,7 @@
     },
     mounted() {
       this.mainurl = mainurl;
+      this.restaurants = this.loadAll();
       const loading = this.$loading({
         lock: true,
         text: "Loading",
