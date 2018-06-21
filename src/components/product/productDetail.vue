@@ -24,18 +24,18 @@
             {{editForm.PushMan}}
           </el-form-item>
           <el-form-item label="作品大图：" prop="BigImage">
-            <img :src="mainurl+editForm.BigImage" width="100" />
+            <img :src="mainurl+editForm.BigImage" width="100" @click="handlePictureCardPreview(editForm.BigImage)" />
           </el-form-item>
           <el-form-item label="单品图：" prop="Imges">
             <span v-for="(items,index) in imageForm" :key="index">
-              <img :src="mainurl+items" width="100" class="imgpad">
+              <img :src="mainurl+items" width="100" class="imgpad" @click="handlePictureCardPreview(items)" >
             </span>
           </el-form-item>
           <el-form-item label="主色调：" prop="MainColor">
-            {{editForm.MainColor}}
+            <div class="circle" v-bind:style="{ background: editForm.MainColor}"></div>
           </el-form-item>
           <el-form-item label="辅色调：" prop="SubColor">
-            {{editForm.SubColor}}
+            <div class="circle" v-bind:style="{ background: editForm.SubColor}"></div>
           </el-form-item>
           <el-form-item label="空间分类：" prop="Area">
             {{editForm.Area}}
@@ -72,6 +72,9 @@
     <center>
       <el-button type="primary" @click="back()" class="centerbtn">返回</el-button>
     </center>
+    <el-dialog :visible.sync="dialogVisible">
+      <img width="100%" :src="dialogImageUrl" alt="">
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -87,7 +90,9 @@
         dialogFormVisible: false,
         dialogVisible2: false,
         ServiceProvider: [],
-        isjump:false
+        isjump:false,
+        dialogImageUrl:'',
+        dialogVisible:false
       };
     },
     computed:{
@@ -161,6 +166,11 @@
           }.bind(this)
         );
       },
+      //图片放大
+      handlePictureCardPreview(url) {
+        this.dialogImageUrl = this.mainurl + url;
+        this.dialogVisible = true;
+      },
       back() {
         if(this.isjump){
           this.$router.push('../../GetProductListIndex?name='+this.editForm.PushMan+'&id='+this.userid+'');
@@ -195,6 +205,11 @@
 
   .imgpad {
     padding: 5px;
+  }
+  .circle{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
   }
 
 </style>
