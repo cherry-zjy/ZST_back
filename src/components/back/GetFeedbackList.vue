@@ -2,26 +2,21 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>系统公告</el-breadcrumb-item>
+      <el-breadcrumb-item>帮助与反馈</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!--检索条-->
-    <el-col class="toolbar" style="padding-top: 15px;" v-if="change">
+    <el-col class="toolbar" style="padding-top: 15px;">
       <el-form :inline="true" :model="filters">
         <el-form-item>
           <el-input v-model="filters.sear" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
         <el-button type="primary" @click="getInfo(true)">查询</el-button>
-        <el-form :inline="true" style="float:right">
-          <el-form-item>
-            <el-button type="primary" @click="handleAdd()">新增</el-button>
-          </el-form-item>
-        </el-form>
       </el-form>
     </el-col>
 
     <!-- table 内容 -->
-    <el-table :data="List" style="width: 100%" :border='true' v-if="change">
+    <el-table :data="List" style="width: 100%" :border='true'>
       <el-table-column label="公告内容" prop="Content">
       </el-table-column>
       <el-table-column label="发布时间" prop="CreateTime">
@@ -29,32 +24,16 @@
 
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="del(scope.row.Content)">删除</el-button>
+          <el-button size="mini" type="danger" @click="del(scope.row.ID)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页 -->
-    <div class="block" v-if="change">
+    <div class="block">
       <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount" :current-page="currentPage">
       </el-pagination>
     </div>
-
-    <el-main v-if="!change">
-
-      <el-form :model="getList" ref="getList" label-width="150px" class="demo-ruleForm" :rules="rules" style="width:70%">
-        <el-form-item>
-          <el-button type="primary" @click="change = false" style="float:right">返回</el-button>
-        </el-form-item>
-        <el-form-item label="系统公告详情" prop="Content">
-          <el-input v-model="getList.Content" type="textarea" rows="10"></el-input>
-        </el-form-item>
-
-        <el-form-item>
-          <el-button type="primary" @click="addForm('getList')">添加</el-button>
-        </el-form-item>
-      </el-form>
-    </el-main>
 
   </div>
 </template>
@@ -67,7 +46,6 @@
         pageCount: 1,
         // currentPage:1,//当前页
         mainurl: "",
-        change: true,
         getList: [],
         rules: {
           Content: [{
@@ -111,7 +89,7 @@
           background: "rgba(0, 0, 0, 0.7)"
         });
         this.$http
-          .get("api/Back_PlatformManager/SysMesList", {
+          .get("api/Back_PlatformManager/GetFeedbackList", {
             params: this.filters
           })
           .then(
@@ -154,85 +132,14 @@
           );
       },
       
-
-      handleAdd() {
-        this.change = false;
-      },
       // 分页
       handleCurrentChange(val) {
         this.filters.pageIndex = val;
         this.getInfo();
       },
-      addForm(formName) {
-        this.$refs[formName].validate(valid => {
-          if (valid) {
-            //判断是否填写完整  --true
-            this.$confirm("确认提交吗？", "提示", {}).then(() => {
-              var para = Object.assign({}, this.getList);
-              const loading = this.$loading({
-                lock: true,
-                text: "Loading",
-                spinner: "el-icon-loading",
-                background: "rgba(0, 0, 0, 0.7)"
-              });
-              // 发保存请求
-              this.$http
-                .get("api/Back_PlatformManager/SendSysMes", {
-                  params: {
-                    Content: this.getList.Content,
-                    token: getCookie("token")
-                  }
-                })
-                .then(
-                  function (response) {
-                    loading.close();
-                    var status = response.data.Status;
-                    if (status === 1) {
-                      this.$message({
-                        showClose: true,
-                        type: "success",
-                        message: response.data.Result
-                      });
-                      this.getInfo();
-                      this.change = true;
-                    } else if (status === 40001) {
-                      this.$message({
-                        showClose: true,
-                        type: "warning",
-                        message: response.data.Result
-                      });
-                      setTimeout(() => {
-                        this.$router.push({
-                          path: "/login"
-                        });
-                      }, 1500);
-                    } else {
-                      loading.close();
-                      this.$message({
-                        showClose: true,
-                        type: "warning",
-                        message: response.data.Result
-                      });
-                    }
-                  }.bind(this)
-                )
-                // 请求error
-                .catch(
-                  function (error) {
-                    loading.close();
-                    this.$notify.error({
-                      title: "错误",
-                      message: "错误：请检查网络"
-                    });
-                  }.bind(this)
-                );
-            });
-          }
-        });
-      },
       //删除
       del(id) {
-        this.$confirm('确认删除该系统消息?', '提示', {
+        this.$confirm('确认删除该反馈?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -244,10 +151,10 @@
             background: "rgba(0, 0, 0, 0.7)"
           });
           this.$http
-            .get("api/Back_PlatformManager/DelSysMes", {
+            .get("api/Back_PlatformManager/DelFeedback", {
               params: {
                 Token: getCookie("token"),
-                Content: id,
+                feedbackID: id,
               }
             })
             .then(

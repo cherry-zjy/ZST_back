@@ -10,7 +10,7 @@
         <el-form-item>
           <el-input v-model="filters.sear" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
-        
+
         <el-form-item>
           <el-col :span="11">
             <el-date-picker type="date" placeholder="开始日期" v-model="filters.startTime" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
@@ -21,16 +21,14 @@
           </el-col>
         </el-form-item>
         <el-select v-model="filters.state" placeholder="是否支付">
-    <el-option
-      v-for="item in state"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value">
-    </el-option>
-  </el-select>
+          <el-option v-for="item in state" :key="item.value" :label="item.label" :value="item.value">
+          </el-option>
+        </el-select>
         <el-form-item>
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
+        <el-tag>未支付总费用：{{Unpaid}}</el-tag>
+        <el-tag>已支付总费用：{{Paid}}</el-tag>
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -47,42 +45,43 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini"  type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '已支付'" disabled>已同意</el-button>
-          <el-button size="mini"  type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '未支付'">同意</el-button>
-          <el-button size="mini"  type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '已拒绝'" disabled>已拒绝</el-button>
-          <el-button size="mini"  type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '未支付'">拒绝</el-button>
+          <el-button size="mini" type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '已支付'" disabled>已同意</el-button>
+          <el-button size="mini" type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '未支付'">同意</el-button>
+          <el-button size="mini" type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '已拒绝'" disabled>已拒绝</el-button>
+          <el-button size="mini" type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '未支付'">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页 -->
     <div class="block">
-      <el-pagination @current-change="handleCurrentChange"
-       layout="prev, pager, next,jumper" :page-count="pageCount" :current-page="currentPage">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount" :current-page="currentPage">
       </el-pagination>
     </div>
   </div>
 </template>
 <script>
-import md5 from "js-md5";
+  import md5 from "js-md5";
 
-export default {
-  data() {
-    return {
-      List: [], //列表
-      pageCount: 1,
-      mainurl: "",
-      // 搜索关键字
-      filters: {
-        pageIndex: 1,
-        pageSize: 12,
-        Token: getCookie("token"),
-        // sear: '',
-        // startTime: '',
-        // endTime: '',
-        state:"0"
-      },
-      state: [{
+  export default {
+    data() {
+      return {
+        List: [], //列表
+        pageCount: 1,
+        mainurl: "",
+        Paid: '',
+        Unpaid: '',
+        // 搜索关键字
+        filters: {
+          pageIndex: 1,
+          pageSize: 12,
+          Token: getCookie("token"),
+          // sear: '',
+          // startTime: '',
+          // endTime: '',
+          state: "0"
+        },
+        state: [{
           value: '0',
           label: '提现状态（全部）'
         }, {
@@ -92,70 +91,69 @@ export default {
           value: '2',
           label: '已支付'
         }],
-    };
-  },
-  computed: {
+      };
+    },
+    computed: {
       currentPage: function () {
         return this.filters.pageIndex
       }
     },
-  methods: {
-    /*
-         1、获取列表 渲染列表
-         2、搜索关键字
-         3、分页
-      */
-    getInfo(searchange) {
-      if (searchange) {
+    methods: {
+      /*
+           1、获取列表 渲染列表
+           2、搜索关键字
+           3、分页
+        */
+      getInfo(searchange) {
+        if (searchange) {
           this.filters.pageIndex = 1
         }
-      const loading = this.$loading({
-        lock: true,
-        text: "Loading",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
-      if(this.filters.sear == ""){
-        delete this.filters.sear
-      }
-      else{
-        this.filters.sear = this.filters.sear
-      }
-      // if(this.filters.startTime == ""){
-      //   delete this.filters.startTime
-      // }
-      // else{
-      //   this.filters.startTime = this.filters.startTime
-      // }
-      // if(this.filters.endTime == ""){
-      //   delete this.filters.endTime
-      // }
-      // else{
-      //   this.filters.endTime = this.filters.endTime
-      // }
-      this.$http
-        .get("api/Back_FinanceManager/GetWithdrawIndex", {
-          params: this.filters
-        })
-        .then(
-          function(response) {
-            loading.close();
-            var status = response.data.Status;
-            if (status === 1) {
-              this.List = response.data.Result.withdrawList;
-              this.pageCount = response.data.Result.page;
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-              setTimeout(() => {
-                this.$router.push({
-                  path: "/login"
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        if (this.filters.sear == "") {
+          delete this.filters.sear
+        } else {
+          this.filters.sear = this.filters.sear
+        }
+        // if(this.filters.startTime == ""){
+        //   delete this.filters.startTime
+        // }
+        // else{
+        //   this.filters.startTime = this.filters.startTime
+        // }
+        // if(this.filters.endTime == ""){
+        //   delete this.filters.endTime
+        // }
+        // else{
+        //   this.filters.endTime = this.filters.endTime
+        // }
+        this.$http
+          .get("api/Back_FinanceManager/GetWithdrawIndex", {
+            params: this.filters
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.List = response.data.Result.withdrawList;
+                this.pageCount = response.data.Result.page;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
                 });
-              }, 1500);
-            } else {
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
                 loading.close();
                 this.$message({
                   showClose: true,
@@ -163,22 +161,74 @@ export default {
                   message: response.data.Result
                 });
               }
-          }.bind(this)
-        )
-        // 请求error
-        .catch(
-          function(error) {
-            loading.close();
-            this.$notify.error({
-              title: "错误",
-              message: "错误：请检查网络"
-            });
-          }.bind(this)
-        );
-    },
-    //审核
-    handle(state,row,msg) {
-        this.$confirm('确认'+msg+'?', '提示', {
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
+      getData() {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        this.$http
+          .get("api/Back_FinanceManager/PaidData", {
+            params: {
+              Token: getCookie("token")
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.Paid = response.data.Result.Paid;
+                this.Unpaid = response.data.Result.Unpaid;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
+      //审核
+      handle(state, row, msg) {
+        this.$confirm('确认' + msg + '?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -190,83 +240,86 @@ export default {
             background: "rgba(0, 0, 0, 0.7)"
           });
           this.$http
-        .get("api/Back_FinanceManager/HandleWithdrawals", {
-          params: {
-            Token:getCookie("token"),
-            withID:row.ID,
-            state:state,
-          }
-        })
-        .then(
-          function(response) {
-            loading.close();
-            var status = response.data.Status;
-            if (status === 1) {
-              this.$message({
-                showClose: true,
-                type: "success",
-                message: response.data.Result
-              });
-              this.getInfo()
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-              setTimeout(() => {
-                this.$router.push({
-                  path: "/login"
+            .get("api/Back_FinanceManager/HandleWithdrawals", {
+              params: {
+                Token: getCookie("token"),
+                withID: row.ID,
+                state: state,
+              }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
+                  });
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
                 });
-              }, 1500);
-            }else{
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-            }
-          }.bind(this)
-        )
-        // 请求error
-        .catch(
-          function(error) {
-            loading.close();
-            this.$notify.error({
-              title: "错误",
-              message: "错误：请检查网络"
-            });
-          }.bind(this)
-        );
+              }.bind(this)
+            );
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '已取消操作'
-          });          
+          });
         });
       },
-    // 分页
-    handleCurrentChange(val) {
-      this.filters.pageIndex = val;
-      this.getInfo();
+      // 分页
+      handleCurrentChange(val) {
+        this.filters.pageIndex = val;
+        this.getInfo();
+      },
     },
-  },
-  mounted() {
-    this.mainurl = mainurl;
-    this.getInfo();
-  }
-};
+    mounted() {
+      this.mainurl = mainurl;
+      this.getInfo();
+      this.getData();
+    }
+  };
+
 </script>
 <style scoped>
-/* 面包屑 */
+  /* 面包屑 */
 
-.crumb {
-  height: 36px;
-  line-height: 36px;
-}
+  .crumb {
+    height: 36px;
+    line-height: 36px;
+  }
 
-.block {
-  text-align: center;
-  padding: 20px 0;
-}
+  .block {
+    text-align: center;
+    padding: 20px 0;
+  }
+
 </style>

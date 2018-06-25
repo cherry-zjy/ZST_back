@@ -23,6 +23,9 @@
         <el-form-item>
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
+        <el-tag>总充值人数：{{NOP}}</el-tag>
+        <el-tag>次数未用完人数：{{TheRestTimes}}</el-tag>
+        <el-tag>总充值额：{{TotalIncome}}</el-tag>
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -63,6 +66,9 @@
           startTime: '',
           endTime: '',
         },
+        TotalIncome:'',
+        NOP:'',
+        TheRestTimes:''
       };
     },
     computed: {
@@ -144,7 +150,60 @@
             }.bind(this)
           );
       },
-      //
+      getData() {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        this.$http
+          .get("api/Back_FinanceManager/RechargeData", {
+            params: {
+              Token:getCookie("token"),
+              Type:1
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.NOP = response.data.Result.NOP;
+                this.TotalIncome = response.data.Result.TotalIncome;
+                this.TheRestTimes = response.data.Result.TheRestTimes;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
       // 分页
       handleCurrentChange(val) {
         this.filters.pageIndex = val;
@@ -154,6 +213,7 @@
     mounted() {
       this.mainurl = mainurl;
       this.getInfo();
+      this.getData();
     }
   };
 

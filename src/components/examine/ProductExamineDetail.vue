@@ -63,12 +63,18 @@
           <el-form-item label="楼号门牌号：" prop="AddressDetail">
             {{editForm.AddressDetail}}
           </el-form-item>
+          <el-form-item label="状态：" prop="Status">
+            {{editForm.Status|Statusfilter}}
+          </el-form-item>
+          <el-form-item label="拒绝原因：" prop="Reason" v-if="editForm.Status == 2">
+            {{editForm.Reason}}
+          </el-form-item>
         </el-form>
       </el-col>
     </el-row>
     <center>
-      <el-button type="success" @click="dialogVisible2 = true">通过</el-button>
-      <el-button type="danger" @click="dialogFormVisible = true">拒绝</el-button>
+      <el-button type="success" @click="dialogVisible2 = true" v-if="editForm.Status == 3">通过</el-button>
+      <el-button type="danger" @click="dialogFormVisible = true" v-if="editForm.Status == 3">拒绝</el-button>
       <el-button type="primary" @click="back()" class="centerbtn">返回</el-button>
     </center>
 
@@ -108,6 +114,18 @@
         dialogVisible2: false,
         restaurants: [],
       };
+    },
+    filters: {
+      Statusfilter: function (value) {
+        if (value == 1) {
+          value = "通过审核"
+        } else if (value == 2) {
+          value = "未通过审核"
+        } else {
+          value = "未审核"
+        }
+        return value
+      }
     },
     methods: {
       createFilter(queryString) {
