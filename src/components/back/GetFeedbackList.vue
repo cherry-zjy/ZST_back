@@ -17,9 +17,15 @@
 
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
-      <el-table-column label="公告内容" prop="Content">
+      <el-table-column label="反馈标题" prop="Title" :formatter="titleText">
       </el-table-column>
-      <el-table-column label="发布时间" prop="CreateTime">
+      <el-table-column label="反馈内容" prop="Content">
+      </el-table-column>
+      <el-table-column label="反馈时间" prop="CreateTime">
+      </el-table-column>
+      <el-table-column label="反馈人昵称" prop="NicName">
+      </el-table-column>
+      <el-table-column label="反馈人手机号" prop="Phone">
       </el-table-column>
 
       <el-table-column label="操作">
@@ -72,6 +78,16 @@
       this.getInfo();
     },
     methods: {
+      titleText(row, Title) {
+        var Title = row[Title.property];
+        switch (Title) {
+          case -1:
+            return (Title = "");
+            break;
+          default:
+            break;
+        }
+      },
       getInfo(searchange) {
         // searchange判断是否是搜索关键字，是的话当前页为1
         if (searchange) {
@@ -97,7 +113,7 @@
               loading.close();
               var status = response.data.Status;
               if (status === 1) {
-                this.List = response.data.Result.UserMes;
+                this.List = response.data.Result.feedbackList;
                 this.pageCount = response.data.Result.Page;
               } else if (status === 40001) {
                 this.$message({
