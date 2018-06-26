@@ -73,8 +73,8 @@
       </el-col>
     </el-row>
     <center>
-      <el-button type="success" @click="dialogVisible2 = true" v-if="editForm.Status == 3">通过</el-button>
-      <el-button type="danger" @click="dialogFormVisible = true" v-if="editForm.Status == 3">拒绝</el-button>
+      <el-button type="success" @click="dialogVisible2 = true" v-if="editForm.Status == 1">通过</el-button>
+      <el-button type="danger" @click="dialogFormVisible = true" v-if="editForm.Status == 1">拒绝</el-button>
       <el-button type="primary" @click="back()" class="centerbtn">返回</el-button>
     </center>
 
@@ -117,7 +117,7 @@
     },
     filters: {
       Statusfilter: function (value) {
-        if (value == 1) {
+        if (value == 3) {
           value = "通过审核"
         } else if (value == 2) {
           value = "未通过审核"

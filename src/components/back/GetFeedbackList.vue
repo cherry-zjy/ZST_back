@@ -17,8 +17,6 @@
 
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
-      <el-table-column label="反馈标题" prop="Title" :formatter="titleText">
-      </el-table-column>
       <el-table-column label="反馈内容" prop="Content">
       </el-table-column>
       <el-table-column label="反馈时间" prop="CreateTime">
@@ -78,16 +76,6 @@
       this.getInfo();
     },
     methods: {
-      titleText(row, Title) {
-        var Title = row[Title.property];
-        switch (Title) {
-          case -1:
-            return (Title = "");
-            break;
-          default:
-            break;
-        }
-      },
       getInfo(searchange) {
         // searchange判断是否是搜索关键字，是的话当前页为1
         if (searchange) {
