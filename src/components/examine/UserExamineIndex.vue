@@ -26,6 +26,10 @@
         <el-form-item>
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
+        <el-tag><span class="cursur" @click="filters.type = '0';getInfo()">总认证申请人数：{{Datalist.Sum}}</span></el-tag>
+        <el-tag><span @click="filters.type = '1';getInfo()" class="cursur">通过人数：{{Datalist.Through}}</span></el-tag>
+        <el-tag><span class="cursur" @click="filters.type = '2';getInfo()">拒绝人数：{{Datalist.NotThrough}}</span></el-tag>
+        <el-tag><span>未审核人数：{{Datalist.Unaudited}}</span></el-tag>
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -65,6 +69,7 @@
         List: [], //列表
         pageCount: 1,
         mainurl: "",
+        Datalist:[],
         filters: {
           pageIndex: 1,
           pageSize: 12,
@@ -162,7 +167,58 @@
             }.bind(this)
           );
       },
-      //
+      getData() {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        this.$http
+          .get("api/Back_ExamineManager/DataStatistics", {
+            params: {
+              type:2,
+              Token:getCookie("token")
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.Datalist = response.data.Result;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
       // 分页
       handleCurrentChange(val) {
         this.filters.pageIndex = val;
@@ -242,6 +298,7 @@
     mounted() {
       this.mainurl = mainurl;
       this.getInfo();
+      this.getData();
     }
   };
 
@@ -257,6 +314,9 @@
   .block {
     text-align: center;
     padding: 20px 0;
+  }
+  .cursur{
+    cursor: pointer;
   }
 
 </style>

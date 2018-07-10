@@ -21,6 +21,9 @@
         <el-form-item>
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
+        <el-tag><span @click="filters.IsVip = '1';filters.IsVerify = '0';getInfo()" class="cursur">黑卡会员人数：{{BlackRealMoney.BlackCard}}</span></el-tag>
+        <el-tag><span @click="filters.IsVerify = '2';filters.IsVip = '0';getInfo()" class="cursur">实名认证人数：{{BlackRealMoney.Attestation}}</span></el-tag>
+        <el-tag><span>钱袋收入总金额：{{BlackRealMoney.MoneyBag}}</span></el-tag>
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -36,7 +39,7 @@
       </el-table-column>
       <el-table-column label="剩余匹配次数" prop="Available">
       </el-table-column>
-      <el-table-column label="钱袋收入（元）" prop="Balance">
+      <el-table-column label="钱袋收入（元）" prop="Balance" :render-header="foo">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -61,6 +64,7 @@
         List: [], //列表
         pageCount: 1,
         mainurl: "",
+        BlackRealMoney:[],
         // 搜索关键字
         filters: {
           sear: "",
@@ -69,6 +73,7 @@
           Token: getCookie("token"),
           IsVip: '0',
           IsVerify: '0',
+          Order:1
         },
         IsVip: [{
           value: '0',
@@ -98,11 +103,29 @@
       }
     },
     methods: {
-      /*
-           1、获取列表 渲染列表
-           2、搜索关键字
-           3、分页
-        */
+     foo(h,{column}){
+       console.log(column)
+        return(
+          <span>{column.label}
+          <i class="icon el-icon-caret-top" onClick={ this.topsort }></i>
+          <i class="icon el-icon-caret-bottom" onClick={ this.bottomsort } style="display:none"></i>
+          </span>
+        )
+      },
+      topsort(){
+        $(".el-icon-caret-bottom").show();
+        $(".el-icon-caret-top").hide();
+        this.filters.Order = 0;
+        this.filters.pageIndex = 1
+        this.getInfo()
+      },
+      bottomsort(){
+        $(".el-icon-caret-top").show();
+        $(".el-icon-caret-bottom").hide();
+        this.filters.Order = 1;
+        this.filters.pageIndex = 1
+        this.getInfo()
+      },
       getInfo(searchange) {
         if (searchange) {
           this.filters.pageIndex = 1
@@ -136,7 +159,56 @@
                   message: response.data.Result
                 });
                 setTimeout(() => {
-                  tt.$router.push({
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
+      getData(){
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        this.$http
+          .get("api/Back_UserList/BlackRealMoney", {
+            params: {}
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === -1) {
+                this.BlackRealMoney = response.data.Result;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
                     path: "/login"
                   });
                 }, 1500);
@@ -177,6 +249,7 @@
     mounted() {
       this.mainurl = mainurl;
       this.getInfo();
+      this.getData();
     }
   };
 
@@ -192,6 +265,9 @@
   .block {
     text-align: center;
     padding: 20px 0;
+  }
+  .cursur{
+    cursor: pointer;
   }
 
 </style>

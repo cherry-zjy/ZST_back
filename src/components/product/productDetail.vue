@@ -28,14 +28,18 @@
           </el-form-item>
           <el-form-item label="单品图：" prop="Imges">
             <span v-for="(items,index) in imageForm" :key="index">
-              <img :src="mainurl+items" width="100" class="imgpad" @click="handlePictureCardPreview(items)" >
+              <img :src="mainurl+items" width="100" class="imgpad" @click="handlePictureCardPreview(items)">
             </span>
           </el-form-item>
           <el-form-item label="主色调：" prop="MainColor">
             <div class="circle" v-bind:style="{ background: editForm.MainColor}"></div>
+            <!-- 主用神五行：{{editForm.MainAttribute}} -->
+            <!-- <el-button size="mini" type="primary" @click="dialogmian=true">修改</el-button> -->
           </el-form-item>
           <el-form-item label="辅色调：" prop="SubColor">
             <div class="circle" v-bind:style="{ background: editForm.SubColor}"></div>
+            <!-- 辅用神五行：{{editForm.SecondaryColorAttribute}} -->
+            <!-- <el-button size="mini" type="primary" @click="dialogsecond=true">修改</el-button> -->
           </el-form-item>
           <el-form-item label="空间分类：" prop="Area">
             {{editForm.Area}}
@@ -43,6 +47,7 @@
           <el-form-item label="合适面积：" prop="Proportion">
             {{editForm.Proportion}}
           </el-form-item>
+
         </el-form>
       </el-col>
       <el-col :span="12">
@@ -66,6 +71,14 @@
           <el-form-item label="楼号门牌号：" prop="AddressDetail">
             {{ServiceProvider.AddressDetail}}
           </el-form-item>
+          <el-form-item label="主用神五行：" prop="MainAttribute">
+            {{editForm.MainAttribute}}
+            <el-button size="mini" type="primary" @click="dialogmian=true">修改</el-button>
+          </el-form-item>
+          <el-form-item label="辅用神五行：" prop="SecondaryColorAttribute">
+            {{editForm.SecondaryColorAttribute}}
+            <el-button size="mini" type="primary" @click="dialogsecond=true">修改</el-button>
+          </el-form-item>
         </el-form>
       </el-col>
     </el-row>
@@ -75,6 +88,27 @@
     <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt="">
     </el-dialog>
+
+    <el-dialog title="提示" :visible.sync="dialogmian" width="30%" center>
+      <el-select v-model="editForm.MainAttribute" placeholder="请选择五行">
+        <el-option v-for="item in mainList" :key="item.name" :label="item.name" :value="item.name"></el-option>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogmian = false">取 消</el-button>
+        <el-button type="primary" @click="editmain(0,editForm.MainAttribute)">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="提示" :visible.sync="dialogsecond" width="30%" center>
+      <el-select v-model="editForm.SecondaryColorAttribute" placeholder="请选择五行">
+        <el-option v-for="item in mainList" :key="item.name" :label="item.name" :value="item.name"></el-option>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogsecond = false">取 消</el-button>
+        <el-button type="primary" @click="editmain(1,editForm.SecondaryColorAttribute)">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -88,98 +122,178 @@
         labelPosition: 'left',
         reason: "",
         dialogFormVisible: false,
-        dialogVisible2: false,
         ServiceProvider: [],
-        isjump:false,
-        dialogImageUrl:'',
-        dialogVisible:false
+        isjump: false,
+        dialogImageUrl: '',
+        dialogVisible: false,
+        dialogmian: false,
+        dialogsecond: false,
+        mainList: [{
+            name: "金",
+          },
+          {
+            name: "木",
+          },
+          {
+            name: "水",
+          },
+          {
+            name: "火",
+          },
+          {
+            name: "土",
+          },
+        ],
       };
     },
-    computed:{
-      userid:function(){
+    computed: {
+      userid: function () {
         return window.location.href.split("userid=")[1]
       }
     },
     mounted() {
       this.mainurl = mainurl;
-      if (window.location.href.split("userid=")[1] !== undefined && window.location.href.split("userid=")[1] !== ""&&window.location.href.split("userid=")[1] !== 'undefined') {
+      if (window.location.href.split("userid=")[1] !== undefined && window.location.href.split("userid=")[1] !== "" &&
+        window.location.href.split("userid=")[1] !== 'undefined') {
         this.userid;
         this.isjump = true;
       }
       this.getInfo()
     },
     methods: {
-      getInfo(){
+      getInfo() {
         const loading = this.$loading({
-        lock: true,
-        text: "Loading",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
-      // 获取详情
-      this.$http
-        .get("api/Back_ProductList/GetProductDetail", {
-          params: {
-            Token: getCookie("token"),
-            prodID: window.location.href.split("id=")[1].split("&")[0]
-          }
-        })
-        .then(
-          function (response) {
-            loading.close();
-            var status = response.data.Status;
-            if (status === 1) {
-              this.editForm = response.data.Result;
-              var images = response.data.Result.Imges;
-              this.imageForm = images.split(",");
-              this.ServiceProvider = response.data.Result.ServiceProvider[0];
-              console.log(this.ServiceProvider)
-            } else if (status === 40001) {
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
-              setTimeout(() => {
-                this.$router.push({
-                  path: "/login"
-                });
-              }, 1500);
-            } else {
-              loading.close();
-              this.$message({
-                showClose: true,
-                type: "warning",
-                message: response.data.Result
-              });
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        // 获取详情
+        this.$http
+          .get("api/Back_ProductList/GetProductDetail", {
+            params: {
+              Token: getCookie("token"),
+              prodID: window.location.href.split("id=")[1].split("&")[0]
             }
-          }.bind(this)
-        )
-        // 请求error
-        .catch(
-          function (error) {
-            loading.close();
-            // this.$notify.error({
-            //   title: "错误",
-            //   message: "错误：请检查网络"
-            // });
-          }.bind(this)
-        );
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.editForm = response.data.Result;
+                var images = response.data.Result.Imges;
+                this.imageForm = images.split(",");
+                this.ServiceProvider = response.data.Result.ServiceProvider[0];
+                console.log(this.ServiceProvider)
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              // this.$notify.error({
+              //   title: "错误",
+              //   message: "错误：请检查网络"
+              // });
+            }.bind(this)
+          );
       },
       //图片放大
       handlePictureCardPreview(url) {
         this.dialogImageUrl = this.mainurl + url;
         this.dialogVisible = true;
       },
+      editmain(type, value) {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        // 获取详情
+        this.$http
+          .get("api/Back_ProductList/EditProdAttribute", {
+            params: {
+              Token: getCookie("token"),
+              prodID: window.location.href.split("id=")[1].split("&")[0],
+              type: type,
+              value: value
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.$message({
+                  showClose: true,
+                  type: "success",
+                  message: response.data.Result
+                });
+                this.dialogmian = false
+                this.dialogsecond = false
+                this.getInfo()
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              // this.$notify.error({
+              //   title: "错误",
+              //   message: "错误：请检查网络"
+              // });
+            }.bind(this)
+          );
+      },
       back() {
-        if(this.isjump){
-          this.$router.push('../../GetProductListIndex?name='+this.editForm.PushMan+'&id='+this.userid+'');
-        }else{
+        if (this.isjump) {
+          this.$router.push('../../GetProductListIndex?name=' + this.editForm.PushMan + '&id=' + this.userid + '');
+        } else {
           this.$router.push("/GetProductListIndex");
         }
       },
     },
-    
+
   };
 
 </script>
@@ -206,7 +320,8 @@
   .imgpad {
     padding: 5px;
   }
-  .circle{
+
+  .circle {
     width: 30px;
     height: 30px;
     border-radius: 50%;

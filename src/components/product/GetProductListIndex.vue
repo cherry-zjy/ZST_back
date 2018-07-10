@@ -30,8 +30,14 @@
       <el-table-column label="发布人" prop="NickName" width="120">
       </el-table-column>
       <el-table-column label="主色调" prop="MainColor" width="120">
+        <template slot-scope="scope">
+          <div class="circle" v-bind:style="{ background: scope.row.MainColor}"></div>
+        </template>
       </el-table-column>
-      <el-table-column label="辅色调" prop="SecondaryColor" width="120">
+      <el-table-column label="辅色调" prop="SubColor" width="120">
+        <template slot-scope="scope">
+          <div class="circle" v-bind:style="{ background: scope.row.SubColor}"></div>
+        </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -256,6 +262,11 @@
   .block {
     text-align: center;
     padding: 20px 0;
+  }
+  .circle{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
   }
 
 </style>

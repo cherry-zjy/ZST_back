@@ -23,9 +23,9 @@
     <el-table :data="List" style="width: 100%" :border='true' v-if="!change">
       <el-table-column label="广告标题" prop="Title">
       </el-table-column>
-      <el-table-column label="广告图" prop="Image" width="300">
+      <el-table-column label="广告图" prop="Image" width="250">
         <template slot-scope="scope">
-          <img :src="mainurl+scope.row.Image" width="250" @click="handlePictureCardPreview(scope.row.Image)" />
+          <img :src="mainurl+scope.row.Image" width="200" height="150" @click="handlePictureCardPreview(scope.row.Image)" />
         </template>
       </el-table-column>
       <el-table-column label="广告类型" prop="Type" :formatter="typeText">
@@ -129,7 +129,7 @@
         mainurl: "",
         filters: {
           pageIndex: 1,
-          pageSize: 6,
+          pageSize: 4,
           Token: getCookie("token"),
           type: '4'
         },

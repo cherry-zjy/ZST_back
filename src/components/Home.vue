@@ -60,7 +60,7 @@
     </el-container>
     <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
       <el-input v-model="value"></el-input>
-      {{Val}}
+      已匹配/匹配上限：{{Val}}
       <span slot="footer" class="dialog-footer">
         <el-button @click="centerDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="match()">确 定</el-button>
