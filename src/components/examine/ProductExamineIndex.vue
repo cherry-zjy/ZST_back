@@ -26,10 +26,10 @@
         <el-form-item>
           <el-button type="primary" @click="getInfo(false,true)">查询</el-button>
         </el-form-item>
-        <el-tag><span @click="getInfo(0)" class="cursur">审核作品共：{{data.Sum}}</span></el-tag>
-        <el-tag><span @click="getInfo(1)" class="cursur">通过审核数：{{data.Through}}</span></el-tag>
-        <el-tag><span @click="getInfo(2)" class="cursur">未通过审核数：{{data.NotThrough}}</span></el-tag>
-        <el-tag><span @click="getInfo(3)" class="cursur">未审核作品共：{{data.Unaudited}}</span></el-tag>
+        <el-tag><span @click="filters.pageIndex = 1;getInfo(0)" class="cursur">审核作品共：{{data.Sum}}</span></el-tag>
+        <el-tag><span @click="filters.pageIndex = 1;getInfo(1)" class="cursur">通过审核数：{{data.Through}}</span></el-tag>
+        <el-tag><span @click="filters.pageIndex = 1;getInfo(2)" class="cursur">未通过审核数：{{data.NotThrough}}</span></el-tag>
+        <el-tag><span @click="filters.pageIndex = 1;getInfo(3)" class="cursur">未审核作品共：{{data.Unaudited}}</span></el-tag>
         
       </el-form>
     </el-col>

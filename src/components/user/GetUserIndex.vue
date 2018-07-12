@@ -21,8 +21,8 @@
         <el-form-item>
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
-        <el-tag><span @click="filters.IsVip = '1';filters.IsVerify = '0';getInfo()" class="cursur">黑卡会员人数：{{BlackRealMoney.BlackCard}}</span></el-tag>
-        <el-tag><span @click="filters.IsVerify = '2';filters.IsVip = '0';getInfo()" class="cursur">实名认证人数：{{BlackRealMoney.Attestation}}</span></el-tag>
+        <el-tag><span @click="filters.IsVip = '1';filters.IsVerify = '0';filters.pageIndex = 1;getInfo()" class="cursur">黑卡会员人数：{{BlackRealMoney.BlackCard}}</span></el-tag>
+        <el-tag><span @click="filters.IsVerify = '2';filters.IsVip = '0';filters.pageIndex = 1;getInfo()" class="cursur">实名认证人数：{{BlackRealMoney.Attestation}}</span></el-tag>
         <el-tag><span>钱袋收入总金额：{{BlackRealMoney.MoneyBag}}</span></el-tag>
       </el-form>
     </el-col>

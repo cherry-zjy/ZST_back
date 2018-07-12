@@ -27,8 +27,8 @@
         <el-form-item>
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
-        <el-tag>未支付总费用：{{Unpaid}}</el-tag>
-        <el-tag>已支付总费用：{{Paid}}</el-tag>
+        <el-tag><span class="cursur" @click="filters.state='2';getInfo(true)">未支付总费用：{{Unpaid}}</span></el-tag>
+        <el-tag><span @click="filters.state='1';getInfo(true)" class="cursur">已支付总费用：{{Paid}}</span></el-tag>
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -45,10 +45,10 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '已支付'" disabled>已同意</el-button>
-          <el-button size="mini" type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '未支付'">同意</el-button>
-          <el-button size="mini" type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '已拒绝'" disabled>已拒绝</el-button>
-          <el-button size="mini" type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '未支付'">拒绝</el-button>
+          <el-button size="mini" type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '2'" disabled>已同意</el-button>
+          <el-button size="mini" type="primary" @click="handle('1', scope.row,'同意')" v-if="scope.row.State == '0'">同意</el-button>
+          <el-button size="mini" type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '1'" disabled>已拒绝</el-button>
+          <el-button size="mini" type="primary" @click="handle('2', scope.row,'拒绝')" v-if="scope.row.State == '0'">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -320,6 +320,9 @@
   .block {
     text-align: center;
     padding: 20px 0;
+  }
+  .cursur{
+    cursor: pointer;
   }
 
 </style>

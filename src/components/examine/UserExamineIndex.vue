@@ -26,9 +26,9 @@
         <el-form-item>
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
-        <el-tag><span class="cursur" @click="filters.type = '0';getInfo()">总认证申请人数：{{Datalist.Sum}}</span></el-tag>
-        <el-tag><span @click="filters.type = '1';getInfo()" class="cursur">通过人数：{{Datalist.Through}}</span></el-tag>
-        <el-tag><span class="cursur" @click="filters.type = '2';getInfo()">拒绝人数：{{Datalist.NotThrough}}</span></el-tag>
+        <el-tag><span class="cursur" @click="filters.pageIndex = 1;filters.type = '0';getInfo()">总认证申请人数：{{Datalist.Sum}}</span></el-tag>
+        <el-tag><span @click="filters.pageIndex = 1;filters.type = '1';getInfo()" class="cursur">通过人数：{{Datalist.Through}}</span></el-tag>
+        <el-tag><span class="cursur" @click="filters.pageIndex = 1;filters.type = '2';getInfo()">拒绝人数：{{Datalist.NotThrough}}</span></el-tag>
         <el-tag><span>未审核人数：{{Datalist.Unaudited}}</span></el-tag>
       </el-form>
     </el-col>
