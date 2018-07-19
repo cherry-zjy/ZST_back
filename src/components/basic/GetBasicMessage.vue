@@ -8,6 +8,9 @@
       <p>注册用户数量：{{List.userList}}</p>
       <br/>
       <p>会员用户数量：{{List.vipLis}}</p>
+      <br/>
+      <p>活跃用户数量：{{List.ActiveUser}}</p>
+      
     </div>
   </div>
 

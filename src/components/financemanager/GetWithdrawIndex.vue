@@ -39,7 +39,7 @@
       </el-table-column>
       <el-table-column label="提现支付宝账号" prop="Account">
       </el-table-column>
-      <el-table-column label="提现金额（元）" prop="Price">
+      <el-table-column label="提现金额（元）" prop="Price" :render-header="foo">
       </el-table-column>
       <el-table-column label="提现状态" prop="State">
       </el-table-column>
@@ -79,16 +79,20 @@
           // sear: '',
           // startTime: '',
           // endTime: '',
-          state: "0"
+          state: "0",
+          priceOrder:0
         },
         state: [{
           value: '0',
           label: '提现状态（全部）'
         }, {
           value: '1',
-          label: '未支付'
+          label: '未审核'
         }, {
           value: '2',
+          label: '已拒绝'
+        }, {
+          value: '3',
           label: '已支付'
         }],
       };
@@ -119,18 +123,6 @@
         } else {
           this.filters.sear = this.filters.sear
         }
-        // if(this.filters.startTime == ""){
-        //   delete this.filters.startTime
-        // }
-        // else{
-        //   this.filters.startTime = this.filters.startTime
-        // }
-        // if(this.filters.endTime == ""){
-        //   delete this.filters.endTime
-        // }
-        // else{
-        //   this.filters.endTime = this.filters.endTime
-        // }
         this.$http
           .get("api/Back_FinanceManager/GetWithdrawIndex", {
             params: this.filters
@@ -173,6 +165,29 @@
               });
             }.bind(this)
           );
+      },
+      foo(h,{column}){
+       console.log(column)
+        return(
+          <span>{column.label}
+          <i class="icon el-icon-caret-top" onClick={ this.topsort } style="display:none"></i>
+          <i class="icon el-icon-d-caret" onClick={ this.bottomsort }></i>
+          </span>
+        )
+      },
+      topsort(){
+        $(".el-icon-d-caret").show();
+        $(".el-icon-caret-top").hide();
+        this.filters.priceOrder = 0;
+        this.filters.pageIndex = 1
+        this.getInfo()
+      },
+      bottomsort(){
+        $(".el-icon-caret-top").show();
+        $(".el-icon-d-caret").hide();
+        this.filters.priceOrder = 1;
+        this.filters.pageIndex = 1
+        this.getInfo()
       },
       getData() {
         const loading = this.$loading({

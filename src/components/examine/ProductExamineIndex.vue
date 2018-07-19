@@ -76,7 +76,7 @@
           pageSize: 6,
           Token: getCookie("token"),
           type:'0',
-          sear:'',
+          // sear:'',
           // startTime:'',
           // endTime:'',
         },
@@ -108,11 +108,17 @@
            3、分页
         */
       getInfo(type,searchange) {
+        
         if (searchange) {
           this.filters.pageIndex = 1
         }
         if (type) {
           this.filters.type = ""+type+""
+        }
+        if (this.filters.sear == "") {
+          delete this.filters.sear
+        } else {
+          this.filters.sear = this.filters.sear
         }
         const loading = this.$loading({
           lock: true,
@@ -120,11 +126,6 @@
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)"
         });
-        if (this.filters.sear == "") {
-          delete this.filters.sear
-        } else {
-          this.filters.sear = this.sear
-        }
         // if (this.filters.startTime == "") {
         //   delete this.filters.startTime
         // } else {
