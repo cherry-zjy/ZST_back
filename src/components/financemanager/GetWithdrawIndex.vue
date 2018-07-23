@@ -28,7 +28,7 @@
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
         <el-tag><span class="cursur" @click="filters.state='2';getInfo(true)">未支付总费用：{{Unpaid}}</span></el-tag>
-        <el-tag><span @click="filters.state='1';getInfo(true)" class="cursur">已支付总费用：{{Paid}}</span></el-tag>
+        <el-tag><span @click="filters.state='3';getInfo(true)" class="cursur">已支付总费用：{{Paid}}</span></el-tag>
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -41,7 +41,7 @@
       </el-table-column>
       <el-table-column label="提现金额（元）" prop="Price" :render-header="foo">
       </el-table-column>
-      <el-table-column label="提现状态" prop="State">
+      <el-table-column label="提现状态" prop="State" :formatter="State">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -103,11 +103,21 @@
       }
     },
     methods: {
-      /*
-           1、获取列表 渲染列表
-           2、搜索关键字
-           3、分页
-        */
+      State(row, State) {
+        console.log(row)
+        var State = row[State.property];
+        switch (State) {
+          case 0:
+            return (State = "待同意");
+            break;
+          case 1:
+            return (State = "拒绝");
+            break;
+          case 2:
+            return (State = "同意");
+            break;
+        }
+      },
       getInfo(searchange) {
         if (searchange) {
           this.filters.pageIndex = 1

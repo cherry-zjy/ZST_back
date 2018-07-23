@@ -29,7 +29,7 @@
 
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="del(scope.row.Content)">删除</el-button>
+          <el-button size="mini" type="danger" @click="del(scope.row.ID)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -247,7 +247,7 @@
             .get("api/Back_PlatformManager/DelSysMes", {
               params: {
                 Token: getCookie("token"),
-                Content: id,
+                msgID: id,
               }
             })
             .then(
