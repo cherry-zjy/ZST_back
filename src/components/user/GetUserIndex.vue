@@ -31,6 +31,8 @@
 
       <el-table-column label="用户名" prop="Name">
       </el-table-column>
+      <el-table-column label="注册时间" prop="OverdueTime" :render-header="time">
+      </el-table-column>
       <el-table-column label="手机号" prop="Phone">
       </el-table-column>
       <el-table-column label="是否认证" prop="IsVerify" width="120">
@@ -73,7 +75,8 @@
           Token: getCookie("token"),
           IsVip: '0',
           IsVerify: '0',
-          Order:1
+          Order:1,
+          RegisterOrder:0
         },
         IsVip: [{
           value: '0',
@@ -112,10 +115,33 @@
           </span>
         )
       },
+      time(h,{column}){
+       console.log(column)
+        return(
+          <span>{column.label}
+          <i class="icon el-icon-d-caret" onClick={ this.toptime }></i>
+          <i class="icon el-icon-caret-bottom" onClick={ this.bottomtime } style="display:none"></i>
+          </span>
+        )
+      },
       topsort(){
         $(".el-icon-caret-bottom").show();
         $(".el-icon-caret-top").hide();
         this.filters.Order = 0;
+        this.filters.pageIndex = 1
+        this.getInfo()
+      },
+      bottomtime(){
+        $(".el-icon-d-caret").show();
+        $(".el-icon-caret-bottom").hide();
+        this.filters.RegisterOrder = 0;
+        this.filters.pageIndex = 1
+        this.getInfo()
+      },
+      toptime(){
+        $(".el-icon-caret-bottom").show();
+        $(".el-icon-d-caret").hide();
+        this.filters.RegisterOrder = 1;
         this.filters.pageIndex = 1
         this.getInfo()
       },
