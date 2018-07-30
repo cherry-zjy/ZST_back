@@ -31,7 +31,7 @@
 
       <el-table-column label="用户名" prop="Name">
       </el-table-column>
-      <el-table-column label="注册时间" prop="OverdueTime" :render-header="time">
+      <el-table-column label="注册时间" prop="CreateTime" :render-header="time">
       </el-table-column>
       <el-table-column label="手机号" prop="Phone">
       </el-table-column>
@@ -110,8 +110,8 @@
        console.log(column)
         return(
           <span>{column.label}
-          <i class="icon el-icon-caret-top" onClick={ this.topsort }></i>
-          <i class="icon el-icon-caret-bottom" onClick={ this.bottomsort } style="display:none"></i>
+          <i class="icon el-icon-caret-top" id="footop" onClick={ this.topsort }></i>
+          <i class="icon el-icon-caret-bottom" id="foobot" onClick={ this.bottomsort } style="display:none"></i>
           </span>
         )
       },
@@ -119,36 +119,42 @@
        console.log(column)
         return(
           <span>{column.label}
-          <i class="icon el-icon-d-caret" onClick={ this.toptime }></i>
-          <i class="icon el-icon-caret-bottom" onClick={ this.bottomtime } style="display:none"></i>
+          <i class="icon el-icon-d-caret" id="timetop" onClick={ this.toptime }></i>
+          <i class="icon el-icon-caret-bottom" id="timebot" onClick={ this.bottomtime } style="display:none"></i>
           </span>
         )
       },
       topsort(){
-        $(".el-icon-caret-bottom").show();
-        $(".el-icon-caret-top").hide();
+        $("#foobot").show();
+        $("#footop").hide();
         this.filters.Order = 0;
         this.filters.pageIndex = 1
         this.getInfo()
       },
       bottomtime(){
-        $(".el-icon-d-caret").show();
-        $(".el-icon-caret-bottom").hide();
+        $("#timetop").show();
+        $("#timebot").hide();
         this.filters.RegisterOrder = 0;
         this.filters.pageIndex = 1
         this.getInfo()
       },
       toptime(){
-        $(".el-icon-caret-bottom").show();
-        $(".el-icon-d-caret").hide();
+        $("#timebot").show();
+        $("#timetop").hide();
+        $("#foobot").show();
+        $("#footop").hide();
         this.filters.RegisterOrder = 1;
+        this.filters.Order = 0;
         this.filters.pageIndex = 1
         this.getInfo()
       },
       bottomsort(){
-        $(".el-icon-caret-top").show();
-        $(".el-icon-caret-bottom").hide();
+        $("#footop").show();
+        $("#foobot").hide();
+        $("#timetop").show();
+        $("#timebot").hide();
         this.filters.Order = 1;
+        this.filters.RegisterOrder = 0;
         this.filters.pageIndex = 1
         this.getInfo()
       },

@@ -74,14 +74,14 @@
     </el-row>
     <center>
       <el-button type="success" @click="dialogVisible2 = true" v-if="editForm.Status == 1">通过</el-button>
-      <el-button type="danger" @click="dialogFormVisible = true" v-if="editForm.Status == 1">拒绝</el-button>
+      <el-button type="danger" @click="dialogFormVisible = true">拒绝</el-button>
       <el-button type="primary" @click="back()" class="centerbtn">返回</el-button>
     </center>
 
     <el-dialog title="拒绝理由" :visible.sync="dialogFormVisible">
       <el-form>
         <el-form-item label="请输入拒绝理由">
-          <el-autocomplete class="inline-input" v-model="reason" :fetch-suggestions="querySearch" placeholder="请输入内容"></el-autocomplete>
+          <el-autocomplete class="inline-input big" v-model="reason" :fetch-suggestions="querySearch" placeholder="请输入内容"></el-autocomplete>
           <!-- <el-input v-model="reason" auto-complete="off"></el-input> -->
         </el-form-item>
       </el-form>
@@ -300,6 +300,9 @@
 
   .imgpad {
     padding: 5px;
+  }
+  .big{
+    width: 100%;
   }
 
 </style>
