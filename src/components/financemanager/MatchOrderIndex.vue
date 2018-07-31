@@ -37,6 +37,18 @@
       </el-table-column>
       <el-table-column label="匹配作品名" prop="ProductName">
       </el-table-column>
+      <el-table-column label="性别" prop="Sex">
+      </el-table-column>
+      <el-table-column label="姓名" prop="Name">
+      </el-table-column>
+      <el-table-column label="年" prop="Year" width="80">
+      </el-table-column>
+      <el-table-column label="月" prop="Month" width="80">
+      </el-table-column>
+      <el-table-column label="日" prop="Day" width="80">
+      </el-table-column>
+      <el-table-column label="时" prop="Hour" width="80">
+      </el-table-column>
     </el-table>
 
     <!-- 分页 -->

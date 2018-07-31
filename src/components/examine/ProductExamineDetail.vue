@@ -74,7 +74,7 @@
     </el-row>
     <center>
       <el-button type="success" @click="dialogVisible2 = true" v-if="editForm.Status == 1">通过</el-button>
-      <el-button type="danger" @click="dialogFormVisible = true">拒绝</el-button>
+      <el-button type="danger" @click="dialogFormVisible = true" v-if="editForm.Status == 1">拒绝</el-button>
       <el-button type="primary" @click="back()" class="centerbtn">返回</el-button>
     </center>
 

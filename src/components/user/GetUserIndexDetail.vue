@@ -36,7 +36,7 @@
       </el-col>
       <el-col :span="12">
         <el-form ref="editForm" label-width="150px" class="demo-editForm">
-        <el-form-item label="黑卡会员：" prop="IsVip">
+        <el-form-item label="会员：" prop="IsVip">
             {{editForm.IsVip}}
           </el-form-item>
            <el-form-item label="会员到期时间：" prop="ExpiryTime">

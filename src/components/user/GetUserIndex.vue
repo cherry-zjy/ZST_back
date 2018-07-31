@@ -10,7 +10,7 @@
         <el-form-item>
           <el-input v-model="filters.sear" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
-        <el-select v-model="filters.IsVip" placeholder="黑卡会员">
+        <el-select v-model="filters.IsVip" placeholder="会员">
           <el-option v-for="item in IsVip" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -21,7 +21,7 @@
         <el-form-item>
           <el-button type="primary" @click="getInfo(true)">查询</el-button>
         </el-form-item>
-        <el-tag><span @click="filters.IsVip = '1';filters.IsVerify = '0';filters.pageIndex = 1;getInfo()" class="cursur">黑卡会员人数：{{BlackRealMoney.BlackCard}}</span></el-tag>
+        <el-tag><span @click="filters.IsVip = '1';filters.IsVerify = '0';filters.pageIndex = 1;getInfo()" class="cursur">会员人数：{{BlackRealMoney.BlackCard}}</span></el-tag>
         <el-tag><span @click="filters.IsVerify = '2';filters.IsVip = '0';filters.pageIndex = 1;getInfo()" class="cursur">实名认证人数：{{BlackRealMoney.Attestation}}</span></el-tag>
         <el-tag><span>钱袋收入总金额：{{BlackRealMoney.MoneyBag}}</span></el-tag>
       </el-form>
@@ -39,13 +39,15 @@
       </el-table-column>
       <el-table-column label="会员卡号" prop="CardNo">
       </el-table-column>
-      <el-table-column label="剩余匹配次数" prop="Available">
+      <el-table-column label="剩余匹配次数" prop="Available" :render-header="pipei">
       </el-table-column>
       <el-table-column label="钱袋收入（元）" prop="Balance" :render-header="foo">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">详情</el-button>
+          <el-button size="mini" type="success" @click="force(scope.row,1)" v-if="scope.row.IsVerify=='是'">实名</el-button>
+          <el-button size="mini" type="danger" @click="force(scope.row,0)" v-if="scope.row.IsVerify=='否'">不实名</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -76,17 +78,24 @@
           IsVip: '0',
           IsVerify: '0',
           Order:1,
-          RegisterOrder:0
+          RegisterOrder:0,
+          MatchOrder:0
         },
         IsVip: [{
           value: '0',
-          label: '黑卡会员（全部）'
+          label: '会员（全部）'
         }, {
           value: '1',
-          label: '是'
+          label: '会员（是）'
         }, {
           value: '2',
-          label: '否'
+          label: '会员（否）'
+        }, {
+          value: '3',
+          label: '实名认证（是）'
+        }, {
+          value: '4',
+          label: '实名认证（否）'
         }],
         IsVerify: [{
           value: '0',
@@ -107,7 +116,6 @@
     },
     methods: {
      foo(h,{column}){
-       console.log(column)
         return(
           <span>{column.label}
           <i class="icon el-icon-caret-top" id="footop" onClick={ this.topsort }></i>
@@ -116,7 +124,6 @@
         )
       },
       time(h,{column}){
-       console.log(column)
         return(
           <span>{column.label}
           <i class="icon el-icon-d-caret" id="timetop" onClick={ this.toptime }></i>
@@ -124,28 +131,51 @@
           </span>
         )
       },
+      pipei(h,{column}){
+        return(
+          <span>{column.label}
+          <i class="icon el-icon-d-caret" id="pptop" onClick={ this.pptop }></i>
+          <i class="icon el-icon-caret-bottom" id="ppbot" onClick={ this.ppbot } style="display:none"></i>
+          </span>
+        )
+      },
       topsort(){
         $("#foobot").show();
         $("#footop").hide();
+        $("#timetop").show();
+        $("#timebot").hide();
+        $("#pptop").show();
+        $("#ppbot").hide();
         this.filters.Order = 0;
-        this.filters.pageIndex = 1
+        this.filters.MatchOrder = 0;
+        this.filters.pageIndex = 1;
+        this.filters.RegisterOrder = 0;
         this.getInfo()
       },
       bottomtime(){
         $("#timetop").show();
         $("#timebot").hide();
+        $("#foobot").hide();
+        $("#footop").show();
+        $("#pptop").show();
+        $("#ppbot").hide();
+        this.filters.Order = 0;
         this.filters.RegisterOrder = 0;
+        this.filters.MatchOrder = 0;
         this.filters.pageIndex = 1
         this.getInfo()
       },
       toptime(){
         $("#timebot").show();
         $("#timetop").hide();
-        $("#foobot").show();
-        $("#footop").hide();
+        $("#foobot").hide();
+        $("#footop").show();
+        $("#pptop").show();
+        $("#ppbot").hide();
         this.filters.RegisterOrder = 1;
         this.filters.Order = 0;
-        this.filters.pageIndex = 1
+        this.filters.pageIndex = 1;
+        this.filters.MatchOrder = 0;
         this.getInfo()
       },
       bottomsort(){
@@ -153,11 +183,41 @@
         $("#foobot").hide();
         $("#timetop").show();
         $("#timebot").hide();
+        $("#pptop").show();
+        $("#ppbot").hide();
         this.filters.Order = 1;
         this.filters.RegisterOrder = 0;
+        this.filters.pageIndex = 1;
+        this.filters.MatchOrder = 0;
+        this.getInfo()
+      },
+      pptop(){
+        $("#pptop").show();
+        $("#ppbot").hide();
+        $("#foobot").hide();
+        $("#footop").show();
+        $("#pptop").show();
+        $("#ppbot").hide();
+        this.filters.RegisterOrder = 0;
+        this.filters.pageIndex = 1;
+        this.filters.MatchOrder = 0;
+        this.filters.Order = 0;
+        this.getInfo()
+      },
+      ppbot(){
+        $("#pptop").hide();
+        $("#ppbot").show();
+        $("#foobot").hide();
+        $("#footop").show();
+        $("#pptop").show();
+        $("#ppbot").hide();
+        this.filters.RegisterOrder = 1;
+        this.filters.Order = 0;
+        this.filters.MatchOrder = 1;
         this.filters.pageIndex = 1
         this.getInfo()
       },
+      
       getInfo(searchange) {
         if (searchange) {
           this.filters.pageIndex = 1
@@ -184,6 +244,66 @@
               if (status === 1) {
                 this.List = response.data.Result.coustomer;
                 this.pageCount = response.data.Result.page;
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
+      force(row,status){
+        var obj = Object.assign({}, row);
+        var urlId = obj.ID;
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        this.$http
+          .get("api/Back_UserList/ForceAuthentication", {
+            params: {
+              userID:urlId,
+              State:status,
+              Token:getCookie("token"),
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.$message({
+                  showClose: true,
+                  type: "success",
+                  message: response.data.Result
+                });
+                this.getInfo();
               } else if (status === 40001) {
                 this.$message({
                   showClose: true,
