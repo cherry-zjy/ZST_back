@@ -36,8 +36,11 @@
       <el-table-column label="联系手机号" prop="Phone">
       </el-table-column>
       <el-table-column label="匹配作品名" prop="ProductName">
+        <template slot-scope="scope">
+          <img :src="mainurl+scope.row.ProductName" style="max-width:100%">
+        </template>
       </el-table-column>
-      <el-table-column label="性别" prop="Sex">
+      <el-table-column label="性别" prop="Sex" :formatter="Sex">
       </el-table-column>
       <el-table-column label="姓名" prop="Name">
       </el-table-column>
@@ -49,11 +52,14 @@
       </el-table-column>
       <el-table-column label="时" prop="Hour" width="80">
       </el-table-column>
+      <el-table-column label="匹配区分" prop="MatchType" width="80">
+      </el-table-column>
     </el-table>
 
     <!-- 分页 -->
     <div class="block">
-      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount" :current-page="currentPage">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount"
+        :current-page="currentPage">
       </el-pagination>
     </div>
   </div>
@@ -82,11 +88,18 @@
       }
     },
     methods: {
-      /*
-           1、获取列表 渲染列表
-           2、搜索关键字
-           3、分页
-        */
+      Sex(row, Sex) {
+        console.log(row)
+        var Sex = row[Sex.property];
+        switch (Sex) {
+          case 0:
+            return (Sex = "女");
+            break;
+          case 1:
+            return (Sex = "男");
+            break;
+        }
+      },
       getInfo(searchange) {
         if (searchange) {
           this.filters.pageIndex = 1

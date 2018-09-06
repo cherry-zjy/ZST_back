@@ -11,11 +11,18 @@
         <el-option v-for="item in type" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
-      <el-button type="primary" @click="getInfo()">查询</el-button>
+      <!-- <el-button type="primary" @click="getInfo()">查询</el-button> -->
+      <el-tag v-if="filters.type == 1"><span @click="filters.pageIndex = 1;filters.state = 1;getInfo()" class="cursur">首页广告上架：{{adverup}}</span></el-tag>
+      <el-tag v-if="filters.type == 1"><span @click="filters.pageIndex = 1;filters.state = 2;getInfo()" class="cursur">首页广告下架：{{adverdown}}</span></el-tag>
+      <el-tag v-if="filters.type == 2"><span @click="filters.pageIndex = 1;filters.state = 1;getInfo()" class="cursur">配对广告上架：{{adverup}}</span></el-tag>
+      <el-tag v-if="filters.type == 2"><span @click="filters.pageIndex = 1;filters.state = 2;getInfo()" class="cursur">配对广告下架：{{adverdown}}</span></el-tag>
+      <el-tag v-if="filters.type == 0"><span @click="filters.pageIndex = 1;filters.state = 1;getInfo()" class="cursur">欢迎页广告上架：{{adverup}}</span></el-tag>
+      <el-tag v-if="filters.type == 0"><span @click="filters.pageIndex = 1;filters.state = 2;getInfo()" class="cursur">欢迎页广告下架：{{adverdown}}</span></el-tag>
       <el-form :inline="true" style="float:right">
         <el-form-item>
           <el-button type="primary" @click="handleAdd()">新增</el-button>
         </el-form-item>
+
       </el-form>
     </el-col>
 
@@ -82,8 +89,8 @@
           <el-date-picker type="date" placeholder="到期时间" v-model="getList.ExpiryTime" style="width: 100%;"></el-date-picker>
         </el-form-item>
         <el-form-item label="广告大图" prop="Image">
-          <el-upload v-model="getList.Image" class="avatar-uploader" :action="action" :show-file-list="false" :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload">
+          <el-upload v-model="getList.Image" class="avatar-uploader" :action="action" :show-file-list="false"
+            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -131,8 +138,11 @@
           pageIndex: 1,
           pageSize: 4,
           Token: getCookie("token"),
-          type: '4'
+          type: '4',
+          state: 0
         },
+        adverdown:'',
+        adverup:'',
         dialogImageUrl: '',
         Sequence: '',
         SequenceID: '',
@@ -234,16 +244,25 @@
       };
     },
     computed: {
-      filterstype() {　　　　
-        return this.filters.type　　
+      filterstype() {
+        return this.filters.type
       }
     },
     watch: {
       filterstype: function (newQuestion, oldQuestion) {
         if (newQuestion !== oldQuestion) {
           this.filters.pageIndex = 1;
+          this.filters.state = 0
+          this.getInfo()
+          if (newQuestion == 0) {
+            this.getadver(1)
+          } else if (newQuestion == 1) {
+            this.getadver(2)
+          } else if (newQuestion == 2) {
+            this.getadver(3)
+          }
         }
-      }
+      },
     },
     components: {
       UEditor
@@ -254,6 +273,58 @@
         this.getInfo();
     },
     methods: {
+      getadver(type) {
+        const loading = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        this.$http
+          .get("api/Back_PlatformManager/GetAdverTypeUpDown", {
+            params: {
+              type: type,
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.adverdown = response.data.Result.Down
+                this.adverup = response.data.Result.Up
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
       timefilterHandler(row) {
         var ExpiryTime = row.ExpiryTime;
         ExpiryTime = ExpiryTime.substring(0, 10);

@@ -35,7 +35,7 @@
       </el-table-column>
       <el-table-column label="手机号" prop="Phone">
       </el-table-column>
-      <el-table-column label="是否认证" prop="IsVerify" width="120">
+      <el-table-column label="是否会员认证" prop="IsVip" width="120">
       </el-table-column>
       <el-table-column label="会员卡号" prop="CardNo">
       </el-table-column>
@@ -46,8 +46,8 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">详情</el-button>
-          <el-button size="mini" type="success" @click="force(scope.row,1)" v-if="scope.row.IsVerify=='是'">实名</el-button>
-          <el-button size="mini" type="danger" @click="force(scope.row,0)" v-if="scope.row.IsVerify=='否'">不实名</el-button>
+          <el-button size="mini" type="success" @click="force(scope.row,0)" v-if="scope.row.IsVerify=='是'">实名</el-button>
+          <el-button size="mini" type="danger" @click="force(scope.row,1)" v-if="scope.row.IsVerify=='否'">不实名</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -83,7 +83,7 @@
         },
         IsVip: [{
           value: '0',
-          label: '会员（全部）'
+          label: '全部用户'
         }, {
           value: '1',
           label: '会员（是）'
